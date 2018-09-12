@@ -37,7 +37,7 @@ namespace VideoImageDeltaApp.Forms
             this.Button_Import = new System.Windows.Forms.Button();
             this.Button_Process = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.button1 = new System.Windows.Forms.Button();
+            this.Button_Videos = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.Button_Watch = new System.Windows.Forms.Button();
             this.listView1 = new System.Windows.Forms.ListView();
@@ -111,7 +111,7 @@ namespace VideoImageDeltaApp.Forms
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel1.Controls.Add(this.button1, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.Button_Videos, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.button2, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.Button_Watch, 2, 0);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 7);
@@ -121,15 +121,16 @@ namespace VideoImageDeltaApp.Forms
             this.tableLayoutPanel1.Size = new System.Drawing.Size(600, 29);
             this.tableLayoutPanel1.TabIndex = 103;
             // 
-            // button1
+            // Button_Videos
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(3, 3);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(194, 23);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Add Videos";
-            this.button1.UseVisualStyleBackColor = true;
+            this.Button_Videos.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.Button_Videos.Location = new System.Drawing.Point(3, 3);
+            this.Button_Videos.Name = "Button_Videos";
+            this.Button_Videos.Size = new System.Drawing.Size(194, 23);
+            this.Button_Videos.TabIndex = 0;
+            this.Button_Videos.Text = "Add Videos";
+            this.Button_Videos.UseVisualStyleBackColor = true;
+            this.Button_Videos.Click += new System.EventHandler(this.Button_Videos_Click);
             // 
             // button2
             // 
@@ -178,7 +179,6 @@ namespace VideoImageDeltaApp.Forms
             this.MinimumSize = new System.Drawing.Size(600, 200);
             this.Name = "MainWindow";
             this.Text = "Video Image Delta";
-            this.Load += new System.EventHandler(this.MainWindow_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -192,7 +192,7 @@ namespace VideoImageDeltaApp.Forms
         private Button Button_Quit;
         private Button Button_Help;
         private TableLayoutPanel tableLayoutPanel1;
-        private Button button1;
+        private Button Button_Videos;
         private Button button2;
         private Button Button_Watch;
         private ListView listView1;
