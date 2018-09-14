@@ -48,11 +48,17 @@ using VideoImageDeltaApp;
 using VideoImageDeltaApp.Forms;
 using VideoImageDeltaApp.Models;
 
+using System.Reflection;
+using System.Data.OleDb;
+
 namespace VideoImageDeltaApp
 {
 
     public class RawFFmpeg
     {
+        private static string ffmpegPath;
+        private static string ffprobePath;
+
         /**
          * Placing the array here stops the memory leaking. Not really a problem since only one thumbnail is shown at a time.
          * But if the user makes multiple windows, things could get weird. A better solution would be preferred.
@@ -61,7 +67,95 @@ namespace VideoImageDeltaApp
          * The odds of this being used for anything larger is very unlikely. The better solution should fix that.
          */
         public const int MAX_IMAGE_SIZE = 6291456; // 6MiBs flat
-        private static byte[] imageCache = new byte[MAX_IMAGE_SIZE];
+        private static readonly byte[] imageCache = new byte[MAX_IMAGE_SIZE];
+
+        public static bool FindFFExecutables()
+        {
+            retry:
+            // Check if executables exist in the same directory as the program.
+            string srcDir = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            if (File.Exists(srcDir + @"\" + "ffmpeg.exe"))
+                ffmpegPath = srcDir + @"\" + "ffmpeg.exe";
+            if (File.Exists(srcDir + @"\" + "ffprobe.exe"))
+                ffprobePath = srcDir + @"\" + "ffprobe.exe";
+
+            // Check if executables exist in system paths.
+            string[] dirs = Environment.GetEnvironmentVariable("PATH").Split(';');
+            if (String.IsNullOrWhiteSpace(ffmpegPath))
+            {
+                foreach (string dir in dirs)
+                {
+                    if (File.Exists(dir + @"\" + "ffmpeg.exe"))
+                    {
+                        ffmpegPath = dir + @"\" + "ffmpeg.exe";
+                        break;
+                    }
+                }
+            }
+            if (String.IsNullOrWhiteSpace(ffprobePath))
+            {
+                foreach (string dir in dirs)
+                {
+                    if (File.Exists(dir + @"\" + "ffprobe.exe"))
+                    {
+                        ffprobePath = dir + @"\" + "ffprobe.exe";
+                        break;
+                    }
+                }
+            }
+
+            // Windows search. Can't test on my PC since I have it disabled.
+            /*
+            try
+            {
+                var connection = new OleDbConnection(@"Provider=Search.CollatorDSO;Extended Properties=""Application=Windows""");
+                var query = @"SELECT System.ItemName FROM SystemIndex WHERE scope ='file:C:/' AND System.ItemName = 'ffmpeg.exe'";
+                connection.Open();
+                var command = new OleDbCommand(query, connection);
+                using (var r = command.ExecuteReader())
+                {
+                    while (r.Read())
+                    {
+                        Console.WriteLine(r[0]);
+                    }
+                }
+                connection.Close();
+            }
+            catch (InvalidOperationException e) { Debug.Write(e); }
+            */
+
+            if (!File.Exists(ffmpegPath) || !File.Exists(ffprobePath))
+            {
+                string str = "FFmpeg and FFprobe are ";
+                if (File.Exists(ffmpegPath))
+                {
+                    str = "FFprobe is ";
+                } else if (File.Exists(ffprobePath))
+                {
+                    str = "FFmpeg is ";
+                }
+                DialogResult dr = MessageBox.Show(
+                    str + "required for this program to run properly and cannot be found." +
+                    " The latest build for FFmpeg can be downloaded at" +
+                    "\r\nhttps://ffmpeg.zeranoe.com/builds/" + 
+                    "\r\nThis program will now close.",
+                    "Fatal Error",
+                    MessageBoxButtons.RetryCancel,
+                    MessageBoxIcon.Error
+                );
+                if (dr == DialogResult.Retry)
+                {
+                    goto retry;
+                } else
+                {
+                    return false;
+                }
+            } else
+            {
+                ResourceManagement.CommandConfiguration = CommandConfiguration.Create(Path.GetTempPath(), ffmpegPath, ffprobePath);
+                return true;
+            }
+        }
 
         public static string FFCommand(string process, string videoPath, string parameters)
         {
@@ -150,6 +244,7 @@ namespace VideoImageDeltaApp
             }
             catch (ArgumentException e)
             { // Don't stop the program because it failed to load the thumbnail. Just return blank.
+                Debug.Write(e);
                 t = null;
             }
 
@@ -189,8 +284,6 @@ namespace VideoImageDeltaApp
 
             return "";
         }
-
-
 
     }
 }

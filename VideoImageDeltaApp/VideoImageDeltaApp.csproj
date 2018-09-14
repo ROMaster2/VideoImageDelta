@@ -28,7 +28,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -114,8 +114,14 @@
     <Compile Include="PairVideosAndGames.Designer.cs">
       <DependentUpon>PairVideosAndGames.cs</DependentUpon>
     </Compile>
+    <Compile Include="ProcessSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProcessSettings.Designer.cs">
+      <DependentUpon>ProcessSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="Test.cs" />
-    <Compile Include="RawFFmpeg.cs" />
+    <Compile Include="FFmpeg.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
@@ -137,6 +143,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PairVideosAndGames.resx">
       <DependentUpon>PairVideosAndGames.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProcessSettings.resx">
+      <DependentUpon>ProcessSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
