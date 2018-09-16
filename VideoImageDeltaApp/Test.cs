@@ -127,8 +127,7 @@ namespace VideoImageDeltaApp
                             MagickImage diffImage = new MagickImage(fullThumbPath);
                             //diffImage.Composite(deltaImage, CompositeOperator.CopyAlpha);
                             diffImage.Composite(deltaImage, CompositeOperator.Difference);
-                            double delta;
-                            Double.TryParse(diffImage.FormatExpression("%[fx:mean]"), out delta);
+                            Double.TryParse(diffImage.FormatExpression("%[fx:mean]"), out double delta);
                             if (delta < 0.25)
                             {
                                 File.Copy(fullThumbPath, @"J:\Dump2" + @"\" + i.Name, true);

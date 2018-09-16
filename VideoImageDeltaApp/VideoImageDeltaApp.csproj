@@ -26,6 +26,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -54,6 +55,7 @@
       <HintPath>..\packages\Magick.NET-Q8-x64.7.7.0\lib\net40\Magick.NET-Q8-x64.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -108,6 +110,8 @@
     <Compile Include="AddWatchers.Designer.cs">
       <DependentUpon>AddWatchers.cs</DependentUpon>
     </Compile>
+    <Compile Include="Rect.cs" />
+    <Compile Include="ModelsNew.cs" />
     <Compile Include="PairVideosAndGames.cs">
       <SubType>Form</SubType>
     </Compile>

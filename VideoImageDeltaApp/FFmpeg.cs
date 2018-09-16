@@ -204,7 +204,7 @@ namespace VideoImageDeltaApp
          * Extra Spaghetti.
          */
 
-        public static Image FFCommand2(string process, TimeSpan timestamp, Video video, string parameters)
+        public static Image FFCommand2(string process, TimeSpan timestamp, string videoPath, System.Windows.Size size, string parameters)
         {
             Array.Clear(imageCache, 0, MAX_IMAGE_SIZE);
             NamedPipeServerStream p_from_ffmpeg;
@@ -218,7 +218,7 @@ namespace VideoImageDeltaApp
                 MAX_IMAGE_SIZE);
 
             string start = timestamp.ToString().Substring(0, 8);
-            string args = String.Format(@"-ss {0} -i ""{1}"" {2}", start, video.FilePath, parameters);
+            string args = String.Format(@"-ss {0} -i ""{1}"" {2}", start, videoPath, parameters);
 
             Process pProcess = new Process();
             pProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
@@ -234,7 +234,7 @@ namespace VideoImageDeltaApp
 
             pProcess.WaitForExit();
 
-            int imageSize = (int)(video.Geometry.Width * video.Geometry.Height) * 3;
+            int imageSize = (int)(size.Width * size.Height) * 3;
             p_from_ffmpeg.Read(imageCache, 0, imageSize + 128); // 128 is added for bmp overhead
             object t;
 
@@ -254,9 +254,9 @@ namespace VideoImageDeltaApp
             return (Image)t;
         }
 
-        public static Image GetThumbnail(Video video, TimeSpan timestamp)
+        public static Image GetThumbnail(string videoPath, System.Windows.Size size, TimeSpan timestamp)
         {
-            Image i = FFCommand2(@"ffmpeg", timestamp, video,
+            Image i = FFCommand2(@"ffmpeg", timestamp, videoPath, size,
                 @"-y -f image2pipe -vframes 1 ""\\.\pipe\from_ffmpeg""");
 
             return i;

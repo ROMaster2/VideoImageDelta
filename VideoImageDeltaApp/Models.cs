@@ -124,17 +124,38 @@ namespace VideoImageDeltaApp.Models
                 }
             }
         }
-    }
 
-    public class Pair
-    {
-        public Video Video;
-        public GameProfile GameProfile;
+        public static void AdjustVideo(Video v)
+        {
+            double x = 32768;
+            double y = 32768;
+            double width = -32768;
+            double height = -32768;
+            foreach (var f in v.Feeds)
+            {
+                x = Math.Min(x, f.Geometry.X);
+                y = Math.Min(y, f.Geometry.Y);
+                width = Math.Max(width, f.Geometry.X + f.Geometry.Width);
+                height = Math.Max(height, f.Geometry.Y + f.Geometry.Height);
+            }
+            width -= x;
+            height -= y;
 
-        public Feed Feed;
-        public Screen Screen;
+            v.AdjustedGeometry = new Geometry(x, y, width, height);
+        }
+        /*
+        public static Geometry AdjustWatchZone(Video v, Feed f, Screen s, WatchZone wz)
+        {
+            if (v.AdjustedGeometry == null) AdjustVideo(v);
 
-        public Geometry GameGeometry;
+            Geometry GameGeometry = s.Geometry;
+            if (f.GameGeometry.Width != 0 && f.GameGeometry.Height != 0)
+                GameGeometry = f.GameGeometry;
+
+            double xScale = GameGeometry.Width / f.Geometry.Width;
+            double yScale = GameGeometry.Height / f.Geometry.Height;
+        }
+        */
     }
 
     public class VideoProfile
@@ -222,6 +243,7 @@ namespace VideoImageDeltaApp.Models
         public VideoStreamMetadata RawMetadata { get; }
         public TimeSpan Duration { get; }
         public Geometry Geometry { get; }
+        public Geometry AdjustedGeometry { get; set; }
         public double FrameRate {
             get
             {
@@ -243,9 +265,10 @@ namespace VideoImageDeltaApp.Models
         public Image GetThumbnail(TimeSpan timestamp)
         {
             // Would use Hudl but figuring out the syntax is a pain. Documentation kinda sucks.
-            return RawFFmpeg.GetThumbnail(this, timestamp);
+//            return RawFFmpeg.GetThumbnail(this, timestamp);
+            return RawFFmpeg.GetThumbnail(FilePath, new System.Windows.Size(Geometry.Width, Geometry.Height),timestamp);
         }
-        
+
         override public string ToString()
         {
             return FilePath;
@@ -274,13 +297,39 @@ namespace VideoImageDeltaApp.Models
         public Geometry Geometry { get; set; }
         public Geometry GameGeometry { get; set; }
 
+        public Screen Screen { get; set; } // Experimenting
+
         override public string ToString()
         { // Figure out how to get + and - to appear based on value.
             return Geometry.Width.ToString() + "x" + Geometry.Height.ToString() + " " + Name;
         }
 
     }
+    /*
+    public class VideoProfilePair
+    {
+        public VideoProfilePair(Video video, GameProfile gameProfile)
+        {
+            Video = video;
+            GameProfile = gameProfile;
+        }
 
+        public Video Video;
+        public GameProfile GameProfile;
+    }
+
+    public class FeedScreenPair
+    {
+        public FeedScreenPair(Feed feed, Screen screen)
+        {
+            Feed = feed;
+            Screen = screen;
+        }
+
+        public Feed Feed;
+        public Screen Screen;
+    }
+    */
     public class GameProfile
     {
         public GameProfile(string name)
@@ -308,7 +357,7 @@ namespace VideoImageDeltaApp.Models
 
     }
 
-    public enum ScreenType
+    public enum ScreenType // To remove?
     {
         Undefined = -1,
         Static = 0,
@@ -326,7 +375,7 @@ namespace VideoImageDeltaApp.Models
         }
 
         public string Name { get; set; }
-        public ScreenType ScreenType { get; set; }
+        public ScreenType ScreenType { get; set; } // To remove?
         public Geometry Geometry { get; set; }
         public List<WatchZone> WatchZones { get; set; } = new List<WatchZone>();
 
@@ -348,6 +397,8 @@ namespace VideoImageDeltaApp.Models
         public string Name { get; set; }
         public Geometry Geometry { get; set; }
         public List<Watcher> Watches { get; set; } = new List<Watcher>();
+
+        public Geometry AdjustedGeometry { get; set; } = null;
 
         override public string ToString()
         {
