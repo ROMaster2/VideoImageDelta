@@ -50,10 +50,25 @@ namespace VideoImageDeltaApp
     {
         static public void RunTest(List<Video> videos, List<GameProfile> gameProfiles)
         {
-            // Single video and profile for testing
-            var v = videos[0];
+            // Force pair Feeds and Screens on matching names for testing. UI later.
             var gp = gameProfiles[0];
 
+            foreach (var v in videos)
+            {
+                foreach (var f in v.Feeds)
+                {
+                    foreach (var s in gp.Screens)
+                    {
+                        if (f.Name == s.Name)
+                        {
+                            f.Screen = s;
+                            break;
+                        }
+                    }
+                }
+                v.CalcChildAdjGeo(); // Very likely to break. Need to test.
+            }
+            /*
             string inputVideoPath = v.FilePath;
             string deltaImagePath = gp.Screens[0].WatchZones[0].Watches[0].Images[0].FilePath;
             string dumpFolder = @"J:\Dump";
@@ -65,6 +80,7 @@ namespace VideoImageDeltaApp
             double frameRate = v.FrameRate;
             TimeSpan duration = v.Duration;
             int frameCount = v.FrameCount;
+            frameCount = 1;
 
             MagickImage deltaImage = new MagickImage(deltaImagePath);
 
@@ -87,6 +103,7 @@ namespace VideoImageDeltaApp
 
             //Console.WriteLine("Press any key to exit...");
             //Console.ReadKey();
+            */
         }
 
         public static string GetCommandOutput(string process, string parameters)

@@ -43,7 +43,7 @@
             this.Button_Plus_GameProfile = new System.Windows.Forms.Button();
             this.TableLayoutPanel_ListBoxes = new System.Windows.Forms.TableLayoutPanel();
             this.ListBox_WatchZones = new System.Windows.Forms.ListBox();
-            this.ListBox_GameProfile = new System.Windows.Forms.ListBox();
+            this.ListBox_GameProfiles = new System.Windows.Forms.ListBox();
             this.ListBox_Screens = new System.Windows.Forms.ListBox();
             this.ListBox_Watches = new System.Windows.Forms.ListBox();
             this.TableLayoutPanel_Minus_Plus_Buttons = new System.Windows.Forms.TableLayoutPanel();
@@ -61,12 +61,9 @@
             this.Label_GameProfile_New_Title = new System.Windows.Forms.Label();
             this.TextBox_GameProfile_New_Name = new System.Windows.Forms.TextBox();
             this.Panel_Screens_New = new System.Windows.Forms.Panel();
+            this.CheckBox_Screens_New_Advanced = new System.Windows.Forms.CheckBox();
             this.Numeric_Screens_New_Height = new System.Windows.Forms.NumericUpDown();
             this.Numeric_Screens_New_Width = new System.Windows.Forms.NumericUpDown();
-            this.GroupBox_Screens_New_Radio = new System.Windows.Forms.GroupBox();
-            this.Radio_Screens_New_Static = new System.Windows.Forms.RadioButton();
-            this.Radio_Screens_New_Dynamic = new System.Windows.Forms.RadioButton();
-            this.Radio_Screens_New_Ratio = new System.Windows.Forms.RadioButton();
             this.Label_Screens_New_Name = new System.Windows.Forms.Label();
             this.TextBox_Screens_New_Name = new System.Windows.Forms.TextBox();
             this.Button_Screens_New_Create = new System.Windows.Forms.Button();
@@ -75,12 +72,9 @@
             this.Label_Screens_New_Title = new System.Windows.Forms.Label();
             this.Panel_Blank = new System.Windows.Forms.Panel();
             this.Panel_Screens = new System.Windows.Forms.Panel();
+            this.CheckBox_Screens_Advanced = new System.Windows.Forms.CheckBox();
             this.Numeric_Screens_Height = new System.Windows.Forms.NumericUpDown();
             this.Numeric_Screens_Width = new System.Windows.Forms.NumericUpDown();
-            this.GroupBox_Screens_Radio = new System.Windows.Forms.GroupBox();
-            this.Radio_Screens_Static = new System.Windows.Forms.RadioButton();
-            this.Radio_Screens_Dynamic = new System.Windows.Forms.RadioButton();
-            this.Radio_Screens_Ratio = new System.Windows.Forms.RadioButton();
             this.Label_Screens_Name = new System.Windows.Forms.Label();
             this.TextBox_Screens_Name = new System.Windows.Forms.TextBox();
             this.Button_Screens_Update = new System.Windows.Forms.Button();
@@ -94,6 +88,10 @@
             this.Box_WatchZones_New_Main = new System.Windows.Forms.Panel();
             this.Box_WatchZones_New_Preview = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.GroupBox_WatchZones_New_ScaleType = new System.Windows.Forms.GroupBox();
+            this.Radio_WatchZones_New_NoScale = new System.Windows.Forms.RadioButton();
+            this.Radio_WatchZones_New_Scale = new System.Windows.Forms.RadioButton();
+            this.Radio_WatchZones_New_KeepRatio = new System.Windows.Forms.RadioButton();
             this.Numeric_WatchZones_New_Height = new System.Windows.Forms.NumericUpDown();
             this.Numeric_WatchZones_New_Width = new System.Windows.Forms.NumericUpDown();
             this.Numeric_WatchZones_New_Y = new System.Windows.Forms.NumericUpDown();
@@ -126,6 +124,10 @@
             this.Box_WatchZones_Main = new System.Windows.Forms.Panel();
             this.Box_WatchZones_Preview = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
+            this.GroupBox_WatchZones_ScaleType = new System.Windows.Forms.GroupBox();
+            this.Radio_WatchZones_NoScale = new System.Windows.Forms.RadioButton();
+            this.Radio_WatchZones_Scale = new System.Windows.Forms.RadioButton();
+            this.Radio_WatchZones_KeepRatio = new System.Windows.Forms.RadioButton();
             this.Numeric_WatchZones_Height = new System.Windows.Forms.NumericUpDown();
             this.Numeric_WatchZones_Width = new System.Windows.Forms.NumericUpDown();
             this.Numeric_WatchZones_Y = new System.Windows.Forms.NumericUpDown();
@@ -150,38 +152,26 @@
             this.Button_WatchZones_Update = new System.Windows.Forms.Button();
             this.Label_WatchZones_Title = new System.Windows.Forms.Label();
             this.Panel_Watches_New = new System.Windows.Forms.Panel();
-            this.Numeric_Watches_New_Rescan_Range = new System.Windows.Forms.NumericUpDown();
             this.Numeric_Watches_New_Frequency = new System.Windows.Forms.NumericUpDown();
             this.PictureBox_Watches_New = new System.Windows.Forms.PictureBox();
             this.Label_Watches_New_Images = new System.Windows.Forms.Label();
             this.Button_Minus_Watches_New_Images = new System.Windows.Forms.Button();
             this.Button_Plus_Watches_New_Images = new System.Windows.Forms.Button();
             this.ListBox_Watches_New_Images = new System.Windows.Forms.ListBox();
-            this.Label_Watches_New_Rescan_Type = new System.Windows.Forms.Label();
-            this.ComboBox_Watches_New_Rescan_Type = new System.Windows.Forms.ComboBox();
-            this.Label_Watches_New_Rescan_Range = new System.Windows.Forms.Label();
             this.Label_Watches_New_CpS = new System.Windows.Forms.Label();
-            this.Label_Watches_New_MVF = new System.Windows.Forms.Label();
-            this.CheckBox_Watches_New_Frequency = new System.Windows.Forms.CheckBox();
             this.Label_Watches_New_Name = new System.Windows.Forms.Label();
             this.TextBox_Watches_New_Name = new System.Windows.Forms.TextBox();
             this.Button_Watches_New_Create = new System.Windows.Forms.Button();
             this.Label_Watches_New_Frequency = new System.Windows.Forms.Label();
             this.Label_Watches_New_Title = new System.Windows.Forms.Label();
             this.Panel_Watches = new System.Windows.Forms.Panel();
-            this.Numeric_Watches_Rescan_Range = new System.Windows.Forms.NumericUpDown();
             this.Numeric_Watches_Frequency = new System.Windows.Forms.NumericUpDown();
             this.PictureBox_Watches = new System.Windows.Forms.PictureBox();
             this.Label_Watches_Images = new System.Windows.Forms.Label();
             this.Button_Minus_Watches_Images = new System.Windows.Forms.Button();
             this.Button_Plus_Watches_Images = new System.Windows.Forms.Button();
             this.ListBox_Watches_Images = new System.Windows.Forms.ListBox();
-            this.Label_Watches_Rescan_Type = new System.Windows.Forms.Label();
-            this.ComboBox_Watches_Rescan_Type = new System.Windows.Forms.ComboBox();
-            this.Label_Watches_Rescan_Range = new System.Windows.Forms.Label();
             this.Label_Watches_CpS = new System.Windows.Forms.Label();
-            this.Label_Watches_MVF = new System.Windows.Forms.Label();
-            this.CheckBox_Watches_Frequency = new System.Windows.Forms.CheckBox();
             this.Label_Watches_Name = new System.Windows.Forms.Label();
             this.TextBox_Watches_Name = new System.Windows.Forms.TextBox();
             this.Button_Watches_Update = new System.Windows.Forms.Button();
@@ -194,15 +184,14 @@
             this.Panel_Screens_New.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_Screens_New_Height)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_Screens_New_Width)).BeginInit();
-            this.GroupBox_Screens_New_Radio.SuspendLayout();
             this.Panel_Screens.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_Screens_Height)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_Screens_Width)).BeginInit();
-            this.GroupBox_Screens_Radio.SuspendLayout();
             this.Panel_WatchZones_New.SuspendLayout();
             this.TableLayoutPanel_WatchZones_New.SuspendLayout();
             this.Box_WatchZones_New_Main.SuspendLayout();
             this.panel2.SuspendLayout();
+            this.GroupBox_WatchZones_New_ScaleType.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_WatchZones_New_Height)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_WatchZones_New_Width)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_WatchZones_New_Y)).BeginInit();
@@ -212,17 +201,16 @@
             this.TableLayoutPanel_WatchZones.SuspendLayout();
             this.Box_WatchZones_Main.SuspendLayout();
             this.panel5.SuspendLayout();
+            this.GroupBox_WatchZones_ScaleType.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_WatchZones_Height)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_WatchZones_Width)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_WatchZones_Y)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_WatchZones_X)).BeginInit();
             this.TableLayoutPanel_WatchZones_Anchor.SuspendLayout();
             this.Panel_Watches_New.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.Numeric_Watches_New_Rescan_Range)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_Watches_New_Frequency)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBox_Watches_New)).BeginInit();
             this.Panel_Watches.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.Numeric_Watches_Rescan_Range)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_Watches_Frequency)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBox_Watches)).BeginInit();
             this.SuspendLayout();
@@ -382,7 +370,7 @@
             this.TableLayoutPanel_ListBoxes.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.TableLayoutPanel_ListBoxes.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.TableLayoutPanel_ListBoxes.Controls.Add(this.ListBox_WatchZones, 2, 0);
-            this.TableLayoutPanel_ListBoxes.Controls.Add(this.ListBox_GameProfile, 0, 0);
+            this.TableLayoutPanel_ListBoxes.Controls.Add(this.ListBox_GameProfiles, 0, 0);
             this.TableLayoutPanel_ListBoxes.Controls.Add(this.ListBox_Screens, 1, 0);
             this.TableLayoutPanel_ListBoxes.Controls.Add(this.ListBox_Watches, 3, 0);
             this.TableLayoutPanel_ListBoxes.Location = new System.Drawing.Point(12, 12);
@@ -405,17 +393,17 @@
             this.ListBox_WatchZones.TabIndex = 2;
             this.ListBox_WatchZones.SelectedIndexChanged += new System.EventHandler(this.ListBox_WatchZones_SelectedIndexChanged);
             // 
-            // ListBox_GameProfile
+            // ListBox_GameProfiles
             // 
-            this.ListBox_GameProfile.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.ListBox_GameProfiles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.ListBox_GameProfile.FormattingEnabled = true;
-            this.ListBox_GameProfile.Location = new System.Drawing.Point(3, 3);
-            this.ListBox_GameProfile.Name = "ListBox_GameProfile";
-            this.ListBox_GameProfile.Size = new System.Drawing.Size(144, 95);
-            this.ListBox_GameProfile.TabIndex = 0;
-            this.ListBox_GameProfile.SelectedIndexChanged += new System.EventHandler(this.ListBox_GameProfile_SelectedIndexChanged);
+            this.ListBox_GameProfiles.FormattingEnabled = true;
+            this.ListBox_GameProfiles.Location = new System.Drawing.Point(3, 3);
+            this.ListBox_GameProfiles.Name = "ListBox_GameProfiles";
+            this.ListBox_GameProfiles.Size = new System.Drawing.Size(144, 95);
+            this.ListBox_GameProfiles.TabIndex = 0;
+            this.ListBox_GameProfiles.SelectedIndexChanged += new System.EventHandler(this.ListBox_GameProfile_SelectedIndexChanged);
             // 
             // ListBox_Screens
             // 
@@ -629,9 +617,9 @@
             this.Panel_Screens_New.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.Panel_Screens_New.Controls.Add(this.CheckBox_Screens_New_Advanced);
             this.Panel_Screens_New.Controls.Add(this.Numeric_Screens_New_Height);
             this.Panel_Screens_New.Controls.Add(this.Numeric_Screens_New_Width);
-            this.Panel_Screens_New.Controls.Add(this.GroupBox_Screens_New_Radio);
             this.Panel_Screens_New.Controls.Add(this.Label_Screens_New_Name);
             this.Panel_Screens_New.Controls.Add(this.TextBox_Screens_New_Name);
             this.Panel_Screens_New.Controls.Add(this.Button_Screens_New_Create);
@@ -643,10 +631,21 @@
             this.Panel_Screens_New.Size = new System.Drawing.Size(600, 249);
             this.Panel_Screens_New.TabIndex = 122;
             // 
+            // CheckBox_Screens_New_Advanced
+            // 
+            this.CheckBox_Screens_New_Advanced.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.CheckBox_Screens_New_Advanced.AutoSize = true;
+            this.CheckBox_Screens_New_Advanced.Location = new System.Drawing.Point(245, 113);
+            this.CheckBox_Screens_New_Advanced.Name = "CheckBox_Screens_New_Advanced";
+            this.CheckBox_Screens_New_Advanced.Size = new System.Drawing.Size(114, 17);
+            this.CheckBox_Screens_New_Advanced.TabIndex = 17;
+            this.CheckBox_Screens_New_Advanced.Text = "Advanced Options";
+            this.CheckBox_Screens_New_Advanced.UseVisualStyleBackColor = true;
+            // 
             // Numeric_Screens_New_Height
             // 
             this.Numeric_Screens_New_Height.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Numeric_Screens_New_Height.Location = new System.Drawing.Point(338, 155);
+            this.Numeric_Screens_New_Height.Location = new System.Drawing.Point(307, 164);
             this.Numeric_Screens_New_Height.Maximum = new decimal(new int[] {
             4320,
             0,
@@ -654,14 +653,19 @@
             0});
             this.Numeric_Screens_New_Height.Name = "Numeric_Screens_New_Height";
             this.Numeric_Screens_New_Height.Size = new System.Drawing.Size(60, 20);
-            this.Numeric_Screens_New_Height.TabIndex = 21;
+            this.Numeric_Screens_New_Height.TabIndex = 19;
             this.Numeric_Screens_New_Height.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.Numeric_Screens_New_Height.Value = new decimal(new int[] {
+            480,
+            0,
+            0,
+            0});
             this.Numeric_Screens_New_Height.Enter += new System.EventHandler(this.Numeric_Auto_Selector);
             // 
             // Numeric_Screens_New_Width
             // 
             this.Numeric_Screens_New_Width.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Numeric_Screens_New_Width.Location = new System.Drawing.Point(338, 129);
+            this.Numeric_Screens_New_Width.Location = new System.Drawing.Point(233, 164);
             this.Numeric_Screens_New_Width.Maximum = new decimal(new int[] {
             7680,
             0,
@@ -669,59 +673,14 @@
             0});
             this.Numeric_Screens_New_Width.Name = "Numeric_Screens_New_Width";
             this.Numeric_Screens_New_Width.Size = new System.Drawing.Size(60, 20);
-            this.Numeric_Screens_New_Width.TabIndex = 20;
+            this.Numeric_Screens_New_Width.TabIndex = 18;
             this.Numeric_Screens_New_Width.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.Numeric_Screens_New_Width.Value = new decimal(new int[] {
+            640,
+            0,
+            0,
+            0});
             this.Numeric_Screens_New_Width.Enter += new System.EventHandler(this.Numeric_Auto_Selector);
-            // 
-            // GroupBox_Screens_New_Radio
-            // 
-            this.GroupBox_Screens_New_Radio.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.GroupBox_Screens_New_Radio.Controls.Add(this.Radio_Screens_New_Static);
-            this.GroupBox_Screens_New_Radio.Controls.Add(this.Radio_Screens_New_Dynamic);
-            this.GroupBox_Screens_New_Radio.Controls.Add(this.Radio_Screens_New_Ratio);
-            this.GroupBox_Screens_New_Radio.Location = new System.Drawing.Point(200, 107);
-            this.GroupBox_Screens_New_Radio.Name = "GroupBox_Screens_New_Radio";
-            this.GroupBox_Screens_New_Radio.Size = new System.Drawing.Size(80, 80);
-            this.GroupBox_Screens_New_Radio.TabIndex = 17;
-            this.GroupBox_Screens_New_Radio.TabStop = false;
-            this.GroupBox_Screens_New_Radio.Text = "Type";
-            // 
-            // Radio_Screens_New_Static
-            // 
-            this.Radio_Screens_New_Static.AutoSize = true;
-            this.Radio_Screens_New_Static.Checked = true;
-            this.Radio_Screens_New_Static.Location = new System.Drawing.Point(9, 19);
-            this.Radio_Screens_New_Static.Name = "Radio_Screens_New_Static";
-            this.Radio_Screens_New_Static.Size = new System.Drawing.Size(52, 17);
-            this.Radio_Screens_New_Static.TabIndex = 17;
-            this.Radio_Screens_New_Static.TabStop = true;
-            this.Radio_Screens_New_Static.Text = "Static";
-            this.Radio_Screens_New_Static.UseVisualStyleBackColor = true;
-            this.Radio_Screens_New_Static.Click += new System.EventHandler(this.Radio_Screens_New_Static_Click);
-            // 
-            // Radio_Screens_New_Dynamic
-            // 
-            this.Radio_Screens_New_Dynamic.AutoSize = true;
-            this.Radio_Screens_New_Dynamic.Location = new System.Drawing.Point(9, 57);
-            this.Radio_Screens_New_Dynamic.Name = "Radio_Screens_New_Dynamic";
-            this.Radio_Screens_New_Dynamic.Size = new System.Drawing.Size(66, 17);
-            this.Radio_Screens_New_Dynamic.TabIndex = 19;
-            this.Radio_Screens_New_Dynamic.TabStop = true;
-            this.Radio_Screens_New_Dynamic.Text = "Dynamic";
-            this.Radio_Screens_New_Dynamic.UseVisualStyleBackColor = true;
-            this.Radio_Screens_New_Dynamic.Click += new System.EventHandler(this.Radio_Screens_New_Dynamic_Click);
-            // 
-            // Radio_Screens_New_Ratio
-            // 
-            this.Radio_Screens_New_Ratio.AutoSize = true;
-            this.Radio_Screens_New_Ratio.Location = new System.Drawing.Point(9, 38);
-            this.Radio_Screens_New_Ratio.Name = "Radio_Screens_New_Ratio";
-            this.Radio_Screens_New_Ratio.Size = new System.Drawing.Size(50, 17);
-            this.Radio_Screens_New_Ratio.TabIndex = 18;
-            this.Radio_Screens_New_Ratio.TabStop = true;
-            this.Radio_Screens_New_Ratio.Text = "Ratio";
-            this.Radio_Screens_New_Ratio.UseVisualStyleBackColor = true;
-            this.Radio_Screens_New_Ratio.Click += new System.EventHandler(this.Radio_Screens_New_Ratio_Click);
             // 
             // Label_Screens_New_Name
             // 
@@ -749,7 +708,7 @@
             this.Button_Screens_New_Create.Location = new System.Drawing.Point(262, 197);
             this.Button_Screens_New_Create.Name = "Button_Screens_New_Create";
             this.Button_Screens_New_Create.Size = new System.Drawing.Size(75, 23);
-            this.Button_Screens_New_Create.TabIndex = 22;
+            this.Button_Screens_New_Create.TabIndex = 20;
             this.Button_Screens_New_Create.Text = "Create";
             this.Button_Screens_New_Create.UseVisualStyleBackColor = true;
             this.Button_Screens_New_Create.Click += new System.EventHandler(this.Button_Screens_New_Create_Click);
@@ -758,7 +717,7 @@
             // 
             this.Label_Screens_New_Height.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Label_Screens_New_Height.AutoSize = true;
-            this.Label_Screens_New_Height.Location = new System.Drawing.Point(294, 158);
+            this.Label_Screens_New_Height.Location = new System.Drawing.Point(319, 146);
             this.Label_Screens_New_Height.Name = "Label_Screens_New_Height";
             this.Label_Screens_New_Height.Size = new System.Drawing.Size(38, 13);
             this.Label_Screens_New_Height.TabIndex = 10;
@@ -768,7 +727,7 @@
             // 
             this.Label_Screens_New_Width.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Label_Screens_New_Width.AutoSize = true;
-            this.Label_Screens_New_Width.Location = new System.Drawing.Point(299, 132);
+            this.Label_Screens_New_Width.Location = new System.Drawing.Point(245, 147);
             this.Label_Screens_New_Width.Name = "Label_Screens_New_Width";
             this.Label_Screens_New_Width.Size = new System.Drawing.Size(35, 13);
             this.Label_Screens_New_Width.TabIndex = 8;
@@ -800,9 +759,9 @@
             this.Panel_Screens.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.Panel_Screens.Controls.Add(this.CheckBox_Screens_Advanced);
             this.Panel_Screens.Controls.Add(this.Numeric_Screens_Height);
             this.Panel_Screens.Controls.Add(this.Numeric_Screens_Width);
-            this.Panel_Screens.Controls.Add(this.GroupBox_Screens_Radio);
             this.Panel_Screens.Controls.Add(this.Label_Screens_Name);
             this.Panel_Screens.Controls.Add(this.TextBox_Screens_Name);
             this.Panel_Screens.Controls.Add(this.Button_Screens_Update);
@@ -814,25 +773,36 @@
             this.Panel_Screens.Size = new System.Drawing.Size(600, 249);
             this.Panel_Screens.TabIndex = 123;
             // 
+            // CheckBox_Screens_Advanced
+            // 
+            this.CheckBox_Screens_Advanced.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.CheckBox_Screens_Advanced.AutoSize = true;
+            this.CheckBox_Screens_Advanced.Location = new System.Drawing.Point(245, 113);
+            this.CheckBox_Screens_Advanced.Name = "CheckBox_Screens_Advanced";
+            this.CheckBox_Screens_Advanced.Size = new System.Drawing.Size(114, 17);
+            this.CheckBox_Screens_Advanced.TabIndex = 22;
+            this.CheckBox_Screens_Advanced.Text = "Advanced Options";
+            this.CheckBox_Screens_Advanced.UseVisualStyleBackColor = true;
+            // 
             // Numeric_Screens_Height
             // 
             this.Numeric_Screens_Height.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Numeric_Screens_Height.Location = new System.Drawing.Point(338, 155);
+            this.Numeric_Screens_Height.Location = new System.Drawing.Point(307, 164);
             this.Numeric_Screens_Height.Maximum = new decimal(new int[] {
-            7680,
+            4320,
             0,
             0,
             0});
             this.Numeric_Screens_Height.Name = "Numeric_Screens_Height";
             this.Numeric_Screens_Height.Size = new System.Drawing.Size(60, 20);
-            this.Numeric_Screens_Height.TabIndex = 28;
+            this.Numeric_Screens_Height.TabIndex = 24;
             this.Numeric_Screens_Height.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.Numeric_Screens_Height.Enter += new System.EventHandler(this.Numeric_Auto_Selector);
             // 
             // Numeric_Screens_Width
             // 
             this.Numeric_Screens_Width.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Numeric_Screens_Width.Location = new System.Drawing.Point(338, 129);
+            this.Numeric_Screens_Width.Location = new System.Drawing.Point(233, 164);
             this.Numeric_Screens_Width.Maximum = new decimal(new int[] {
             7680,
             0,
@@ -840,58 +810,9 @@
             0});
             this.Numeric_Screens_Width.Name = "Numeric_Screens_Width";
             this.Numeric_Screens_Width.Size = new System.Drawing.Size(60, 20);
-            this.Numeric_Screens_Width.TabIndex = 27;
+            this.Numeric_Screens_Width.TabIndex = 23;
             this.Numeric_Screens_Width.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.Numeric_Screens_Width.Enter += new System.EventHandler(this.Numeric_Auto_Selector);
-            // 
-            // GroupBox_Screens_Radio
-            // 
-            this.GroupBox_Screens_Radio.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.GroupBox_Screens_Radio.Controls.Add(this.Radio_Screens_Static);
-            this.GroupBox_Screens_Radio.Controls.Add(this.Radio_Screens_Dynamic);
-            this.GroupBox_Screens_Radio.Controls.Add(this.Radio_Screens_Ratio);
-            this.GroupBox_Screens_Radio.Location = new System.Drawing.Point(200, 107);
-            this.GroupBox_Screens_Radio.Name = "GroupBox_Screens_Radio";
-            this.GroupBox_Screens_Radio.Size = new System.Drawing.Size(80, 80);
-            this.GroupBox_Screens_Radio.TabIndex = 27;
-            this.GroupBox_Screens_Radio.TabStop = false;
-            this.GroupBox_Screens_Radio.Text = "Type";
-            // 
-            // Radio_Screens_Static
-            // 
-            this.Radio_Screens_Static.AutoSize = true;
-            this.Radio_Screens_Static.Location = new System.Drawing.Point(9, 19);
-            this.Radio_Screens_Static.Name = "Radio_Screens_Static";
-            this.Radio_Screens_Static.Size = new System.Drawing.Size(52, 17);
-            this.Radio_Screens_Static.TabIndex = 24;
-            this.Radio_Screens_Static.TabStop = true;
-            this.Radio_Screens_Static.Text = "Static";
-            this.Radio_Screens_Static.UseVisualStyleBackColor = true;
-            this.Radio_Screens_Static.Click += new System.EventHandler(this.Radio_Screens_Static_Click);
-            // 
-            // Radio_Screens_Dynamic
-            // 
-            this.Radio_Screens_Dynamic.AutoSize = true;
-            this.Radio_Screens_Dynamic.Location = new System.Drawing.Point(9, 57);
-            this.Radio_Screens_Dynamic.Name = "Radio_Screens_Dynamic";
-            this.Radio_Screens_Dynamic.Size = new System.Drawing.Size(66, 17);
-            this.Radio_Screens_Dynamic.TabIndex = 26;
-            this.Radio_Screens_Dynamic.TabStop = true;
-            this.Radio_Screens_Dynamic.Text = "Dynamic";
-            this.Radio_Screens_Dynamic.UseVisualStyleBackColor = true;
-            this.Radio_Screens_Dynamic.Click += new System.EventHandler(this.Radio_Screens_Dynamic_Click);
-            // 
-            // Radio_Screens_Ratio
-            // 
-            this.Radio_Screens_Ratio.AutoSize = true;
-            this.Radio_Screens_Ratio.Location = new System.Drawing.Point(9, 38);
-            this.Radio_Screens_Ratio.Name = "Radio_Screens_Ratio";
-            this.Radio_Screens_Ratio.Size = new System.Drawing.Size(50, 17);
-            this.Radio_Screens_Ratio.TabIndex = 25;
-            this.Radio_Screens_Ratio.TabStop = true;
-            this.Radio_Screens_Ratio.Text = "Ratio";
-            this.Radio_Screens_Ratio.UseVisualStyleBackColor = true;
-            this.Radio_Screens_Ratio.Click += new System.EventHandler(this.Radio_Screens_Ratio_Click);
             // 
             // Label_Screens_Name
             // 
@@ -910,7 +831,7 @@
             this.TextBox_Screens_Name.MaxLength = 127;
             this.TextBox_Screens_Name.Name = "TextBox_Screens_Name";
             this.TextBox_Screens_Name.Size = new System.Drawing.Size(200, 20);
-            this.TextBox_Screens_Name.TabIndex = 23;
+            this.TextBox_Screens_Name.TabIndex = 21;
             this.TextBox_Screens_Name.Enter += new System.EventHandler(this.TextBox_Auto_Selector);
             // 
             // Button_Screens_Update
@@ -919,7 +840,7 @@
             this.Button_Screens_Update.Location = new System.Drawing.Point(262, 197);
             this.Button_Screens_Update.Name = "Button_Screens_Update";
             this.Button_Screens_Update.Size = new System.Drawing.Size(75, 23);
-            this.Button_Screens_Update.TabIndex = 29;
+            this.Button_Screens_Update.TabIndex = 25;
             this.Button_Screens_Update.Text = "Update";
             this.Button_Screens_Update.UseVisualStyleBackColor = true;
             this.Button_Screens_Update.Click += new System.EventHandler(this.Button_Screens_Update_Click);
@@ -928,7 +849,7 @@
             // 
             this.Label_Screens_Height.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Label_Screens_Height.AutoSize = true;
-            this.Label_Screens_Height.Location = new System.Drawing.Point(294, 158);
+            this.Label_Screens_Height.Location = new System.Drawing.Point(319, 146);
             this.Label_Screens_Height.Name = "Label_Screens_Height";
             this.Label_Screens_Height.Size = new System.Drawing.Size(38, 13);
             this.Label_Screens_Height.TabIndex = 10;
@@ -938,7 +859,7 @@
             // 
             this.Label_Screens_Width.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Label_Screens_Width.AutoSize = true;
-            this.Label_Screens_Width.Location = new System.Drawing.Point(299, 132);
+            this.Label_Screens_Width.Location = new System.Drawing.Point(245, 147);
             this.Label_Screens_Width.Name = "Label_Screens_Width";
             this.Label_Screens_Width.Size = new System.Drawing.Size(35, 13);
             this.Label_Screens_Width.TabIndex = 8;
@@ -979,7 +900,7 @@
             this.Button_WatchZones_New_SSAAI.Location = new System.Drawing.Point(46, 221);
             this.Button_WatchZones_New_SSAAI.Name = "Button_WatchZones_New_SSAAI";
             this.Button_WatchZones_New_SSAAI.Size = new System.Drawing.Size(159, 23);
-            this.Button_WatchZones_New_SSAAI.TabIndex = 45;
+            this.Button_WatchZones_New_SSAAI.TabIndex = 27;
             this.Button_WatchZones_New_SSAAI.Text = "Save selected area as Image";
             this.Button_WatchZones_New_SSAAI.UseVisualStyleBackColor = true;
             this.Button_WatchZones_New_SSAAI.Click += new System.EventHandler(this.Button_WatchZones_New_SSAAI_Click);
@@ -989,7 +910,7 @@
             this.Button_WatchZones_New_URI.Location = new System.Drawing.Point(56, 13);
             this.Button_WatchZones_New_URI.Name = "Button_WatchZones_New_URI";
             this.Button_WatchZones_New_URI.Size = new System.Drawing.Size(126, 23);
-            this.Button_WatchZones_New_URI.TabIndex = 44;
+            this.Button_WatchZones_New_URI.TabIndex = 26;
             this.Button_WatchZones_New_URI.Text = "Use Reference Image";
             this.Button_WatchZones_New_URI.UseVisualStyleBackColor = true;
             this.Button_WatchZones_New_URI.Click += new System.EventHandler(this.Button_WatchZones_New_URI_Click);
@@ -1036,6 +957,7 @@
             this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel2.Controls.Add(this.GroupBox_WatchZones_New_ScaleType);
             this.panel2.Controls.Add(this.Numeric_WatchZones_New_Height);
             this.panel2.Controls.Add(this.Numeric_WatchZones_New_Width);
             this.panel2.Controls.Add(this.Numeric_WatchZones_New_Y);
@@ -1053,10 +975,59 @@
             this.panel2.Size = new System.Drawing.Size(292, 168);
             this.panel2.TabIndex = 1;
             // 
+            // GroupBox_WatchZones_New_ScaleType
+            // 
+            this.GroupBox_WatchZones_New_ScaleType.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.GroupBox_WatchZones_New_ScaleType.Controls.Add(this.Radio_WatchZones_New_NoScale);
+            this.GroupBox_WatchZones_New_ScaleType.Controls.Add(this.Radio_WatchZones_New_Scale);
+            this.GroupBox_WatchZones_New_ScaleType.Controls.Add(this.Radio_WatchZones_New_KeepRatio);
+            this.GroupBox_WatchZones_New_ScaleType.Location = new System.Drawing.Point(21, 7);
+            this.GroupBox_WatchZones_New_ScaleType.Name = "GroupBox_WatchZones_New_ScaleType";
+            this.GroupBox_WatchZones_New_ScaleType.Size = new System.Drawing.Size(89, 80);
+            this.GroupBox_WatchZones_New_ScaleType.TabIndex = 28;
+            this.GroupBox_WatchZones_New_ScaleType.TabStop = false;
+            this.GroupBox_WatchZones_New_ScaleType.Text = "Scale Type";
+            // 
+            // Radio_WatchZones_New_NoScale
+            // 
+            this.Radio_WatchZones_New_NoScale.AutoSize = true;
+            this.Radio_WatchZones_New_NoScale.Location = new System.Drawing.Point(9, 57);
+            this.Radio_WatchZones_New_NoScale.Name = "Radio_WatchZones_New_NoScale";
+            this.Radio_WatchZones_New_NoScale.Size = new System.Drawing.Size(69, 17);
+            this.Radio_WatchZones_New_NoScale.TabIndex = 30;
+            this.Radio_WatchZones_New_NoScale.TabStop = true;
+            this.Radio_WatchZones_New_NoScale.Text = "No Scale";
+            this.Radio_WatchZones_New_NoScale.UseVisualStyleBackColor = true;
+            this.Radio_WatchZones_New_NoScale.Click += new System.EventHandler(this.Radio_WatchZones_New_NoScale_Click);
+            // 
+            // Radio_WatchZones_New_Scale
+            // 
+            this.Radio_WatchZones_New_Scale.AutoSize = true;
+            this.Radio_WatchZones_New_Scale.Location = new System.Drawing.Point(9, 19);
+            this.Radio_WatchZones_New_Scale.Name = "Radio_WatchZones_New_Scale";
+            this.Radio_WatchZones_New_Scale.Size = new System.Drawing.Size(52, 17);
+            this.Radio_WatchZones_New_Scale.TabIndex = 28;
+            this.Radio_WatchZones_New_Scale.TabStop = true;
+            this.Radio_WatchZones_New_Scale.Text = "Scale";
+            this.Radio_WatchZones_New_Scale.UseVisualStyleBackColor = true;
+            this.Radio_WatchZones_New_Scale.Click += new System.EventHandler(this.Radio_WatchZones_New_Scale_Click);
+            // 
+            // Radio_WatchZones_New_KeepRatio
+            // 
+            this.Radio_WatchZones_New_KeepRatio.AutoSize = true;
+            this.Radio_WatchZones_New_KeepRatio.Location = new System.Drawing.Point(9, 38);
+            this.Radio_WatchZones_New_KeepRatio.Name = "Radio_WatchZones_New_KeepRatio";
+            this.Radio_WatchZones_New_KeepRatio.Size = new System.Drawing.Size(78, 17);
+            this.Radio_WatchZones_New_KeepRatio.TabIndex = 29;
+            this.Radio_WatchZones_New_KeepRatio.TabStop = true;
+            this.Radio_WatchZones_New_KeepRatio.Text = "Keep Ratio";
+            this.Radio_WatchZones_New_KeepRatio.UseVisualStyleBackColor = true;
+            this.Radio_WatchZones_New_KeepRatio.Click += new System.EventHandler(this.Radio_WatchZones_New_KeepRatio_Click);
+            // 
             // Numeric_WatchZones_New_Height
             // 
             this.Numeric_WatchZones_New_Height.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Numeric_WatchZones_New_Height.Location = new System.Drawing.Point(221, 116);
+            this.Numeric_WatchZones_New_Height.Location = new System.Drawing.Point(220, 127);
             this.Numeric_WatchZones_New_Height.Maximum = new decimal(new int[] {
             4320,
             0,
@@ -1069,7 +1040,7 @@
             -2147483648});
             this.Numeric_WatchZones_New_Height.Name = "Numeric_WatchZones_New_Height";
             this.Numeric_WatchZones_New_Height.Size = new System.Drawing.Size(60, 20);
-            this.Numeric_WatchZones_New_Height.TabIndex = 43;
+            this.Numeric_WatchZones_New_Height.TabIndex = 44;
             this.Numeric_WatchZones_New_Height.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.Numeric_WatchZones_New_Height.ValueChanged += new System.EventHandler(this.Numeric_WatchZones_New_Height_ValueChanged);
             this.Numeric_WatchZones_New_Height.Enter += new System.EventHandler(this.Numeric_Auto_Selector);
@@ -1077,7 +1048,7 @@
             // Numeric_WatchZones_New_Width
             // 
             this.Numeric_WatchZones_New_Width.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Numeric_WatchZones_New_Width.Location = new System.Drawing.Point(137, 116);
+            this.Numeric_WatchZones_New_Width.Location = new System.Drawing.Point(136, 127);
             this.Numeric_WatchZones_New_Width.Maximum = new decimal(new int[] {
             7680,
             0,
@@ -1090,7 +1061,7 @@
             -2147483648});
             this.Numeric_WatchZones_New_Width.Name = "Numeric_WatchZones_New_Width";
             this.Numeric_WatchZones_New_Width.Size = new System.Drawing.Size(60, 20);
-            this.Numeric_WatchZones_New_Width.TabIndex = 42;
+            this.Numeric_WatchZones_New_Width.TabIndex = 43;
             this.Numeric_WatchZones_New_Width.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.Numeric_WatchZones_New_Width.ValueChanged += new System.EventHandler(this.Numeric_WatchZones_New_Width_ValueChanged);
             this.Numeric_WatchZones_New_Width.Enter += new System.EventHandler(this.Numeric_Auto_Selector);
@@ -1098,7 +1069,7 @@
             // Numeric_WatchZones_New_Y
             // 
             this.Numeric_WatchZones_New_Y.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Numeric_WatchZones_New_Y.Location = new System.Drawing.Point(221, 65);
+            this.Numeric_WatchZones_New_Y.Location = new System.Drawing.Point(220, 76);
             this.Numeric_WatchZones_New_Y.Maximum = new decimal(new int[] {
             4320,
             0,
@@ -1111,7 +1082,7 @@
             -2147483648});
             this.Numeric_WatchZones_New_Y.Name = "Numeric_WatchZones_New_Y";
             this.Numeric_WatchZones_New_Y.Size = new System.Drawing.Size(60, 20);
-            this.Numeric_WatchZones_New_Y.TabIndex = 41;
+            this.Numeric_WatchZones_New_Y.TabIndex = 42;
             this.Numeric_WatchZones_New_Y.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.Numeric_WatchZones_New_Y.ValueChanged += new System.EventHandler(this.Numeric_WatchZones_New_Y_ValueChanged);
             this.Numeric_WatchZones_New_Y.Enter += new System.EventHandler(this.Numeric_Auto_Selector);
@@ -1119,7 +1090,7 @@
             // Numeric_WatchZones_New_X
             // 
             this.Numeric_WatchZones_New_X.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Numeric_WatchZones_New_X.Location = new System.Drawing.Point(137, 65);
+            this.Numeric_WatchZones_New_X.Location = new System.Drawing.Point(136, 76);
             this.Numeric_WatchZones_New_X.Maximum = new decimal(new int[] {
             7680,
             0,
@@ -1132,7 +1103,7 @@
             -2147483648});
             this.Numeric_WatchZones_New_X.Name = "Numeric_WatchZones_New_X";
             this.Numeric_WatchZones_New_X.Size = new System.Drawing.Size(60, 20);
-            this.Numeric_WatchZones_New_X.TabIndex = 40;
+            this.Numeric_WatchZones_New_X.TabIndex = 41;
             this.Numeric_WatchZones_New_X.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.Numeric_WatchZones_New_X.ValueChanged += new System.EventHandler(this.Numeric_WatchZones_New_X_ValueChanged);
             this.Numeric_WatchZones_New_X.Enter += new System.EventHandler(this.Numeric_Auto_Selector);
@@ -1153,7 +1124,7 @@
             this.TableLayoutPanel_WatchZones_New_Anchor.Controls.Add(this.Radio_WatchZones_New_BottomLeft, 0, 2);
             this.TableLayoutPanel_WatchZones_New_Anchor.Controls.Add(this.Radio_WatchZones_New_Left, 0, 1);
             this.TableLayoutPanel_WatchZones_New_Anchor.Controls.Add(this.Radio_WatchZones_New_TopLeft, 0, 0);
-            this.TableLayoutPanel_WatchZones_New_Anchor.Location = new System.Drawing.Point(18, 66);
+            this.TableLayoutPanel_WatchZones_New_Anchor.Location = new System.Drawing.Point(34, 103);
             this.TableLayoutPanel_WatchZones_New_Anchor.Name = "TableLayoutPanel_WatchZones_New_Anchor";
             this.TableLayoutPanel_WatchZones_New_Anchor.RowCount = 3;
             this.TableLayoutPanel_WatchZones_New_Anchor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
@@ -1274,7 +1245,7 @@
             // 
             this.Label_WatchZones_New_Y.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Label_WatchZones_New_Y.AutoSize = true;
-            this.Label_WatchZones_New_Y.Location = new System.Drawing.Point(245, 47);
+            this.Label_WatchZones_New_Y.Location = new System.Drawing.Point(244, 60);
             this.Label_WatchZones_New_Y.Name = "Label_WatchZones_New_Y";
             this.Label_WatchZones_New_Y.Size = new System.Drawing.Size(12, 13);
             this.Label_WatchZones_New_Y.TabIndex = 205;
@@ -1284,7 +1255,7 @@
             // 
             this.Label_WatchZones_New_Height.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Label_WatchZones_New_Height.AutoSize = true;
-            this.Label_WatchZones_New_Height.Location = new System.Drawing.Point(232, 100);
+            this.Label_WatchZones_New_Height.Location = new System.Drawing.Point(231, 111);
             this.Label_WatchZones_New_Height.Name = "Label_WatchZones_New_Height";
             this.Label_WatchZones_New_Height.Size = new System.Drawing.Size(38, 13);
             this.Label_WatchZones_New_Height.TabIndex = 212;
@@ -1294,7 +1265,7 @@
             // 
             this.Label_WatchZones_New_X.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Label_WatchZones_New_X.AutoSize = true;
-            this.Label_WatchZones_New_X.Location = new System.Drawing.Point(163, 47);
+            this.Label_WatchZones_New_X.Location = new System.Drawing.Point(162, 60);
             this.Label_WatchZones_New_X.Name = "Label_WatchZones_New_X";
             this.Label_WatchZones_New_X.Size = new System.Drawing.Size(12, 13);
             this.Label_WatchZones_New_X.TabIndex = 206;
@@ -1304,7 +1275,7 @@
             // 
             this.Label_WatchZones_New_Anchor.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Label_WatchZones_New_Anchor.AutoSize = true;
-            this.Label_WatchZones_New_Anchor.Location = new System.Drawing.Point(28, 51);
+            this.Label_WatchZones_New_Anchor.Location = new System.Drawing.Point(44, 88);
             this.Label_WatchZones_New_Anchor.Name = "Label_WatchZones_New_Anchor";
             this.Label_WatchZones_New_Anchor.Size = new System.Drawing.Size(41, 13);
             this.Label_WatchZones_New_Anchor.TabIndex = 6;
@@ -1314,7 +1285,7 @@
             // 
             this.Label_WatchZones_New_Width.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Label_WatchZones_New_Width.AutoSize = true;
-            this.Label_WatchZones_New_Width.Location = new System.Drawing.Point(150, 100);
+            this.Label_WatchZones_New_Width.Location = new System.Drawing.Point(149, 111);
             this.Label_WatchZones_New_Width.Name = "Label_WatchZones_New_Width";
             this.Label_WatchZones_New_Width.Size = new System.Drawing.Size(35, 13);
             this.Label_WatchZones_New_Width.TabIndex = 211;
@@ -1323,18 +1294,18 @@
             // TextBox_WatchZones_New_Name
             // 
             this.TextBox_WatchZones_New_Name.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.TextBox_WatchZones_New_Name.Location = new System.Drawing.Point(137, 7);
+            this.TextBox_WatchZones_New_Name.Location = new System.Drawing.Point(137, 25);
             this.TextBox_WatchZones_New_Name.MaxLength = 127;
             this.TextBox_WatchZones_New_Name.Name = "TextBox_WatchZones_New_Name";
             this.TextBox_WatchZones_New_Name.Size = new System.Drawing.Size(144, 20);
-            this.TextBox_WatchZones_New_Name.TabIndex = 30;
+            this.TextBox_WatchZones_New_Name.TabIndex = 40;
             this.TextBox_WatchZones_New_Name.Enter += new System.EventHandler(this.TextBox_Auto_Selector);
             // 
             // Label_WatchZones_New_Name
             // 
             this.Label_WatchZones_New_Name.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Label_WatchZones_New_Name.AutoSize = true;
-            this.Label_WatchZones_New_Name.Location = new System.Drawing.Point(96, 10);
+            this.Label_WatchZones_New_Name.Location = new System.Drawing.Point(191, 9);
             this.Label_WatchZones_New_Name.Name = "Label_WatchZones_New_Name";
             this.Label_WatchZones_New_Name.Size = new System.Drawing.Size(35, 13);
             this.Label_WatchZones_New_Name.TabIndex = 207;
@@ -1346,7 +1317,7 @@
             this.Button_WatchZones_New_Add.Location = new System.Drawing.Point(262, 218);
             this.Button_WatchZones_New_Add.Name = "Button_WatchZones_New_Add";
             this.Button_WatchZones_New_Add.Size = new System.Drawing.Size(75, 23);
-            this.Button_WatchZones_New_Add.TabIndex = 46;
+            this.Button_WatchZones_New_Add.TabIndex = 45;
             this.Button_WatchZones_New_Add.Text = "Add";
             this.Button_WatchZones_New_Add.UseVisualStyleBackColor = true;
             this.Button_WatchZones_New_Add.Click += new System.EventHandler(this.Button_WatchZones_New_Add_Click);
@@ -1404,7 +1375,7 @@
             this.Button_WatchZones_SSAAI.Location = new System.Drawing.Point(46, 221);
             this.Button_WatchZones_SSAAI.Name = "Button_WatchZones_SSAAI";
             this.Button_WatchZones_SSAAI.Size = new System.Drawing.Size(159, 23);
-            this.Button_WatchZones_SSAAI.TabIndex = 62;
+            this.Button_WatchZones_SSAAI.TabIndex = 47;
             this.Button_WatchZones_SSAAI.Text = "Save selected area as Image";
             this.Button_WatchZones_SSAAI.UseVisualStyleBackColor = true;
             this.Button_WatchZones_SSAAI.Click += new System.EventHandler(this.Button_WatchZones_SSAAI_Click);
@@ -1414,7 +1385,7 @@
             this.Button_WatchZones_URI.Location = new System.Drawing.Point(56, 13);
             this.Button_WatchZones_URI.Name = "Button_WatchZones_URI";
             this.Button_WatchZones_URI.Size = new System.Drawing.Size(126, 23);
-            this.Button_WatchZones_URI.TabIndex = 61;
+            this.Button_WatchZones_URI.TabIndex = 46;
             this.Button_WatchZones_URI.Text = "Use Reference Image";
             this.Button_WatchZones_URI.UseVisualStyleBackColor = true;
             this.Button_WatchZones_URI.Click += new System.EventHandler(this.Button_WatchZones_URI_Click);
@@ -1460,6 +1431,7 @@
             this.panel5.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel5.Controls.Add(this.GroupBox_WatchZones_ScaleType);
             this.panel5.Controls.Add(this.Numeric_WatchZones_Height);
             this.panel5.Controls.Add(this.Numeric_WatchZones_Width);
             this.panel5.Controls.Add(this.Numeric_WatchZones_Y);
@@ -1477,10 +1449,59 @@
             this.panel5.Size = new System.Drawing.Size(292, 168);
             this.panel5.TabIndex = 1;
             // 
+            // GroupBox_WatchZones_ScaleType
+            // 
+            this.GroupBox_WatchZones_ScaleType.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.GroupBox_WatchZones_ScaleType.Controls.Add(this.Radio_WatchZones_NoScale);
+            this.GroupBox_WatchZones_ScaleType.Controls.Add(this.Radio_WatchZones_Scale);
+            this.GroupBox_WatchZones_ScaleType.Controls.Add(this.Radio_WatchZones_KeepRatio);
+            this.GroupBox_WatchZones_ScaleType.Location = new System.Drawing.Point(21, 7);
+            this.GroupBox_WatchZones_ScaleType.Name = "GroupBox_WatchZones_ScaleType";
+            this.GroupBox_WatchZones_ScaleType.Size = new System.Drawing.Size(89, 80);
+            this.GroupBox_WatchZones_ScaleType.TabIndex = 48;
+            this.GroupBox_WatchZones_ScaleType.TabStop = false;
+            this.GroupBox_WatchZones_ScaleType.Text = "Scale Type";
+            // 
+            // Radio_WatchZones_NoScale
+            // 
+            this.Radio_WatchZones_NoScale.AutoSize = true;
+            this.Radio_WatchZones_NoScale.Location = new System.Drawing.Point(9, 57);
+            this.Radio_WatchZones_NoScale.Name = "Radio_WatchZones_NoScale";
+            this.Radio_WatchZones_NoScale.Size = new System.Drawing.Size(69, 17);
+            this.Radio_WatchZones_NoScale.TabIndex = 50;
+            this.Radio_WatchZones_NoScale.TabStop = true;
+            this.Radio_WatchZones_NoScale.Text = "No Scale";
+            this.Radio_WatchZones_NoScale.UseVisualStyleBackColor = true;
+            this.Radio_WatchZones_NoScale.Click += new System.EventHandler(this.Radio_WatchZones_NoScale_Click);
+            // 
+            // Radio_WatchZones_Scale
+            // 
+            this.Radio_WatchZones_Scale.AutoSize = true;
+            this.Radio_WatchZones_Scale.Location = new System.Drawing.Point(9, 19);
+            this.Radio_WatchZones_Scale.Name = "Radio_WatchZones_Scale";
+            this.Radio_WatchZones_Scale.Size = new System.Drawing.Size(52, 17);
+            this.Radio_WatchZones_Scale.TabIndex = 48;
+            this.Radio_WatchZones_Scale.TabStop = true;
+            this.Radio_WatchZones_Scale.Text = "Scale";
+            this.Radio_WatchZones_Scale.UseVisualStyleBackColor = true;
+            this.Radio_WatchZones_Scale.Click += new System.EventHandler(this.Radio_WatchZones_Scale_Click);
+            // 
+            // Radio_WatchZones_KeepRatio
+            // 
+            this.Radio_WatchZones_KeepRatio.AutoSize = true;
+            this.Radio_WatchZones_KeepRatio.Location = new System.Drawing.Point(9, 38);
+            this.Radio_WatchZones_KeepRatio.Name = "Radio_WatchZones_KeepRatio";
+            this.Radio_WatchZones_KeepRatio.Size = new System.Drawing.Size(78, 17);
+            this.Radio_WatchZones_KeepRatio.TabIndex = 49;
+            this.Radio_WatchZones_KeepRatio.TabStop = true;
+            this.Radio_WatchZones_KeepRatio.Text = "Keep Ratio";
+            this.Radio_WatchZones_KeepRatio.UseVisualStyleBackColor = true;
+            this.Radio_WatchZones_KeepRatio.Click += new System.EventHandler(this.Radio_WatchZones_KeepRatio_Click);
+            // 
             // Numeric_WatchZones_Height
             // 
             this.Numeric_WatchZones_Height.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Numeric_WatchZones_Height.Location = new System.Drawing.Point(221, 116);
+            this.Numeric_WatchZones_Height.Location = new System.Drawing.Point(220, 127);
             this.Numeric_WatchZones_Height.Maximum = new decimal(new int[] {
             4320,
             0,
@@ -1493,7 +1514,7 @@
             -2147483648});
             this.Numeric_WatchZones_Height.Name = "Numeric_WatchZones_Height";
             this.Numeric_WatchZones_Height.Size = new System.Drawing.Size(60, 20);
-            this.Numeric_WatchZones_Height.TabIndex = 60;
+            this.Numeric_WatchZones_Height.TabIndex = 64;
             this.Numeric_WatchZones_Height.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.Numeric_WatchZones_Height.ValueChanged += new System.EventHandler(this.Numeric_WatchZones_Height_ValueChanged);
             this.Numeric_WatchZones_Height.Enter += new System.EventHandler(this.Numeric_Auto_Selector);
@@ -1501,7 +1522,7 @@
             // Numeric_WatchZones_Width
             // 
             this.Numeric_WatchZones_Width.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Numeric_WatchZones_Width.Location = new System.Drawing.Point(137, 116);
+            this.Numeric_WatchZones_Width.Location = new System.Drawing.Point(136, 127);
             this.Numeric_WatchZones_Width.Maximum = new decimal(new int[] {
             7680,
             0,
@@ -1514,7 +1535,7 @@
             -2147483648});
             this.Numeric_WatchZones_Width.Name = "Numeric_WatchZones_Width";
             this.Numeric_WatchZones_Width.Size = new System.Drawing.Size(60, 20);
-            this.Numeric_WatchZones_Width.TabIndex = 59;
+            this.Numeric_WatchZones_Width.TabIndex = 63;
             this.Numeric_WatchZones_Width.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.Numeric_WatchZones_Width.ValueChanged += new System.EventHandler(this.Numeric_WatchZones_Width_ValueChanged);
             this.Numeric_WatchZones_Width.Enter += new System.EventHandler(this.Numeric_Auto_Selector);
@@ -1522,7 +1543,7 @@
             // Numeric_WatchZones_Y
             // 
             this.Numeric_WatchZones_Y.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Numeric_WatchZones_Y.Location = new System.Drawing.Point(221, 65);
+            this.Numeric_WatchZones_Y.Location = new System.Drawing.Point(220, 76);
             this.Numeric_WatchZones_Y.Maximum = new decimal(new int[] {
             4320,
             0,
@@ -1535,7 +1556,7 @@
             -2147483648});
             this.Numeric_WatchZones_Y.Name = "Numeric_WatchZones_Y";
             this.Numeric_WatchZones_Y.Size = new System.Drawing.Size(60, 20);
-            this.Numeric_WatchZones_Y.TabIndex = 58;
+            this.Numeric_WatchZones_Y.TabIndex = 62;
             this.Numeric_WatchZones_Y.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.Numeric_WatchZones_Y.ValueChanged += new System.EventHandler(this.Numeric_WatchZones_Y_ValueChanged);
             this.Numeric_WatchZones_Y.Enter += new System.EventHandler(this.Numeric_Auto_Selector);
@@ -1543,7 +1564,7 @@
             // Numeric_WatchZones_X
             // 
             this.Numeric_WatchZones_X.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Numeric_WatchZones_X.Location = new System.Drawing.Point(137, 65);
+            this.Numeric_WatchZones_X.Location = new System.Drawing.Point(136, 76);
             this.Numeric_WatchZones_X.Maximum = new decimal(new int[] {
             7680,
             0,
@@ -1556,7 +1577,7 @@
             -2147483648});
             this.Numeric_WatchZones_X.Name = "Numeric_WatchZones_X";
             this.Numeric_WatchZones_X.Size = new System.Drawing.Size(60, 20);
-            this.Numeric_WatchZones_X.TabIndex = 57;
+            this.Numeric_WatchZones_X.TabIndex = 61;
             this.Numeric_WatchZones_X.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.Numeric_WatchZones_X.ValueChanged += new System.EventHandler(this.Numeric_WatchZones_X_ValueChanged);
             this.Numeric_WatchZones_X.Enter += new System.EventHandler(this.Numeric_Auto_Selector);
@@ -1577,7 +1598,7 @@
             this.TableLayoutPanel_WatchZones_Anchor.Controls.Add(this.Radio_WatchZones_BottomLeft, 0, 2);
             this.TableLayoutPanel_WatchZones_Anchor.Controls.Add(this.Radio_WatchZones_Left, 0, 1);
             this.TableLayoutPanel_WatchZones_Anchor.Controls.Add(this.Radio_WatchZones_TopLeft, 0, 0);
-            this.TableLayoutPanel_WatchZones_Anchor.Location = new System.Drawing.Point(18, 66);
+            this.TableLayoutPanel_WatchZones_Anchor.Location = new System.Drawing.Point(34, 103);
             this.TableLayoutPanel_WatchZones_Anchor.Name = "TableLayoutPanel_WatchZones_Anchor";
             this.TableLayoutPanel_WatchZones_Anchor.RowCount = 3;
             this.TableLayoutPanel_WatchZones_Anchor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
@@ -1593,7 +1614,7 @@
             this.Radio_WatchZones_BottomRight.Location = new System.Drawing.Point(43, 43);
             this.Radio_WatchZones_BottomRight.Name = "Radio_WatchZones_BottomRight";
             this.Radio_WatchZones_BottomRight.Size = new System.Drawing.Size(14, 13);
-            this.Radio_WatchZones_BottomRight.TabIndex = 56;
+            this.Radio_WatchZones_BottomRight.TabIndex = 59;
             this.Radio_WatchZones_BottomRight.TabStop = true;
             this.Radio_WatchZones_BottomRight.UseVisualStyleBackColor = true;
             this.Radio_WatchZones_BottomRight.Click += new System.EventHandler(this.Radio_WatchZones_BottomRight_Click);
@@ -1605,7 +1626,7 @@
             this.Radio_WatchZones_Right.Location = new System.Drawing.Point(43, 23);
             this.Radio_WatchZones_Right.Name = "Radio_WatchZones_Right";
             this.Radio_WatchZones_Right.Size = new System.Drawing.Size(14, 13);
-            this.Radio_WatchZones_Right.TabIndex = 53;
+            this.Radio_WatchZones_Right.TabIndex = 56;
             this.Radio_WatchZones_Right.TabStop = true;
             this.Radio_WatchZones_Right.UseVisualStyleBackColor = true;
             this.Radio_WatchZones_Right.Click += new System.EventHandler(this.Radio_WatchZones_Right_Click);
@@ -1617,7 +1638,7 @@
             this.Radio_WatchZones_TopRight.Location = new System.Drawing.Point(43, 3);
             this.Radio_WatchZones_TopRight.Name = "Radio_WatchZones_TopRight";
             this.Radio_WatchZones_TopRight.Size = new System.Drawing.Size(14, 13);
-            this.Radio_WatchZones_TopRight.TabIndex = 50;
+            this.Radio_WatchZones_TopRight.TabIndex = 53;
             this.Radio_WatchZones_TopRight.TabStop = true;
             this.Radio_WatchZones_TopRight.UseVisualStyleBackColor = true;
             this.Radio_WatchZones_TopRight.Click += new System.EventHandler(this.Radio_WatchZones_TopRight_Click);
@@ -1629,7 +1650,7 @@
             this.Radio_WatchZones_Bottom.Location = new System.Drawing.Point(23, 43);
             this.Radio_WatchZones_Bottom.Name = "Radio_WatchZones_Bottom";
             this.Radio_WatchZones_Bottom.Size = new System.Drawing.Size(14, 13);
-            this.Radio_WatchZones_Bottom.TabIndex = 55;
+            this.Radio_WatchZones_Bottom.TabIndex = 58;
             this.Radio_WatchZones_Bottom.TabStop = true;
             this.Radio_WatchZones_Bottom.UseVisualStyleBackColor = true;
             this.Radio_WatchZones_Bottom.Click += new System.EventHandler(this.Radio_WatchZones_Bottom_Click);
@@ -1641,7 +1662,7 @@
             this.Radio_WatchZones_Center.Location = new System.Drawing.Point(23, 23);
             this.Radio_WatchZones_Center.Name = "Radio_WatchZones_Center";
             this.Radio_WatchZones_Center.Size = new System.Drawing.Size(14, 13);
-            this.Radio_WatchZones_Center.TabIndex = 52;
+            this.Radio_WatchZones_Center.TabIndex = 55;
             this.Radio_WatchZones_Center.TabStop = true;
             this.Radio_WatchZones_Center.UseVisualStyleBackColor = true;
             this.Radio_WatchZones_Center.Click += new System.EventHandler(this.Radio_WatchZones_Center_Click);
@@ -1653,7 +1674,7 @@
             this.Radio_WatchZones_Top.Location = new System.Drawing.Point(23, 3);
             this.Radio_WatchZones_Top.Name = "Radio_WatchZones_Top";
             this.Radio_WatchZones_Top.Size = new System.Drawing.Size(14, 13);
-            this.Radio_WatchZones_Top.TabIndex = 49;
+            this.Radio_WatchZones_Top.TabIndex = 52;
             this.Radio_WatchZones_Top.TabStop = true;
             this.Radio_WatchZones_Top.UseVisualStyleBackColor = true;
             this.Radio_WatchZones_Top.Click += new System.EventHandler(this.Radio_WatchZones_Top_Click);
@@ -1665,7 +1686,7 @@
             this.Radio_WatchZones_BottomLeft.Location = new System.Drawing.Point(3, 43);
             this.Radio_WatchZones_BottomLeft.Name = "Radio_WatchZones_BottomLeft";
             this.Radio_WatchZones_BottomLeft.Size = new System.Drawing.Size(14, 13);
-            this.Radio_WatchZones_BottomLeft.TabIndex = 54;
+            this.Radio_WatchZones_BottomLeft.TabIndex = 57;
             this.Radio_WatchZones_BottomLeft.TabStop = true;
             this.Radio_WatchZones_BottomLeft.UseVisualStyleBackColor = true;
             this.Radio_WatchZones_BottomLeft.Click += new System.EventHandler(this.Radio_WatchZones_BottomLeft_Click);
@@ -1677,7 +1698,7 @@
             this.Radio_WatchZones_Left.Location = new System.Drawing.Point(3, 23);
             this.Radio_WatchZones_Left.Name = "Radio_WatchZones_Left";
             this.Radio_WatchZones_Left.Size = new System.Drawing.Size(14, 13);
-            this.Radio_WatchZones_Left.TabIndex = 51;
+            this.Radio_WatchZones_Left.TabIndex = 54;
             this.Radio_WatchZones_Left.TabStop = true;
             this.Radio_WatchZones_Left.UseVisualStyleBackColor = true;
             this.Radio_WatchZones_Left.Click += new System.EventHandler(this.Radio_WatchZones_Left_Click);
@@ -1689,7 +1710,7 @@
             this.Radio_WatchZones_TopLeft.Location = new System.Drawing.Point(3, 3);
             this.Radio_WatchZones_TopLeft.Name = "Radio_WatchZones_TopLeft";
             this.Radio_WatchZones_TopLeft.Size = new System.Drawing.Size(14, 13);
-            this.Radio_WatchZones_TopLeft.TabIndex = 48;
+            this.Radio_WatchZones_TopLeft.TabIndex = 51;
             this.Radio_WatchZones_TopLeft.TabStop = true;
             this.Radio_WatchZones_TopLeft.UseVisualStyleBackColor = true;
             this.Radio_WatchZones_TopLeft.Click += new System.EventHandler(this.Radio_WatchZones_TopLeft_Click);
@@ -1698,7 +1719,7 @@
             // 
             this.Label_WatchZones_Y.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Label_WatchZones_Y.AutoSize = true;
-            this.Label_WatchZones_Y.Location = new System.Drawing.Point(245, 47);
+            this.Label_WatchZones_Y.Location = new System.Drawing.Point(244, 60);
             this.Label_WatchZones_Y.Name = "Label_WatchZones_Y";
             this.Label_WatchZones_Y.Size = new System.Drawing.Size(12, 13);
             this.Label_WatchZones_Y.TabIndex = 205;
@@ -1708,7 +1729,7 @@
             // 
             this.Label_WatchZones_Height.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Label_WatchZones_Height.AutoSize = true;
-            this.Label_WatchZones_Height.Location = new System.Drawing.Point(232, 100);
+            this.Label_WatchZones_Height.Location = new System.Drawing.Point(231, 111);
             this.Label_WatchZones_Height.Name = "Label_WatchZones_Height";
             this.Label_WatchZones_Height.Size = new System.Drawing.Size(38, 13);
             this.Label_WatchZones_Height.TabIndex = 212;
@@ -1718,7 +1739,7 @@
             // 
             this.Label_WatchZones_X.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Label_WatchZones_X.AutoSize = true;
-            this.Label_WatchZones_X.Location = new System.Drawing.Point(163, 47);
+            this.Label_WatchZones_X.Location = new System.Drawing.Point(162, 60);
             this.Label_WatchZones_X.Name = "Label_WatchZones_X";
             this.Label_WatchZones_X.Size = new System.Drawing.Size(12, 13);
             this.Label_WatchZones_X.TabIndex = 206;
@@ -1728,7 +1749,7 @@
             // 
             this.Label_WatchZones_Anchor.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Label_WatchZones_Anchor.AutoSize = true;
-            this.Label_WatchZones_Anchor.Location = new System.Drawing.Point(28, 51);
+            this.Label_WatchZones_Anchor.Location = new System.Drawing.Point(44, 88);
             this.Label_WatchZones_Anchor.Name = "Label_WatchZones_Anchor";
             this.Label_WatchZones_Anchor.Size = new System.Drawing.Size(41, 13);
             this.Label_WatchZones_Anchor.TabIndex = 6;
@@ -1738,7 +1759,7 @@
             // 
             this.Label_WatchZones_Width.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Label_WatchZones_Width.AutoSize = true;
-            this.Label_WatchZones_Width.Location = new System.Drawing.Point(150, 100);
+            this.Label_WatchZones_Width.Location = new System.Drawing.Point(149, 111);
             this.Label_WatchZones_Width.Name = "Label_WatchZones_Width";
             this.Label_WatchZones_Width.Size = new System.Drawing.Size(35, 13);
             this.Label_WatchZones_Width.TabIndex = 211;
@@ -1747,18 +1768,18 @@
             // TextBox_WatchZones_Name
             // 
             this.TextBox_WatchZones_Name.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.TextBox_WatchZones_Name.Location = new System.Drawing.Point(137, 7);
+            this.TextBox_WatchZones_Name.Location = new System.Drawing.Point(137, 25);
             this.TextBox_WatchZones_Name.MaxLength = 127;
             this.TextBox_WatchZones_Name.Name = "TextBox_WatchZones_Name";
             this.TextBox_WatchZones_Name.Size = new System.Drawing.Size(144, 20);
-            this.TextBox_WatchZones_Name.TabIndex = 47;
+            this.TextBox_WatchZones_Name.TabIndex = 60;
             this.TextBox_WatchZones_Name.Enter += new System.EventHandler(this.TextBox_Auto_Selector);
             // 
             // Label_WatchZones_Name
             // 
             this.Label_WatchZones_Name.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Label_WatchZones_Name.AutoSize = true;
-            this.Label_WatchZones_Name.Location = new System.Drawing.Point(96, 10);
+            this.Label_WatchZones_Name.Location = new System.Drawing.Point(191, 9);
             this.Label_WatchZones_Name.Name = "Label_WatchZones_Name";
             this.Label_WatchZones_Name.Size = new System.Drawing.Size(35, 13);
             this.Label_WatchZones_Name.TabIndex = 207;
@@ -1770,9 +1791,10 @@
             this.Button_WatchZones_Update.Location = new System.Drawing.Point(262, 218);
             this.Button_WatchZones_Update.Name = "Button_WatchZones_Update";
             this.Button_WatchZones_Update.Size = new System.Drawing.Size(75, 23);
-            this.Button_WatchZones_Update.TabIndex = 63;
+            this.Button_WatchZones_Update.TabIndex = 65;
             this.Button_WatchZones_Update.Text = "Update";
             this.Button_WatchZones_Update.UseVisualStyleBackColor = true;
+            this.Button_WatchZones_Update.Click += new System.EventHandler(this.Button_WatchZones_Update_Click);
             // 
             // Label_WatchZones_Title
             // 
@@ -1790,19 +1812,13 @@
             this.Panel_Watches_New.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.Panel_Watches_New.Controls.Add(this.Numeric_Watches_New_Rescan_Range);
             this.Panel_Watches_New.Controls.Add(this.Numeric_Watches_New_Frequency);
             this.Panel_Watches_New.Controls.Add(this.PictureBox_Watches_New);
             this.Panel_Watches_New.Controls.Add(this.Label_Watches_New_Images);
             this.Panel_Watches_New.Controls.Add(this.Button_Minus_Watches_New_Images);
             this.Panel_Watches_New.Controls.Add(this.Button_Plus_Watches_New_Images);
             this.Panel_Watches_New.Controls.Add(this.ListBox_Watches_New_Images);
-            this.Panel_Watches_New.Controls.Add(this.Label_Watches_New_Rescan_Type);
-            this.Panel_Watches_New.Controls.Add(this.ComboBox_Watches_New_Rescan_Type);
-            this.Panel_Watches_New.Controls.Add(this.Label_Watches_New_Rescan_Range);
             this.Panel_Watches_New.Controls.Add(this.Label_Watches_New_CpS);
-            this.Panel_Watches_New.Controls.Add(this.Label_Watches_New_MVF);
-            this.Panel_Watches_New.Controls.Add(this.CheckBox_Watches_New_Frequency);
             this.Panel_Watches_New.Controls.Add(this.Label_Watches_New_Name);
             this.Panel_Watches_New.Controls.Add(this.TextBox_Watches_New_Name);
             this.Panel_Watches_New.Controls.Add(this.Button_Watches_New_Create);
@@ -1813,30 +1829,11 @@
             this.Panel_Watches_New.Size = new System.Drawing.Size(600, 249);
             this.Panel_Watches_New.TabIndex = 124;
             // 
-            // Numeric_Watches_New_Rescan_Range
-            // 
-            this.Numeric_Watches_New_Rescan_Range.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Numeric_Watches_New_Rescan_Range.Location = new System.Drawing.Point(386, 188);
-            this.Numeric_Watches_New_Rescan_Range.Maximum = new decimal(new int[] {
-            3600000,
-            0,
-            0,
-            0});
-            this.Numeric_Watches_New_Rescan_Range.Name = "Numeric_Watches_New_Rescan_Range";
-            this.Numeric_Watches_New_Rescan_Range.Size = new System.Drawing.Size(100, 20);
-            this.Numeric_Watches_New_Rescan_Range.TabIndex = 67;
-            this.Numeric_Watches_New_Rescan_Range.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.Numeric_Watches_New_Rescan_Range.Value = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.Numeric_Watches_New_Rescan_Range.Enter += new System.EventHandler(this.Numeric_Auto_Selector);
-            // 
             // Numeric_Watches_New_Frequency
             // 
             this.Numeric_Watches_New_Frequency.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Numeric_Watches_New_Frequency.Location = new System.Drawing.Point(386, 118);
+            this.Numeric_Watches_New_Frequency.DecimalPlaces = 2;
+            this.Numeric_Watches_New_Frequency.Location = new System.Drawing.Point(386, 134);
             this.Numeric_Watches_New_Frequency.Maximum = new decimal(new int[] {
             300,
             0,
@@ -1849,7 +1846,7 @@
             0});
             this.Numeric_Watches_New_Frequency.Name = "Numeric_Watches_New_Frequency";
             this.Numeric_Watches_New_Frequency.Size = new System.Drawing.Size(66, 20);
-            this.Numeric_Watches_New_Frequency.TabIndex = 66;
+            this.Numeric_Watches_New_Frequency.TabIndex = 70;
             this.Numeric_Watches_New_Frequency.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.Numeric_Watches_New_Frequency.Value = new decimal(new int[] {
             1,
@@ -1883,7 +1880,7 @@
             this.Button_Minus_Watches_New_Images.Location = new System.Drawing.Point(138, 222);
             this.Button_Minus_Watches_New_Images.Name = "Button_Minus_Watches_New_Images";
             this.Button_Minus_Watches_New_Images.Size = new System.Drawing.Size(23, 23);
-            this.Button_Minus_Watches_New_Images.TabIndex = 70;
+            this.Button_Minus_Watches_New_Images.TabIndex = 67;
             this.Button_Minus_Watches_New_Images.Text = "−";
             this.Button_Minus_Watches_New_Images.UseVisualStyleBackColor = true;
             this.Button_Minus_Watches_New_Images.Click += new System.EventHandler(this.Button_Minus_Watches_New_Images_Click);
@@ -1894,7 +1891,7 @@
             this.Button_Plus_Watches_New_Images.Location = new System.Drawing.Point(167, 222);
             this.Button_Plus_Watches_New_Images.Name = "Button_Plus_Watches_New_Images";
             this.Button_Plus_Watches_New_Images.Size = new System.Drawing.Size(23, 23);
-            this.Button_Plus_Watches_New_Images.TabIndex = 71;
+            this.Button_Plus_Watches_New_Images.TabIndex = 68;
             this.Button_Plus_Watches_New_Images.Text = "+";
             this.Button_Plus_Watches_New_Images.UseVisualStyleBackColor = true;
             this.Button_Plus_Watches_New_Images.Click += new System.EventHandler(this.Button_Plus_Watches_New_Images_Click);
@@ -1906,84 +1903,24 @@
             this.ListBox_Watches_New_Images.Location = new System.Drawing.Point(46, 147);
             this.ListBox_Watches_New_Images.Name = "ListBox_Watches_New_Images";
             this.ListBox_Watches_New_Images.Size = new System.Drawing.Size(144, 69);
-            this.ListBox_Watches_New_Images.TabIndex = 69;
+            this.ListBox_Watches_New_Images.TabIndex = 66;
             this.ListBox_Watches_New_Images.SelectedIndexChanged += new System.EventHandler(this.ListBox_Watches_New_Images_SelectedIndexChanged);
-            // 
-            // Label_Watches_New_Rescan_Type
-            // 
-            this.Label_Watches_New_Rescan_Type.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Label_Watches_New_Rescan_Type.AutoSize = true;
-            this.Label_Watches_New_Rescan_Type.Location = new System.Drawing.Point(505, 172);
-            this.Label_Watches_New_Rescan_Type.Name = "Label_Watches_New_Rescan_Type";
-            this.Label_Watches_New_Rescan_Type.Size = new System.Drawing.Size(71, 13);
-            this.Label_Watches_New_Rescan_Type.TabIndex = 34;
-            this.Label_Watches_New_Rescan_Type.Text = "Rescan Type";
-            // 
-            // ComboBox_Watches_New_Rescan_Type
-            // 
-            this.ComboBox_Watches_New_Rescan_Type.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.ComboBox_Watches_New_Rescan_Type.FormattingEnabled = true;
-            this.ComboBox_Watches_New_Rescan_Type.Items.AddRange(new object[] {
-            "None",
-            "Before",
-            "After",
-            "Start",
-            "End",
-            "Both",
-            "Everything"});
-            this.ComboBox_Watches_New_Rescan_Type.Location = new System.Drawing.Point(492, 187);
-            this.ComboBox_Watches_New_Rescan_Type.Name = "ComboBox_Watches_New_Rescan_Type";
-            this.ComboBox_Watches_New_Rescan_Type.Size = new System.Drawing.Size(100, 21);
-            this.ComboBox_Watches_New_Rescan_Type.TabIndex = 68;
-            this.ComboBox_Watches_New_Rescan_Type.Enter += new System.EventHandler(this.ComboBox_Auto_Selector);
-            // 
-            // Label_Watches_New_Rescan_Range
-            // 
-            this.Label_Watches_New_Rescan_Range.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Label_Watches_New_Rescan_Range.AutoSize = true;
-            this.Label_Watches_New_Rescan_Range.Location = new System.Drawing.Point(386, 172);
-            this.Label_Watches_New_Rescan_Range.Name = "Label_Watches_New_Rescan_Range";
-            this.Label_Watches_New_Rescan_Range.Size = new System.Drawing.Size(101, 13);
-            this.Label_Watches_New_Rescan_Range.TabIndex = 31;
-            this.Label_Watches_New_Rescan_Range.Text = "Rescan Range (ms)";
             // 
             // Label_Watches_New_CpS
             // 
             this.Label_Watches_New_CpS.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Label_Watches_New_CpS.AutoSize = true;
-            this.Label_Watches_New_CpS.Location = new System.Drawing.Point(458, 122);
+            this.Label_Watches_New_CpS.Location = new System.Drawing.Point(458, 138);
             this.Label_Watches_New_CpS.Name = "Label_Watches_New_CpS";
             this.Label_Watches_New_CpS.Size = new System.Drawing.Size(101, 13);
             this.Label_Watches_New_CpS.TabIndex = 30;
             this.Label_Watches_New_CpS.Text = "Checks per Second";
             // 
-            // Label_Watches_New_MVF
-            // 
-            this.Label_Watches_New_MVF.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Label_Watches_New_MVF.AutoSize = true;
-            this.Label_Watches_New_MVF.Location = new System.Drawing.Point(458, 101);
-            this.Label_Watches_New_MVF.Name = "Label_Watches_New_MVF";
-            this.Label_Watches_New_MVF.Size = new System.Drawing.Size(117, 13);
-            this.Label_Watches_New_MVF.TabIndex = 29;
-            this.Label_Watches_New_MVF.Text = "Match Video Framerate";
-            // 
-            // CheckBox_Watches_New_Frequency
-            // 
-            this.CheckBox_Watches_New_Frequency.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.CheckBox_Watches_New_Frequency.AutoSize = true;
-            this.CheckBox_Watches_New_Frequency.Location = new System.Drawing.Point(414, 100);
-            this.CheckBox_Watches_New_Frequency.Name = "CheckBox_Watches_New_Frequency";
-            this.CheckBox_Watches_New_Frequency.Size = new System.Drawing.Size(15, 14);
-            this.CheckBox_Watches_New_Frequency.TabIndex = 65;
-            this.CheckBox_Watches_New_Frequency.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.CheckBox_Watches_New_Frequency.UseVisualStyleBackColor = true;
-            this.CheckBox_Watches_New_Frequency.Click += new System.EventHandler(this.CheckBox_Watches_New_Frequency_Click);
-            // 
             // Label_Watches_New_Name
             // 
             this.Label_Watches_New_Name.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Label_Watches_New_Name.AutoSize = true;
-            this.Label_Watches_New_Name.Location = new System.Drawing.Point(343, 75);
+            this.Label_Watches_New_Name.Location = new System.Drawing.Point(342, 102);
             this.Label_Watches_New_Name.Name = "Label_Watches_New_Name";
             this.Label_Watches_New_Name.Size = new System.Drawing.Size(35, 13);
             this.Label_Watches_New_Name.TabIndex = 23;
@@ -1992,11 +1929,11 @@
             // TextBox_Watches_New_Name
             // 
             this.TextBox_Watches_New_Name.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.TextBox_Watches_New_Name.Location = new System.Drawing.Point(386, 74);
+            this.TextBox_Watches_New_Name.Location = new System.Drawing.Point(385, 101);
             this.TextBox_Watches_New_Name.MaxLength = 128;
             this.TextBox_Watches_New_Name.Name = "TextBox_Watches_New_Name";
             this.TextBox_Watches_New_Name.Size = new System.Drawing.Size(206, 20);
-            this.TextBox_Watches_New_Name.TabIndex = 64;
+            this.TextBox_Watches_New_Name.TabIndex = 69;
             this.TextBox_Watches_New_Name.Enter += new System.EventHandler(this.TextBox_Auto_Selector);
             // 
             // Button_Watches_New_Create
@@ -2005,7 +1942,7 @@
             this.Button_Watches_New_Create.Location = new System.Drawing.Point(262, 197);
             this.Button_Watches_New_Create.Name = "Button_Watches_New_Create";
             this.Button_Watches_New_Create.Size = new System.Drawing.Size(75, 23);
-            this.Button_Watches_New_Create.TabIndex = 72;
+            this.Button_Watches_New_Create.TabIndex = 71;
             this.Button_Watches_New_Create.Text = "Create";
             this.Button_Watches_New_Create.UseVisualStyleBackColor = true;
             this.Button_Watches_New_Create.Click += new System.EventHandler(this.Button_Watches_New_Create_Click);
@@ -2014,7 +1951,7 @@
             // 
             this.Label_Watches_New_Frequency.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Label_Watches_New_Frequency.AutoSize = true;
-            this.Label_Watches_New_Frequency.Location = new System.Drawing.Point(321, 111);
+            this.Label_Watches_New_Frequency.Location = new System.Drawing.Point(320, 138);
             this.Label_Watches_New_Frequency.Name = "Label_Watches_New_Frequency";
             this.Label_Watches_New_Frequency.Size = new System.Drawing.Size(57, 13);
             this.Label_Watches_New_Frequency.TabIndex = 22;
@@ -2036,19 +1973,13 @@
             this.Panel_Watches.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.Panel_Watches.Controls.Add(this.Numeric_Watches_Rescan_Range);
             this.Panel_Watches.Controls.Add(this.Numeric_Watches_Frequency);
             this.Panel_Watches.Controls.Add(this.PictureBox_Watches);
             this.Panel_Watches.Controls.Add(this.Label_Watches_Images);
             this.Panel_Watches.Controls.Add(this.Button_Minus_Watches_Images);
             this.Panel_Watches.Controls.Add(this.Button_Plus_Watches_Images);
             this.Panel_Watches.Controls.Add(this.ListBox_Watches_Images);
-            this.Panel_Watches.Controls.Add(this.Label_Watches_Rescan_Type);
-            this.Panel_Watches.Controls.Add(this.ComboBox_Watches_Rescan_Type);
-            this.Panel_Watches.Controls.Add(this.Label_Watches_Rescan_Range);
             this.Panel_Watches.Controls.Add(this.Label_Watches_CpS);
-            this.Panel_Watches.Controls.Add(this.Label_Watches_MVF);
-            this.Panel_Watches.Controls.Add(this.CheckBox_Watches_Frequency);
             this.Panel_Watches.Controls.Add(this.Label_Watches_Name);
             this.Panel_Watches.Controls.Add(this.TextBox_Watches_Name);
             this.Panel_Watches.Controls.Add(this.Button_Watches_Update);
@@ -2059,30 +1990,11 @@
             this.Panel_Watches.Size = new System.Drawing.Size(600, 249);
             this.Panel_Watches.TabIndex = 215;
             // 
-            // Numeric_Watches_Rescan_Range
-            // 
-            this.Numeric_Watches_Rescan_Range.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Numeric_Watches_Rescan_Range.Location = new System.Drawing.Point(386, 188);
-            this.Numeric_Watches_Rescan_Range.Maximum = new decimal(new int[] {
-            3600000,
-            0,
-            0,
-            0});
-            this.Numeric_Watches_Rescan_Range.Name = "Numeric_Watches_Rescan_Range";
-            this.Numeric_Watches_Rescan_Range.Size = new System.Drawing.Size(100, 20);
-            this.Numeric_Watches_Rescan_Range.TabIndex = 76;
-            this.Numeric_Watches_Rescan_Range.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.Numeric_Watches_Rescan_Range.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.Numeric_Watches_Rescan_Range.Enter += new System.EventHandler(this.Numeric_Auto_Selector);
-            // 
             // Numeric_Watches_Frequency
             // 
             this.Numeric_Watches_Frequency.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Numeric_Watches_Frequency.Location = new System.Drawing.Point(386, 118);
+            this.Numeric_Watches_Frequency.DecimalPlaces = 2;
+            this.Numeric_Watches_Frequency.Location = new System.Drawing.Point(386, 134);
             this.Numeric_Watches_Frequency.Maximum = new decimal(new int[] {
             300,
             0,
@@ -2095,7 +2007,7 @@
             0});
             this.Numeric_Watches_Frequency.Name = "Numeric_Watches_Frequency";
             this.Numeric_Watches_Frequency.Size = new System.Drawing.Size(66, 20);
-            this.Numeric_Watches_Frequency.TabIndex = 75;
+            this.Numeric_Watches_Frequency.TabIndex = 76;
             this.Numeric_Watches_Frequency.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.Numeric_Watches_Frequency.Value = new decimal(new int[] {
             1,
@@ -2129,7 +2041,7 @@
             this.Button_Minus_Watches_Images.Location = new System.Drawing.Point(138, 222);
             this.Button_Minus_Watches_Images.Name = "Button_Minus_Watches_Images";
             this.Button_Minus_Watches_Images.Size = new System.Drawing.Size(23, 23);
-            this.Button_Minus_Watches_Images.TabIndex = 79;
+            this.Button_Minus_Watches_Images.TabIndex = 73;
             this.Button_Minus_Watches_Images.Text = "−";
             this.Button_Minus_Watches_Images.UseVisualStyleBackColor = true;
             this.Button_Minus_Watches_Images.Click += new System.EventHandler(this.Button_Minus_Watches_Images_Click);
@@ -2140,7 +2052,7 @@
             this.Button_Plus_Watches_Images.Location = new System.Drawing.Point(167, 222);
             this.Button_Plus_Watches_Images.Name = "Button_Plus_Watches_Images";
             this.Button_Plus_Watches_Images.Size = new System.Drawing.Size(23, 23);
-            this.Button_Plus_Watches_Images.TabIndex = 80;
+            this.Button_Plus_Watches_Images.TabIndex = 74;
             this.Button_Plus_Watches_Images.Text = "+";
             this.Button_Plus_Watches_Images.UseVisualStyleBackColor = true;
             this.Button_Plus_Watches_Images.Click += new System.EventHandler(this.Button_Plus_Watches_Images_Click);
@@ -2152,84 +2064,24 @@
             this.ListBox_Watches_Images.Location = new System.Drawing.Point(46, 147);
             this.ListBox_Watches_Images.Name = "ListBox_Watches_Images";
             this.ListBox_Watches_Images.Size = new System.Drawing.Size(144, 69);
-            this.ListBox_Watches_Images.TabIndex = 78;
+            this.ListBox_Watches_Images.TabIndex = 72;
             this.ListBox_Watches_Images.SelectedIndexChanged += new System.EventHandler(this.ListBox_Watches_Images_SelectedIndexChanged);
-            // 
-            // Label_Watches_Rescan_Type
-            // 
-            this.Label_Watches_Rescan_Type.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Label_Watches_Rescan_Type.AutoSize = true;
-            this.Label_Watches_Rescan_Type.Location = new System.Drawing.Point(505, 172);
-            this.Label_Watches_Rescan_Type.Name = "Label_Watches_Rescan_Type";
-            this.Label_Watches_Rescan_Type.Size = new System.Drawing.Size(71, 13);
-            this.Label_Watches_Rescan_Type.TabIndex = 34;
-            this.Label_Watches_Rescan_Type.Text = "Rescan Type";
-            // 
-            // ComboBox_Watches_Rescan_Type
-            // 
-            this.ComboBox_Watches_Rescan_Type.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.ComboBox_Watches_Rescan_Type.FormattingEnabled = true;
-            this.ComboBox_Watches_Rescan_Type.Items.AddRange(new object[] {
-            "None",
-            "Before",
-            "After",
-            "Start",
-            "End",
-            "Both",
-            "Everything"});
-            this.ComboBox_Watches_Rescan_Type.Location = new System.Drawing.Point(492, 187);
-            this.ComboBox_Watches_Rescan_Type.Name = "ComboBox_Watches_Rescan_Type";
-            this.ComboBox_Watches_Rescan_Type.Size = new System.Drawing.Size(100, 21);
-            this.ComboBox_Watches_Rescan_Type.TabIndex = 77;
-            this.ComboBox_Watches_Rescan_Type.Enter += new System.EventHandler(this.ComboBox_Auto_Selector);
-            // 
-            // Label_Watches_Rescan_Range
-            // 
-            this.Label_Watches_Rescan_Range.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Label_Watches_Rescan_Range.AutoSize = true;
-            this.Label_Watches_Rescan_Range.Location = new System.Drawing.Point(386, 172);
-            this.Label_Watches_Rescan_Range.Name = "Label_Watches_Rescan_Range";
-            this.Label_Watches_Rescan_Range.Size = new System.Drawing.Size(101, 13);
-            this.Label_Watches_Rescan_Range.TabIndex = 31;
-            this.Label_Watches_Rescan_Range.Text = "Rescan Range (ms)";
             // 
             // Label_Watches_CpS
             // 
             this.Label_Watches_CpS.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Label_Watches_CpS.AutoSize = true;
-            this.Label_Watches_CpS.Location = new System.Drawing.Point(458, 122);
+            this.Label_Watches_CpS.Location = new System.Drawing.Point(458, 138);
             this.Label_Watches_CpS.Name = "Label_Watches_CpS";
             this.Label_Watches_CpS.Size = new System.Drawing.Size(101, 13);
             this.Label_Watches_CpS.TabIndex = 30;
             this.Label_Watches_CpS.Text = "Checks per Second";
             // 
-            // Label_Watches_MVF
-            // 
-            this.Label_Watches_MVF.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Label_Watches_MVF.AutoSize = true;
-            this.Label_Watches_MVF.Location = new System.Drawing.Point(458, 101);
-            this.Label_Watches_MVF.Name = "Label_Watches_MVF";
-            this.Label_Watches_MVF.Size = new System.Drawing.Size(117, 13);
-            this.Label_Watches_MVF.TabIndex = 29;
-            this.Label_Watches_MVF.Text = "Match Video Framerate";
-            // 
-            // CheckBox_Watches_Frequency
-            // 
-            this.CheckBox_Watches_Frequency.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.CheckBox_Watches_Frequency.AutoSize = true;
-            this.CheckBox_Watches_Frequency.Location = new System.Drawing.Point(414, 100);
-            this.CheckBox_Watches_Frequency.Name = "CheckBox_Watches_Frequency";
-            this.CheckBox_Watches_Frequency.Size = new System.Drawing.Size(15, 14);
-            this.CheckBox_Watches_Frequency.TabIndex = 74;
-            this.CheckBox_Watches_Frequency.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.CheckBox_Watches_Frequency.UseVisualStyleBackColor = true;
-            this.CheckBox_Watches_Frequency.Click += new System.EventHandler(this.CheckBox_Watches_Frequency_Click);
-            // 
             // Label_Watches_Name
             // 
             this.Label_Watches_Name.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Label_Watches_Name.AutoSize = true;
-            this.Label_Watches_Name.Location = new System.Drawing.Point(343, 75);
+            this.Label_Watches_Name.Location = new System.Drawing.Point(342, 102);
             this.Label_Watches_Name.Name = "Label_Watches_Name";
             this.Label_Watches_Name.Size = new System.Drawing.Size(35, 13);
             this.Label_Watches_Name.TabIndex = 23;
@@ -2238,11 +2090,11 @@
             // TextBox_Watches_Name
             // 
             this.TextBox_Watches_Name.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.TextBox_Watches_Name.Location = new System.Drawing.Point(386, 74);
+            this.TextBox_Watches_Name.Location = new System.Drawing.Point(385, 101);
             this.TextBox_Watches_Name.MaxLength = 128;
             this.TextBox_Watches_Name.Name = "TextBox_Watches_Name";
             this.TextBox_Watches_Name.Size = new System.Drawing.Size(206, 20);
-            this.TextBox_Watches_Name.TabIndex = 73;
+            this.TextBox_Watches_Name.TabIndex = 75;
             this.TextBox_Watches_Name.Enter += new System.EventHandler(this.TextBox_Auto_Selector);
             // 
             // Button_Watches_Update
@@ -2251,7 +2103,7 @@
             this.Button_Watches_Update.Location = new System.Drawing.Point(262, 197);
             this.Button_Watches_Update.Name = "Button_Watches_Update";
             this.Button_Watches_Update.Size = new System.Drawing.Size(75, 23);
-            this.Button_Watches_Update.TabIndex = 81;
+            this.Button_Watches_Update.TabIndex = 77;
             this.Button_Watches_Update.Text = "Update";
             this.Button_Watches_Update.UseVisualStyleBackColor = true;
             // 
@@ -2259,7 +2111,7 @@
             // 
             this.Label_Watches_Frequency.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Label_Watches_Frequency.AutoSize = true;
-            this.Label_Watches_Frequency.Location = new System.Drawing.Point(321, 111);
+            this.Label_Watches_Frequency.Location = new System.Drawing.Point(320, 138);
             this.Label_Watches_Frequency.Name = "Label_Watches_Frequency";
             this.Label_Watches_Frequency.Size = new System.Drawing.Size(57, 13);
             this.Label_Watches_Frequency.TabIndex = 22;
@@ -2311,20 +2163,18 @@
             this.Panel_Screens_New.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_Screens_New_Height)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_Screens_New_Width)).EndInit();
-            this.GroupBox_Screens_New_Radio.ResumeLayout(false);
-            this.GroupBox_Screens_New_Radio.PerformLayout();
             this.Panel_Screens.ResumeLayout(false);
             this.Panel_Screens.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_Screens_Height)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_Screens_Width)).EndInit();
-            this.GroupBox_Screens_Radio.ResumeLayout(false);
-            this.GroupBox_Screens_Radio.PerformLayout();
             this.Panel_WatchZones_New.ResumeLayout(false);
             this.Panel_WatchZones_New.PerformLayout();
             this.TableLayoutPanel_WatchZones_New.ResumeLayout(false);
             this.Box_WatchZones_New_Main.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
+            this.GroupBox_WatchZones_New_ScaleType.ResumeLayout(false);
+            this.GroupBox_WatchZones_New_ScaleType.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_WatchZones_New_Height)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_WatchZones_New_Width)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_WatchZones_New_Y)).EndInit();
@@ -2337,6 +2187,8 @@
             this.Box_WatchZones_Main.ResumeLayout(false);
             this.panel5.ResumeLayout(false);
             this.panel5.PerformLayout();
+            this.GroupBox_WatchZones_ScaleType.ResumeLayout(false);
+            this.GroupBox_WatchZones_ScaleType.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_WatchZones_Height)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_WatchZones_Width)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_WatchZones_Y)).EndInit();
@@ -2345,12 +2197,10 @@
             this.TableLayoutPanel_WatchZones_Anchor.PerformLayout();
             this.Panel_Watches_New.ResumeLayout(false);
             this.Panel_Watches_New.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.Numeric_Watches_New_Rescan_Range)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_Watches_New_Frequency)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBox_Watches_New)).EndInit();
             this.Panel_Watches.ResumeLayout(false);
             this.Panel_Watches.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.Numeric_Watches_Rescan_Range)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_Watches_Frequency)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBox_Watches)).EndInit();
             this.ResumeLayout(false);
@@ -2376,7 +2226,7 @@
         private System.Windows.Forms.TableLayoutPanel TableLayoutPanel_ListBoxes;
         private System.Windows.Forms.ListBox ListBox_Watches;
         private System.Windows.Forms.ListBox ListBox_Screens;
-        private System.Windows.Forms.ListBox ListBox_GameProfile;
+        private System.Windows.Forms.ListBox ListBox_GameProfiles;
         private System.Windows.Forms.TableLayoutPanel TableLayoutPanel_Minus_Plus_Buttons;
         private System.Windows.Forms.ListBox ListBox_WatchZones;
         private System.Windows.Forms.Label Label_WatchZones;
@@ -2464,24 +2314,11 @@
         private System.Windows.Forms.Label Label_Watches_New_Frequency;
         private System.Windows.Forms.Label Label_Watches_New_Title;
         private System.Windows.Forms.Label Label_Watches_New_CpS;
-        private System.Windows.Forms.Label Label_Watches_New_MVF;
-        private System.Windows.Forms.CheckBox CheckBox_Watches_New_Frequency;
-        private System.Windows.Forms.Label Label_Watches_New_Rescan_Type;
-        private System.Windows.Forms.ComboBox ComboBox_Watches_New_Rescan_Type;
-        private System.Windows.Forms.Label Label_Watches_New_Rescan_Range;
         private System.Windows.Forms.PictureBox PictureBox_Watches_New;
         private System.Windows.Forms.Button Button_Minus_Watches_New_Images;
         private System.Windows.Forms.Button Button_Plus_Watches_New_Images;
         private System.Windows.Forms.ListBox ListBox_Watches_New_Images;
         private System.Windows.Forms.Label Label_Watches_New_Images;
-        private System.Windows.Forms.GroupBox GroupBox_Screens_Radio;
-        private System.Windows.Forms.RadioButton Radio_Screens_Static;
-        private System.Windows.Forms.RadioButton Radio_Screens_Dynamic;
-        private System.Windows.Forms.RadioButton Radio_Screens_Ratio;
-        private System.Windows.Forms.GroupBox GroupBox_Screens_New_Radio;
-        private System.Windows.Forms.RadioButton Radio_Screens_New_Static;
-        private System.Windows.Forms.RadioButton Radio_Screens_New_Dynamic;
-        private System.Windows.Forms.RadioButton Radio_Screens_New_Ratio;
         private System.Windows.Forms.Button Button_WatchZones_New_SSAAI;
         private System.Windows.Forms.Button Button_WatchZones_New_URI;
         private System.Windows.Forms.Panel Panel_Watches;
@@ -2490,12 +2327,7 @@
         private System.Windows.Forms.Button Button_Minus_Watches_Images;
         private System.Windows.Forms.Button Button_Plus_Watches_Images;
         private System.Windows.Forms.ListBox ListBox_Watches_Images;
-        private System.Windows.Forms.Label Label_Watches_Rescan_Type;
-        private System.Windows.Forms.ComboBox ComboBox_Watches_Rescan_Type;
-        private System.Windows.Forms.Label Label_Watches_Rescan_Range;
         private System.Windows.Forms.Label Label_Watches_CpS;
-        private System.Windows.Forms.Label Label_Watches_MVF;
-        private System.Windows.Forms.CheckBox CheckBox_Watches_Frequency;
         private System.Windows.Forms.Label Label_Watches_Name;
         private System.Windows.Forms.TextBox TextBox_Watches_Name;
         private System.Windows.Forms.Button Button_Watches_Update;
@@ -2513,11 +2345,19 @@
         private System.Windows.Forms.NumericUpDown Numeric_WatchZones_New_Width;
         private System.Windows.Forms.NumericUpDown Numeric_WatchZones_New_Y;
         private System.Windows.Forms.NumericUpDown Numeric_WatchZones_New_X;
-        private System.Windows.Forms.NumericUpDown Numeric_Watches_Rescan_Range;
         private System.Windows.Forms.NumericUpDown Numeric_Watches_Frequency;
-        private System.Windows.Forms.NumericUpDown Numeric_Watches_New_Rescan_Range;
         private System.Windows.Forms.NumericUpDown Numeric_Watches_New_Frequency;
         private System.Windows.Forms.Button Button_WatchZones_SSAAI;
         private System.Windows.Forms.Button Button_WatchZones_URI;
+        private System.Windows.Forms.CheckBox CheckBox_Screens_New_Advanced;
+        private System.Windows.Forms.CheckBox CheckBox_Screens_Advanced;
+        private System.Windows.Forms.GroupBox GroupBox_WatchZones_New_ScaleType;
+        private System.Windows.Forms.RadioButton Radio_WatchZones_New_NoScale;
+        private System.Windows.Forms.RadioButton Radio_WatchZones_New_Scale;
+        private System.Windows.Forms.RadioButton Radio_WatchZones_New_KeepRatio;
+        private System.Windows.Forms.GroupBox GroupBox_WatchZones_ScaleType;
+        private System.Windows.Forms.RadioButton Radio_WatchZones_NoScale;
+        private System.Windows.Forms.RadioButton Radio_WatchZones_Scale;
+        private System.Windows.Forms.RadioButton Radio_WatchZones_KeepRatio;
     }
 }

@@ -90,7 +90,7 @@ namespace VideoImageDeltaApp.Forms
 
         private void Button_Process_Click(object sender, EventArgs e)
         {
-            Test.RunTest(Program.Videos, Program.GameProfiles);
+            //Test.RunTest(Program.Videos, Program.GameProfiles);
         }
 
         private void Button_Minus_Videos_Click(object sender, EventArgs e)

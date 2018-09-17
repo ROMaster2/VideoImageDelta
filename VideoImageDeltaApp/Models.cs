@@ -44,13 +44,15 @@ using VideoImageDeltaApp;
 using VideoImageDeltaApp.Forms;
 using VideoImageDeltaApp.Models;
 
+using Anchor = VideoImageDeltaApp.Models.Anchor;
+
 namespace VideoImageDeltaApp.Models
 {
     [Flags]
     public enum Anchor
     {
         Undefined = -1,
-        None = 0,
+        Center = 0,
         Top = 1,
         Bottom = 2,
         Left = 4,
@@ -108,7 +110,7 @@ namespace VideoImageDeltaApp.Models
         public double Y { get; set; } = 0d;
         public double Width { get; set; } = 0d;
         public double Height { get; set; } = 0d;
-        public Anchor Anchor { get; set; } = Models.Anchor.Undefined;
+        public Anchor Anchor { get; set; } = Anchor.Undefined;
 
         public double Ratio
         {
@@ -125,37 +127,56 @@ namespace VideoImageDeltaApp.Models
             }
         }
 
-        public static void AdjustVideo(Video v)
+        public bool HasPoint()
         {
-            double x = 32768;
-            double y = 32768;
-            double width = -32768;
-            double height = -32768;
-            foreach (var f in v.Feeds)
+            return (X != 0) || (Y != 0);
+        }
+
+        public bool IsEmpty()
+        {
+            return (Width != 0) && (Height != 0);
+        }
+
+        public bool HasAnchor()
+        {
+            return Anchor != Anchor.Undefined;
+        }
+
+        public Geometry WithoutAnchor(Geometry baseGeometry)
+        {
+            double _x;
+            double _y;
+
+            if (Anchor == Anchor.Undefined || 
+                Anchor == Anchor.Center ||
+                Anchor.HasFlag(Anchor.Left))
             {
-                x = Math.Min(x, f.Geometry.X);
-                y = Math.Min(y, f.Geometry.Y);
-                width = Math.Max(width, f.Geometry.X + f.Geometry.Width);
-                height = Math.Max(height, f.Geometry.Y + f.Geometry.Height);
+                _x = X;
+            } else if (Anchor.HasFlag(Anchor.Right))
+            {
+                _x = baseGeometry.Width - Width + X;
+            } else
+            {
+                _x = (baseGeometry.Width - Width) / 2d + X;
             }
-            width -= x;
-            height -= y;
 
-            v.AdjustedGeometry = new Geometry(x, y, width, height);
+            if (Anchor == Anchor.Undefined || 
+                Anchor == Anchor.Center ||
+                Anchor.HasFlag(Anchor.Top))
+            {
+                _y = Y;
+            }
+            else if (Anchor.HasFlag(Anchor.Bottom))
+            {
+                _y = baseGeometry.Height - Height + Y;
+            }
+            else
+            {
+                _y = (baseGeometry.Height - Height) / 2d + Y;
+            }
+
+            return new Geometry(_x, _y, Width, Height, Anchor.Undefined);
         }
-        /*
-        public static Geometry AdjustWatchZone(Video v, Feed f, Screen s, WatchZone wz)
-        {
-            if (v.AdjustedGeometry == null) AdjustVideo(v);
-
-            Geometry GameGeometry = s.Geometry;
-            if (f.GameGeometry.Width != 0 && f.GameGeometry.Height != 0)
-                GameGeometry = f.GameGeometry;
-
-            double xScale = GameGeometry.Width / f.Geometry.Width;
-            double yScale = GameGeometry.Height / f.Geometry.Height;
-        }
-        */
     }
 
     public class VideoProfile
@@ -265,8 +286,73 @@ namespace VideoImageDeltaApp.Models
         public Image GetThumbnail(TimeSpan timestamp)
         {
             // Would use Hudl but figuring out the syntax is a pain. Documentation kinda sucks.
-//            return RawFFmpeg.GetThumbnail(this, timestamp);
+            //return RawFFmpeg.GetThumbnail(this, timestamp);
             return RawFFmpeg.GetThumbnail(FilePath, new System.Windows.Size(Geometry.Width, Geometry.Height),timestamp);
+        }
+
+        // Full name would be CalculateChildAdjustedGeometry, but that's a mouthful too many characters.
+        /// <summary>
+        /// Cache the geometry adjustments needed to position and size images to their spot on the video.
+        /// This is done so it's not crunched every single process cycle.
+        /// Warning: Could break if negative offsets are used. Need to test.
+        /// </summary>
+        public void CalcChildAdjGeo()
+        {
+            double x = 32768d;
+            double y = 32768d;
+            double width = -32768d;
+            double height = -32768d;
+            foreach (var f in Feeds)
+            {
+                x = Math.Min(x, f.Geometry.X);
+                y = Math.Min(y, f.Geometry.Y);
+                width = Math.Max(width, f.Geometry.X + f.Geometry.Width);
+                height = Math.Max(height, f.Geometry.Y + f.Geometry.Height);
+            }
+            width -= x;
+            height -= y;
+
+            AdjustedGeometry = new Geometry(x, y, width, height, Anchor.Undefined);
+
+            foreach (var f in Feeds)
+            {
+                Geometry GameGeometry = f.Screen.Geometry;
+                if (f.GameGeometry.Width > 0d && f.GameGeometry.Height > 0d) GameGeometry = f.GameGeometry;
+
+                double xScale = GameGeometry.Width / f.Geometry.Width;
+                double yScale = GameGeometry.Height / f.Geometry.Height;
+                foreach (var wz in f.Screen.WatchZones)
+                {
+                    double _x = wz.Geometry.X;
+                    double _y = wz.Geometry.Y;
+                    double _width = wz.Geometry.Width;
+                    double _height = wz.Geometry.Height;
+
+                    if (wz.ScaleType == ScaleType.Scale)
+                    {
+                        _x *= xScale;
+                        _y *= yScale;
+                        _width *= xScale;
+                        _height *= yScale;
+                    } else if(wz.ScaleType == ScaleType.KeepRatio)
+                    {
+                        double scale = Math.Min(xScale, yScale); // Min or Max?
+                        _x *= scale;
+                        _y *= scale;
+                        _width *= scale;
+                        _height *= scale;
+                    }
+
+                    var newGeo = new Geometry(_x, _y, _width, _height, wz.Geometry.Anchor).WithoutAnchor(GameGeometry);
+
+                    newGeo.X = newGeo.X / GameGeometry.Width * f.Geometry.Width + f.Geometry.X - this.AdjustedGeometry.X;
+                    newGeo.Y = newGeo.Y / GameGeometry.Height * f.Geometry.Height + f.Geometry.Y - this.AdjustedGeometry.Y;
+                    newGeo.Width = newGeo.Width / GameGeometry.Width * f.Geometry.Width;
+                    newGeo.Height = newGeo.Height / GameGeometry.Height * f.Geometry.Height;
+
+                    wz.AdjustedGeometry = newGeo;
+                }
+            }
         }
 
         override public string ToString()
@@ -337,6 +423,8 @@ namespace VideoImageDeltaApp.Models
             Name = name;
         }
 
+        public GameProfile() { }
+
         public string Name { get; set; }
         public List<Screen> Screens { get; set; } = new List<Screen>();
 
@@ -357,25 +445,26 @@ namespace VideoImageDeltaApp.Models
 
     }
 
-    public enum ScreenType // To remove?
-    {
-        Undefined = -1,
-        Static = 0,
-        Ratio = 1,
-        Dynamic = 2,
-    }
-
     public class Screen
     {
-        public Screen(string name, ScreenType screenType, Geometry geometry)
+        public Screen(string name, Geometry geometry)
         {
             Name = name;
-            ScreenType = screenType;
+            UseAdvanced = false;
+            Geometry = null;
+        }
+
+        public Screen(string name, bool useAdvanced, Geometry geometry)
+        {
+            Name = name;
+            UseAdvanced = useAdvanced;
             Geometry = geometry;
         }
 
+        internal Screen() { }
+
         public string Name { get; set; }
-        public ScreenType ScreenType { get; set; } // To remove?
+        public bool UseAdvanced { get; set; }
         public Geometry Geometry { get; set; }
         public List<WatchZone> WatchZones { get; set; } = new List<WatchZone>();
 
@@ -386,15 +475,27 @@ namespace VideoImageDeltaApp.Models
 
     }
 
+    public enum ScaleType
+    {
+        Undefined = -1,
+        NoScale = 0,
+        KeepRatio = 1,
+        Scale = 2,
+    }
+
     public class WatchZone
     {
-        public WatchZone(string name, Geometry geometry)
+        public WatchZone(string name, ScaleType scaleType, Geometry geometry)
         {
             Name = name;
+            ScaleType = scaleType;
             Geometry = geometry;
         }
 
+        internal WatchZone() { }
+
         public string Name { get; set; }
+        public ScaleType ScaleType { get; set; }
         public Geometry Geometry { get; set; }
         public List<Watcher> Watches { get; set; } = new List<Watcher>();
 
@@ -407,62 +508,9 @@ namespace VideoImageDeltaApp.Models
 
     }
 
-    [Flags]
-    public enum ScanType
-    {
-        None = 0,
-        BeforeStart = 1,
-        AfterStart = 2,
-        During = 4,
-        BeforeEnd = 8,
-        AfterEnd = 16,
-        Before = BeforeStart | BeforeEnd,
-        After = AfterStart | AfterEnd,
-        Start = BeforeStart | AfterStart,
-        End = BeforeEnd | AfterEnd,
-        Both = Before | After,
-        Everything = Before | During | After,
-    }
-
     public class Watcher
     {
-        #region Constructors
-        public Watcher(string name, int frequency, ScanType rescanType, TimeSpan rescanRange)
-        {
-            Name = name;
-            Frequency = frequency;
-            RescanType = rescanType;
-            RescanRange = rescanRange;
-        }
-        public Watcher(string name, ScanType rescanType, TimeSpan rescanRange)
-        {
-            Name = name;
-            RescanType = rescanType;
-            RescanRange = rescanRange;
-        }
-        public Watcher(string name, int frequency, TimeSpan rescanRange)
-        {
-            Name = name;
-            Frequency = frequency;
-            RescanRange = rescanRange;
-        }
-        public Watcher(string name, TimeSpan rescanRange)
-        {
-            Name = name;
-            RescanRange = rescanRange;
-        }
-        public Watcher(string name, int frequency, ScanType rescanType)
-        {
-            Name = name;
-            Frequency = frequency;
-            RescanType = rescanType;
-        }
-        public Watcher(string name, ScanType rescanType)
-        {
-            Name = name;
-            RescanType = rescanType;
-        }
-        public Watcher(string name, int frequency)
+        public Watcher(string name, double frequency)
         {
             Name = name;
             Frequency = frequency;
@@ -471,12 +519,11 @@ namespace VideoImageDeltaApp.Models
         {
             Name = name;
         }
-        #endregion
+
+        internal Watcher() { }
 
         public string Name { get; set; }
-        public double? Frequency { get; set; } = 1d; // null = match video framerate
-        public ScanType RescanType { get; set; } = ScanType.Both;
-        public TimeSpan RescanRange { get; set; } = TimeSpan.FromSeconds(1d);
+        public double Frequency { get; set; } = 1d;
         public List<WatchImage> Images { get; set; } = new List<WatchImage>(); // To expand
 
         override public string ToString()
@@ -492,6 +539,8 @@ namespace VideoImageDeltaApp.Models
         {
             FilePath = filePath;
         }
+
+        internal WatchImage() { }
 
         public string FilePath { get; set; }
         private Image image;

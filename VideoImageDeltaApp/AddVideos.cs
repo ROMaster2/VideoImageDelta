@@ -107,7 +107,27 @@ retry:
                         XmlSerializer serializer = new XmlSerializer(typeof(VideoProfile));
                         using (StreamReader reader = new StreamReader(f))
                         {
-                            vp = (VideoProfile)serializer.Deserialize(reader);
+                            try
+                            {
+                                vp = (VideoProfile)serializer.Deserialize(reader);
+                            } catch
+                            {
+                                DialogResult dr = MessageBox.Show(f + "is either not a Video profile or has been corrupted.",
+                                    "Error", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error);
+                                if (dr == DialogResult.Abort)
+                                {
+                                    abort = true;
+                                    break;
+                                }
+                                else if (dr == DialogResult.Retry)
+                                {
+                                    goto retry;
+                                }
+                                else
+                                {
+                                    continue;
+                                }
+                            }
                         }
 
                         bool geoError = false;
@@ -140,17 +160,25 @@ retry:
 
                     if (!abort)
                     {
-                        foreach (Feed f in feeds)
+                        foreach(var lv in SelectedListVideos)
                         {
-                            SelectedVideo.Feeds.Add(f);
-                            SelectedListVideo.UpdateFeeds();
-                            ListBox_Feeds.Items.Add(f);
+                            var i = lv.Index;
+                            foreach (Feed f in feeds)
+                            {
+                                lv.Video.Feeds.Add(f);
+                                lv.UpdateFeeds();
+                                ListView_Main.Items[i] = lv;
+                            }
                         }
+                        ListBox_Feeds.SelectedIndex = ListBox_Feeds.Items.Count - 1;
                     }
                 }
-
                 ofd.Dispose();
             }
+            // For some reason, if your cursor is above the preview box when you click OK, it
+            // changes the preview box dimensions to where your cursor is. The feeds are
+            // unaffected but people might think it imported incorrectly. It probably has to
+            // do with the MouseUp/Down stuff.
         }
 
         private void Button_Export_Click(object sender, EventArgs e)
@@ -168,7 +196,7 @@ retry:
 
                 sfd.ShowDialog();
 
-                if (sfd.FileName != null)
+                if (sfd.FileName != "")
                 {
                     var vp = new VideoProfile("", SelectedVideo);
                     Type t = vp.GetType();
@@ -227,11 +255,7 @@ retry:
                 {
                     foreach (ListVideo vlv in value)
                     {
-                        if (lv.Name == vlv.Name)
-                        {
-                            var i = ListView_Main.SelectedItems.IndexOf(lv);
-                            ListView_Main.Items[i] = vlv;
-                        }
+                        ListView_Main.Items[vlv.Index] = vlv;
                     }
                 }
             }
@@ -750,6 +774,7 @@ retry:
             {
                 SelectedVideo.Feeds.RemoveAt(ListBox_Feeds.SelectedIndex);
                 ListBox_Feeds.Items.RemoveAt(ListBox_Feeds.SelectedIndex);
+                SelectedListVideo.UpdateFeeds();
             }
         }
 

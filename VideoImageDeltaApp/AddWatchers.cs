@@ -56,14 +56,92 @@ namespace VideoImageDeltaApp.Forms
             Hide_Screens();
 
             foreach (var gp in Program.GameProfiles)
-                ListBox_GameProfile.Items.Add(gp);
+                ListBox_GameProfiles.Items.Add(gp);
 
-            if (ListBox_GameProfile.Items.Count > 0)
+            if (ListBox_GameProfiles.Items.Count > 0)
             {
-                ListBox_GameProfile.SelectedIndex = 0;
+                ListBox_GameProfiles.SelectedIndex = 0;
             }
 
         }
+
+        public GameProfile SelectedGameProfile
+        {
+            get
+            {
+                if (ListBox_GameProfiles.SelectedItem != null)
+                {
+                    return (GameProfile)ListBox_GameProfiles.SelectedItem;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                ListBox_GameProfiles.SelectedItem = value;
+            }
+        }
+
+        public Models.Screen SelectedScreen
+        {
+            get
+            {
+                if (ListBox_Screens.SelectedItem != null)
+                {
+                    return (Models.Screen)ListBox_Screens.SelectedItem;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                ListBox_Screens.SelectedItem = value;
+            }
+        }
+
+        public WatchZone SelectedWatchZone
+        {
+            get
+            {
+                if (ListBox_WatchZones.SelectedItem != null)
+                {
+                    return (WatchZone)ListBox_WatchZones.SelectedItem;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                ListBox_WatchZones.SelectedItem = value;
+            }
+        }
+
+        public Watcher SelectedWatcher
+        {
+            get
+            {
+                if (ListBox_Watches.SelectedItem != null)
+                {
+                    return (Watcher)ListBox_Watches.SelectedItem;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                ListBox_Watches.SelectedItem = value;
+            }
+        }
+
+
 
         private void Hide_Screens()
         {
@@ -143,16 +221,38 @@ namespace VideoImageDeltaApp.Forms
             }
         }
 
+        private void Update_GameProfiles()
+        {
+            var selectedGP = SelectedGameProfile;
+            var gps = new List<GameProfile>();
+            foreach (GameProfile gp in ListBox_GameProfiles.Items)
+            {
+                gps.Add(gp);
+            }
+            ListBox_Watches.Items.Clear();
+            ListBox_WatchZones.Items.Clear();
+            ListBox_Screens.Items.Clear();
+            ListBox_GameProfiles.Items.Clear();
+            foreach (var gp in gps)
+            {
+                ListBox_GameProfiles.Items.Add(gp);
+            }
+            int i = ListBox_GameProfiles.Items.IndexOf(selectedGP);
+            ListBox_GameProfiles.SelectedIndex = i;
+        }
+
         private void Update_Screens()
         {
-            if (ListBox_GameProfile.SelectedItem == null)
+            if (ListBox_GameProfiles.SelectedItem == null)
             {
                 Utilities.Error(17945);
             }
             else
             {
+                ListBox_Watches.Items.Clear();
+                ListBox_WatchZones.Items.Clear();
                 ListBox_Screens.Items.Clear();
-                var gp = (GameProfile)ListBox_GameProfile.SelectedItem;
+                var gp = SelectedGameProfile;
                 foreach (Models.Screen s in gp.Screens)
                 {
                     ListBox_Screens.Items.Add(s);
@@ -162,7 +262,7 @@ namespace VideoImageDeltaApp.Forms
 
         private void Update_WatchZones()
         {
-            if (ListBox_GameProfile.SelectedItem == null)
+            if (ListBox_GameProfiles.SelectedItem == null)
             {
                 Utilities.Error(17952);
             }
@@ -172,9 +272,9 @@ namespace VideoImageDeltaApp.Forms
             }
             else
             {
+                ListBox_Watches.Items.Clear();
                 ListBox_WatchZones.Items.Clear();
-                var s = (Models.Screen)ListBox_Screens.SelectedItem;
-                foreach (WatchZone wz in s.WatchZones)
+                foreach (WatchZone wz in SelectedScreen.WatchZones)
                 {
                     ListBox_WatchZones.Items.Add(wz);
                 }
@@ -183,7 +283,7 @@ namespace VideoImageDeltaApp.Forms
 
         private void Update_Watches()
         {
-            if (ListBox_GameProfile.SelectedItem == null)
+            if (ListBox_GameProfiles.SelectedItem == null)
             {
                 Utilities.Error(17954);
             }
@@ -198,7 +298,7 @@ namespace VideoImageDeltaApp.Forms
             else
             {
                 ListBox_Watches.Items.Clear();
-                var wz = (WatchZone)ListBox_WatchZones.SelectedItem;
+                var wz = SelectedWatchZone;
                 foreach (Watcher w in wz.Watches)
                 {
                     ListBox_Watches.Items.Add(w);
@@ -228,7 +328,7 @@ namespace VideoImageDeltaApp.Forms
         private void Form_Closing(object sender, FormClosingEventArgs e)
         {
             Program.GameProfiles.Clear();
-            foreach (GameProfile gp in ListBox_GameProfile.Items)
+            foreach (GameProfile gp in ListBox_GameProfiles.Items)
                 Program.GameProfiles.Add(gp);
         }
 
@@ -240,36 +340,54 @@ namespace VideoImageDeltaApp.Forms
 
         private void Button_Import_Click(object sender, EventArgs e)
         {
-            var fileDialog = new OpenFileDialog()
+            var ofd = new OpenFileDialog()
             {
                 Filter = "XML Files|*.xml",
-                Title = "Select a XML File"
+                Title = "Select an XML File",
+                Multiselect = true
             };
 
-            if (fileDialog.ShowDialog() == DialogResult.OK)
+            if (ofd.ShowDialog() == DialogResult.OK)
             {
-                // Process XML
+                var gps = new List<GameProfile>();
+                foreach (var f in ofd.FileNames)
+                {
+                    GameProfile gp;
+                    XmlSerializer serializer = new XmlSerializer(typeof(GameProfile));
+                    using (StreamReader reader = new StreamReader(f))
+                    {
+                        gp = (GameProfile)serializer.Deserialize(reader);
+                    }
+                    ListBox_GameProfiles.Items.Add(gp);
+                }
+                ListBox_GameProfiles.SelectedIndex = ListBox_GameProfiles.Items.Count - 1;
+                Update_GameProfiles();
             }
 
+            ofd.Dispose();
         }
 
         private void Button_Minus_GameProfile_Click(object sender, EventArgs e)
         {
             // I tried to make this a function that can be applied to other methods. It didn't work. It wouldn't accept Type for the overload.
             // Otherwise I don't know how to get it to work without passing through an unnecessary amount of variables.
-            if (ListBox_GameProfile.SelectedItem != null)
+            if (ListBox_GameProfiles.SelectedItem != null)
             {
-                ListBox_GameProfile.Items.RemoveAt(ListBox_GameProfile.SelectedIndex);
+                ListBox_Watches.Items.Clear();
+                ListBox_WatchZones.Items.Clear();
+                ListBox_Screens.Items.Clear();
+                Hide_Screens();
+                ListBox_GameProfiles.Items.RemoveAt(ListBox_GameProfiles.SelectedIndex);
             }
         }
 
         private void ListBox_GameProfile_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListBox_GameProfile.SelectedItem != null)
+            if (ListBox_GameProfiles.SelectedItem != null)
             {
                 Show_Screens();
                 Show_Panel(Panel_GameProfile, Button_GameProfile_Rename, TextBox_GameProfile_Name);
-                var gp = (GameProfile)ListBox_GameProfile.SelectedItem;
+                var gp = SelectedGameProfile;
                 TextBox_GameProfile_Name.Text = gp.Name;
                 Update_Screens();
                 Hide_WatchZones();
@@ -287,11 +405,10 @@ namespace VideoImageDeltaApp.Forms
             {
                 Show_WatchZones();
                 Show_Panel(Panel_Screens, Button_Screens_Update, TextBox_Screens_Name);
-                var s = (Models.Screen)ListBox_Screens.SelectedItem;
-                TextBox_Screens_Name.Text = s.Name;
-                ScreenType_Radio_Manager(s.ScreenType);
-                Numeric_Screens_Width.Value = (decimal)s.Geometry.Width;
-                Numeric_Screens_Height.Value = (decimal)s.Geometry.Height;
+                TextBox_Screens_Name.Text = SelectedScreen.Name;
+                Numeric_Screens_Width.Value = (decimal)SelectedScreen.Geometry.Width;
+                Numeric_Screens_Height.Value = (decimal)SelectedScreen.Geometry.Height;
+                CheckBox_Screens_Advanced.Checked = SelectedScreen.UseAdvanced;
                 Update_WatchZones();
                 Hide_Watches();
             }
@@ -308,20 +425,22 @@ namespace VideoImageDeltaApp.Forms
             {
                 Show_Watches();
                 Show_Panel(Panel_WatchZones, Button_WatchZones_Update, TextBox_WatchZones_Name);
-                var wz = (WatchZone)ListBox_WatchZones.SelectedItem;
+                var wz = SelectedWatchZone;
                 TextBox_WatchZones_Name.Text = wz.Name;
+                ScaleType_Radio_Manager(wz.ScaleType);
                 Numeric_WatchZones_X.Value = (decimal)wz.Geometry.X;
                 Numeric_WatchZones_Y.Value = (decimal)wz.Geometry.Y;
                 Numeric_WatchZones_Width.Value = (decimal)wz.Geometry.Width;
                 Numeric_WatchZones_Height.Value = (decimal)wz.Geometry.Height;
-                var s = (Models.Screen)ListBox_Screens.SelectedItem;
-                if (s.ScreenType != ScreenType.Dynamic)
+                if (!SelectedScreen.UseAdvanced)
                 {
+                    GroupBox_WatchZones_ScaleType.Hide();
                     Label_WatchZones_Anchor.Hide();
                     TableLayoutPanel_WatchZones_Anchor.Hide();
                 }
                 else
                 {
+                    GroupBox_WatchZones_ScaleType.Show();
                     Label_WatchZones_Anchor.Show();
                     TableLayoutPanel_WatchZones_Anchor.Show();
                 }
@@ -337,74 +456,69 @@ namespace VideoImageDeltaApp.Forms
 
         private void Button_Export_Click(object sender, EventArgs e)
         {
-            if (ListBox_GameProfile.SelectedItem != null)
+            if (ListBox_GameProfiles.SelectedItem != null)
             {
-                var item = @ListBox_GameProfile.SelectedItem;
-                var type = item.GetType();
-                XmlSerializer xsSubmit = new XmlSerializer(type);
-                var xml = "";
-
-                using (var sww = new StringWriter())
-                {
-                    using (XmlWriter writer = XmlWriter.Create(sww))
-                    {
-                        xsSubmit.Serialize(writer, item);
-                        xml = sww.ToString();
-                    }
-                }
-
                 SaveFileDialog sfd = new SaveFileDialog()
                 {
                     DefaultExt = "xml",
                     Filter = "XML Files|*.xml",
-                    FileName = ListBox_GameProfile.SelectedItem.ToString(), // Might not always work...
+                    FileName = ListBox_GameProfiles.SelectedItem.ToString(), // Might not always work...
                     Title = "Save Game Profile",
                 };
                 sfd.ShowDialog();
 
-                XmlDocument document = new XmlDocument();
-                StreamWriter stream = new StreamWriter(sfd.FileName, false, Encoding.GetEncoding("iso-8859-7"));
-                document.Save(xml);
+                if (sfd.FileName != "")
+                {
+                    Type t = typeof(GameProfile);
+                    XmlSerializer serializer = new XmlSerializer(t);
+                    using (TextWriter writer = new StreamWriter(sfd.FileName))
+                    {
+                        serializer.Serialize(writer, SelectedGameProfile);
+                    }
 
+                }
 
+                sfd.Dispose();
             }
             else
             {
-                Utilities.Flicker(ListBox_GameProfile, 500, Color.FromArgb(224, 64, 64));
+                Utilities.Flicker(ListBox_GameProfiles, 500, Color.FromArgb(224, 64, 64));
             }
         }
 
         private void Button_Plus_Screens_Click(object sender, EventArgs e)
         {
-            if (ListBox_GameProfile.SelectedItem == null)
+            if (ListBox_GameProfiles.SelectedItem == null)
             {
                 Utilities.Error(46208);
             }
             else
             {
                 TextBox_Screens_New_Name.Text = null;
-                ScreenType_Radio_Manager_New(ScreenType.Static);
-                Numeric_Screens_New_Width.Value = 640;
-                Numeric_Screens_New_Height.Value = 480;
+                CheckBox_Screens_New_Advanced.Checked = false;
+                Numeric_Screens_New_Width.Value = 640m;
+                Numeric_Screens_New_Height.Value = 480m;
                 Show_Panel(Panel_Screens_New, Button_Screens_New_Create, TextBox_Screens_New_Name);
             }
         }
 
         private void Button_GameProfile_Rename_Click(object sender, EventArgs e)
         {
-            if (ListBox_GameProfile.SelectedItem == null)
+            if (ListBox_GameProfiles.SelectedItem == null)
             {
                 Utilities.Error(46209);
             }
             else
             {
                 var text = TextBox_GameProfile_Name.Text.Trim();
-                var gp = (GameProfile)ListBox_GameProfile.SelectedItem;
+                var gp = SelectedGameProfile;
                 if (!String.IsNullOrWhiteSpace(text))
                 {
                     gp.Name = text;
                 }
-                ListBox_GameProfile.Select();
+                SelectedGameProfile = gp;
+                Update_GameProfiles();
+                ListBox_GameProfiles.Select();
             }
         }
 
@@ -415,8 +529,8 @@ namespace VideoImageDeltaApp.Forms
             if (!String.IsNullOrWhiteSpace(name))
             {
                 GameProfile item = new GameProfile(name);
-                ListBox_GameProfile.Items.Add(item);
-                ListBox_GameProfile.SelectedIndex = ListBox_GameProfile.Items.Count - 1;
+                ListBox_GameProfiles.Items.Add(item);
+                ListBox_GameProfiles.SelectedIndex = ListBox_GameProfiles.Items.Count - 1;
                 Show_Panel(Panel_Screens_New, Button_Screens_New_Create, TextBox_Screens_New_Name);
             } else
             {
@@ -428,11 +542,11 @@ namespace VideoImageDeltaApp.Forms
         {
             string name = TextBox_Screens_New_Name.Text;
             name = name.Trim();
-            ScreenType screenType = Selected_ScreenType_Radio_New();
-            short width = (short)Numeric_Screens_New_Width.Value;
-            short height = (short)Numeric_Screens_New_Height.Value;
+            bool useAdvanced = CheckBox_Screens_New_Advanced.Checked;
+            double width = (double)Numeric_Screens_New_Width.Value;
+            double height = (double)Numeric_Screens_New_Height.Value;
 
-            if (ListBox_GameProfile.SelectedItem == null)
+            if (ListBox_GameProfiles.SelectedItem == null)
             {
                 Utilities.Error(17943);
             }
@@ -442,15 +556,16 @@ namespace VideoImageDeltaApp.Forms
             }
             else
             {
-                Models.Screen item = new Models.Screen(name, screenType, new Geometry(width, height));
-                var gp = (GameProfile)ListBox_GameProfile.SelectedItem;
+                Models.Screen item;
+                item = new Models.Screen(name, useAdvanced, new Geometry(width, height));
+                var gp = SelectedGameProfile;
                 gp.Screens.Add(item);
                 Update_Screens();
                 ListBox_Screens.SelectedIndex = ListBox_Screens.Items.Count - 1;
                 TextBox_Screens_New_Name.Text = null;
-                ScreenType_Radio_Manager_New();
-                Numeric_Screens_New_Width.Value = 640;
-                Numeric_Screens_New_Height.Value = 480;
+                CheckBox_Screens_New_Advanced.Checked = false;
+                Numeric_Screens_New_Width.Value = 640m;
+                Numeric_Screens_New_Height.Value = 480m;
                 Clean_WatchZones_New();
                 Show_Panel(Panel_WatchZones_New, Button_WatchZones_New_Add, TextBox_WatchZones_New_Name);
             }
@@ -460,11 +575,11 @@ namespace VideoImageDeltaApp.Forms
         {
             string name = TextBox_Screens_Name.Text;
             name = name.Trim();
-            ScreenType screenType = Selected_ScreenType_Radio();
-            short width = (short)Numeric_Screens_Width.Value;
-            short height = (short)Numeric_Screens_Height.Value;
+            bool useAdvanced = CheckBox_Screens_Advanced.Checked;
+            double width = (double)Numeric_Screens_Width.Value;
+            double height = (double)Numeric_Screens_Height.Value;
 
-            if (ListBox_GameProfile.SelectedItem == null)
+            if (ListBox_GameProfiles.SelectedItem == null)
             {
                 Utilities.Error(46210);
             }
@@ -478,64 +593,92 @@ namespace VideoImageDeltaApp.Forms
             }
             else
             {
-                var m = (Models.Screen)ListBox_Screens.SelectedItem;
-                m.Name = name;
-                m.ScreenType = screenType;
-                m.Geometry = new Geometry(width, height);
+                var s = SelectedScreen;
+                s.Name = name;
+                s.UseAdvanced = useAdvanced;
+                s.Geometry = new Geometry(width, height);
                 Update_Screens();
-                ListBox_Screens.SelectedItem = m;
+                ListBox_Screens.SelectedItem = s;
             }
         }
 
-        private void Radio_Screens_New_Static_Click(object sender, EventArgs e) { ScreenType_Radio_Manager_New(ScreenType.Static); }
-        private void Radio_Screens_New_Ratio_Click(object sender, EventArgs e) { ScreenType_Radio_Manager_New(ScreenType.Ratio); }
-        private void Radio_Screens_New_Dynamic_Click(object sender, EventArgs e) { ScreenType_Radio_Manager_New(ScreenType.Dynamic); }
+        private void Radio_WatchZones_New_NoScale_Click(object sender, EventArgs e) { ScaleType_Radio_Manager_New(ScaleType.NoScale); }
+        private void Radio_WatchZones_New_KeepRatio_Click(object sender, EventArgs e) { ScaleType_Radio_Manager_New(ScaleType.KeepRatio); }
+        private void Radio_WatchZones_New_Scale_Click(object sender, EventArgs e) { ScaleType_Radio_Manager_New(ScaleType.Scale); }
 
-        private void Radio_Screens_Static_Click(object sender, EventArgs e) { ScreenType_Radio_Manager(ScreenType.Static); }
-        private void Radio_Screens_Ratio_Click(object sender, EventArgs e) { ScreenType_Radio_Manager(ScreenType.Ratio); }
-        private void Radio_Screens_Dynamic_Click(object sender, EventArgs e) { ScreenType_Radio_Manager(ScreenType.Dynamic); }
+        private void Radio_WatchZones_NoScale_Click(object sender, EventArgs e) { ScaleType_Radio_Manager(ScaleType.NoScale); }
+        private void Radio_WatchZones_KeepRatio_Click(object sender, EventArgs e) { ScaleType_Radio_Manager(ScaleType.KeepRatio); }
+        private void Radio_WatchZones_Scale_Click(object sender, EventArgs e) { ScaleType_Radio_Manager(ScaleType.Scale); }
 
-        private ScreenType Selected_ScreenType_Radio_New()
+        private ScaleType Selected_ScaleType_Radio_New()
         {
-            if (Radio_Screens_New_Static.Checked == true) return ScreenType.Static;
-            else if (Radio_Screens_New_Ratio.Checked == true) return ScreenType.Ratio;
-            else if (Radio_Screens_New_Dynamic.Checked == true) return ScreenType.Dynamic;
-            else return ScreenType.Undefined;
+            if (Radio_WatchZones_New_NoScale.Checked == true) return ScaleType.NoScale;
+            else if (Radio_WatchZones_New_KeepRatio.Checked == true) return ScaleType.KeepRatio;
+            else if (Radio_WatchZones_New_Scale.Checked == true) return ScaleType.Scale;
+            else return ScaleType.Undefined;
         }
 
-        private ScreenType Selected_ScreenType_Radio()
+        private ScaleType Selected_ScaleType_Radio()
         {
-            if (Radio_Screens_Static.Checked == true) return ScreenType.Static;
-            else if (Radio_Screens_Ratio.Checked == true) return ScreenType.Ratio;
-            else if (Radio_Screens_Dynamic.Checked == true) return ScreenType.Dynamic;
-            else return ScreenType.Undefined;
+            if (Radio_WatchZones_NoScale.Checked == true) return ScaleType.NoScale;
+            else if (Radio_WatchZones_KeepRatio.Checked == true) return ScaleType.KeepRatio;
+            else if (Radio_WatchZones_Scale.Checked == true) return ScaleType.Scale;
+            else return ScaleType.Undefined;
         }
 
-        private void ScreenType_Radio_Manager_New(ScreenType screenType = ScreenType.Undefined)
+        private void ScaleType_Radio_Manager_New(ScaleType ScaleType = ScaleType.Undefined)
         {
-            Radio_Screens_New_Static.Checked = false;
-            Radio_Screens_New_Ratio.Checked = false;
-            Radio_Screens_New_Dynamic.Checked = false;
-            if (screenType != ScreenType.Undefined)
-                switch (screenType)
+            if (ScaleType == ScaleType.Undefined || ScaleType == ScaleType.Scale)
+            {
+                Label_WatchZones_New_Anchor.Hide();
+                TableLayoutPanel_WatchZones_New_Anchor.Hide();
+                Anchor_Radio_Manager_New(Models.Anchor.Undefined);
+            }
+            else
+            {
+                Label_WatchZones_New_Anchor.Show();
+                TableLayoutPanel_WatchZones_New_Anchor.Show();
+                if (Selected_Anchor_Radio_New() == Models.Anchor.Undefined)
+                    Anchor_Radio_Manager_New(Models.Anchor.TopLeft);
+            }
+
+            Radio_WatchZones_New_NoScale.Checked = false;
+            Radio_WatchZones_New_KeepRatio.Checked = false;
+            Radio_WatchZones_New_Scale.Checked = false;
+            if (ScaleType != ScaleType.Undefined)
+                switch (ScaleType)
                 {
-                    case ScreenType.Static: Radio_Screens_New_Static.Checked = true; break;
-                    case ScreenType.Ratio: Radio_Screens_New_Ratio.Checked = true; break;
-                    case ScreenType.Dynamic: Radio_Screens_New_Dynamic.Checked = true; break;
+                    case ScaleType.NoScale: Radio_WatchZones_New_NoScale.Checked = true; break;
+                    case ScaleType.KeepRatio: Radio_WatchZones_New_KeepRatio.Checked = true; break;
+                    case ScaleType.Scale: Radio_WatchZones_New_Scale.Checked = true; break;
                 }
         }
 
-        private void ScreenType_Radio_Manager(ScreenType screenType = ScreenType.Undefined)
+        private void ScaleType_Radio_Manager(ScaleType ScaleType = ScaleType.Undefined)
         {
-            Radio_Screens_Static.Checked = false;
-            Radio_Screens_Ratio.Checked = false;
-            Radio_Screens_Dynamic.Checked = false;
-            if (screenType != ScreenType.Undefined)
-                switch (screenType)
+            if (ScaleType == ScaleType.Undefined || ScaleType == ScaleType.Scale)
+            {
+                Label_WatchZones_Anchor.Hide();
+                TableLayoutPanel_WatchZones_Anchor.Hide();
+                Anchor_Radio_Manager(Models.Anchor.Undefined);
+            }
+            else
+            {
+                Label_WatchZones_Anchor.Show();
+                TableLayoutPanel_WatchZones_Anchor.Show();
+                if (Selected_Anchor_Radio() == Models.Anchor.Undefined)
+                    Anchor_Radio_Manager(Models.Anchor.TopLeft);
+            }
+
+            Radio_WatchZones_NoScale.Checked = false;
+            Radio_WatchZones_KeepRatio.Checked = false;
+            Radio_WatchZones_Scale.Checked = false;
+            if (ScaleType != ScaleType.Undefined)
+                switch (ScaleType)
                 {
-                    case ScreenType.Static: Radio_Screens_Static.Checked = true; break;
-                    case ScreenType.Ratio: Radio_Screens_Ratio.Checked = true; break;
-                    case ScreenType.Dynamic: Radio_Screens_Dynamic.Checked = true; break;
+                    case ScaleType.NoScale: Radio_WatchZones_NoScale.Checked = true; break;
+                    case ScaleType.KeepRatio: Radio_WatchZones_KeepRatio.Checked = true; break;
+                    case ScaleType.Scale: Radio_WatchZones_Scale.Checked = true; break;
                 }
         }
 
@@ -543,7 +686,7 @@ namespace VideoImageDeltaApp.Forms
         private void Radio_WatchZones_New_Top_Click    (object sender, EventArgs e) { Anchor_Radio_Manager_New(Models.Anchor.Top); }
         private void Radio_WatchZones_New_TopRight_Click(object sender, EventArgs e) { Anchor_Radio_Manager_New(Models.Anchor.TopRight); }
         private void Radio_WatchZones_New_Left_Click     (object sender, EventArgs e) { Anchor_Radio_Manager_New(Models.Anchor.Left); }
-        private void Radio_WatchZones_New_Center_Click   (object sender, EventArgs e) { Anchor_Radio_Manager_New(Models.Anchor.None); }
+        private void Radio_WatchZones_New_Center_Click   (object sender, EventArgs e) { Anchor_Radio_Manager_New(Models.Anchor.Center); }
         private void Radio_WatchZones_New_Right_Click     (object sender, EventArgs e) { Anchor_Radio_Manager_New(Models.Anchor.Right); }
         private void Radio_WatchZones_New_BottomLeft_Click(object sender, EventArgs e) { Anchor_Radio_Manager_New(Models.Anchor.BottomLeft); }
         private void Radio_WatchZones_New_Bottom_Click    (object sender, EventArgs e) { Anchor_Radio_Manager_New(Models.Anchor.Bottom); }
@@ -553,7 +696,7 @@ namespace VideoImageDeltaApp.Forms
         private void Radio_WatchZones_Top_Click    (object sender, EventArgs e) { Anchor_Radio_Manager(Models.Anchor.Top); }
         private void Radio_WatchZones_TopRight_Click(object sender, EventArgs e) { Anchor_Radio_Manager(Models.Anchor.TopRight); }
         private void Radio_WatchZones_Left_Click     (object sender, EventArgs e) { Anchor_Radio_Manager(Models.Anchor.Left); }
-        private void Radio_WatchZones_Center_Click   (object sender, EventArgs e) { Anchor_Radio_Manager(Models.Anchor.None); }
+        private void Radio_WatchZones_Center_Click   (object sender, EventArgs e) { Anchor_Radio_Manager(Models.Anchor.Center); }
         private void Radio_WatchZones_Right_Click     (object sender, EventArgs e) { Anchor_Radio_Manager(Models.Anchor.Right); }
         private void Radio_WatchZones_BottomLeft_Click(object sender, EventArgs e) { Anchor_Radio_Manager(Models.Anchor.BottomLeft); }
         private void Radio_WatchZones_Bottom_Click    (object sender, EventArgs e) { Anchor_Radio_Manager(Models.Anchor.Bottom); }
@@ -566,7 +709,7 @@ namespace VideoImageDeltaApp.Forms
             else if (Radio_WatchZones_New_Top    .Checked == true) return Models.Anchor.Top;
             else if (Radio_WatchZones_New_TopRight.Checked == true) return Models.Anchor.TopRight;
             else if (Radio_WatchZones_New_Left     .Checked == true) return Models.Anchor.Left;
-            else if (Radio_WatchZones_New_Center   .Checked == true) return Models.Anchor.None;
+            else if (Radio_WatchZones_New_Center   .Checked == true) return Models.Anchor.Center;
             else if (Radio_WatchZones_New_Right     .Checked == true) return Models.Anchor.Right;
             else if (Radio_WatchZones_New_BottomLeft.Checked == true) return Models.Anchor.BottomLeft;
             else if (Radio_WatchZones_New_Bottom    .Checked == true) return Models.Anchor.Bottom;
@@ -581,7 +724,7 @@ namespace VideoImageDeltaApp.Forms
             else if (Radio_WatchZones_Top    .Checked == true) return Models.Anchor.Top;
             else if (Radio_WatchZones_TopRight.Checked == true) return Models.Anchor.TopRight;
             else if (Radio_WatchZones_Left     .Checked == true) return Models.Anchor.Left;
-            else if (Radio_WatchZones_Center   .Checked == true) return Models.Anchor.None;
+            else if (Radio_WatchZones_Center   .Checked == true) return Models.Anchor.Center;
             else if (Radio_WatchZones_Right     .Checked == true) return Models.Anchor.Right;
             else if (Radio_WatchZones_BottomLeft.Checked == true) return Models.Anchor.BottomLeft;
             else if (Radio_WatchZones_Bottom    .Checked == true) return Models.Anchor.Bottom;
@@ -606,7 +749,7 @@ namespace VideoImageDeltaApp.Forms
                     case Models.Anchor.Top:     Radio_WatchZones_New_Top    .Checked = true; break;
                     case Models.Anchor.TopRight: Radio_WatchZones_New_TopRight.Checked = true; break;
                     case Models.Anchor.Left:      Radio_WatchZones_New_Left     .Checked = true; break;
-                    case Models.Anchor.None:    Radio_WatchZones_New_Center   .Checked = true; break;
+                    case Models.Anchor.Center:    Radio_WatchZones_New_Center   .Checked = true; break;
                     case Models.Anchor.Right:      Radio_WatchZones_New_Right     .Checked = true; break;
                     case Models.Anchor.BottomLeft: Radio_WatchZones_New_BottomLeft.Checked = true; break;
                     case Models.Anchor.Bottom:     Radio_WatchZones_New_Bottom    .Checked = true; break;
@@ -633,7 +776,7 @@ namespace VideoImageDeltaApp.Forms
                     case Models.Anchor.Top:     Radio_WatchZones_Top    .Checked = true; break;
                     case Models.Anchor.TopRight: Radio_WatchZones_TopRight.Checked = true; break;
                     case Models.Anchor.Left:      Radio_WatchZones_Left     .Checked = true; break;
-                    case Models.Anchor.None:    Radio_WatchZones_Center   .Checked = true; break;
+                    case Models.Anchor.Center:    Radio_WatchZones_Center   .Checked = true; break;
                     case Models.Anchor.Right:      Radio_WatchZones_Right     .Checked = true; break;
                     case Models.Anchor.BottomLeft: Radio_WatchZones_BottomLeft.Checked = true; break;
                     case Models.Anchor.Bottom:     Radio_WatchZones_Bottom    .Checked = true; break;
@@ -644,39 +787,43 @@ namespace VideoImageDeltaApp.Forms
 
         private void Button_Minus_Screens_Click(object sender, EventArgs e)
         {
-            if (ListBox_GameProfile.SelectedItem == null)
+            if (ListBox_GameProfiles.SelectedItem == null)
             {
                 Utilities.Error(17946);
             }
             else if (ListBox_Screens.SelectedItem != null)
             {
-                GameProfile gp = (GameProfile)ListBox_GameProfile.SelectedItem;
+                GameProfile gp = SelectedGameProfile;
                 gp.Screens.Remove((Models.Screen)ListBox_Screens.SelectedItem);
                 Update_Screens();
+                Hide_WatchZones();
                 Show_Panel(Panel_Screens_New, Button_Screens_New_Create, TextBox_Screens_New_Name);
             }
         }
 
         private void Clean_WatchZones_New()
         {
-            var s = (Models.Screen)ListBox_Screens.SelectedItem;
-            Models.Anchor anchor = Models.Anchor.TopLeft;
-            if (s.ScreenType != ScreenType.Dynamic)
+            if (!SelectedScreen.UseAdvanced)
             {
-                anchor = Models.Anchor.Undefined;
-                Label_WatchZones_New_Anchor.Hide();
-                TableLayoutPanel_WatchZones_New_Anchor.Hide();
-            } else
-            {
-                Label_WatchZones_New_Anchor.Show();
-                TableLayoutPanel_WatchZones_New_Anchor.Show();
+                ScaleType_Radio_Manager_New(ScaleType.Undefined);
+                GroupBox_WatchZones_New_ScaleType.Hide();
             }
-            Anchor_Radio_Manager_New(anchor);
+            else
+            {
+                ScaleType_Radio_Manager_New(ScaleType.Scale);
+                GroupBox_WatchZones_New_ScaleType.Show();
+                //Anchor_Radio_Manager_New(Models.Anchor.TopLeft);
+            }
+
+            Anchor_Radio_Manager_New(Models.Anchor.Undefined);
+            Label_WatchZones_New_Anchor.Hide();
+            TableLayoutPanel_WatchZones_New_Anchor.Hide();
+
             TextBox_WatchZones_New_Name.Text = null;
-            Numeric_WatchZones_New_X.Value = 0;
-            Numeric_WatchZones_New_Y.Value = 0;
-            Numeric_WatchZones_New_Width.Value = 100;
-            Numeric_WatchZones_New_Height.Value = 100;
+            Numeric_WatchZones_New_X.Value = 0m;
+            Numeric_WatchZones_New_Y.Value = 0m;
+            Numeric_WatchZones_New_Width.Value = 100m;
+            Numeric_WatchZones_New_Height.Value = 100m;
 
             Box_WatchZones_New_Main.BackgroundImage = null;
             Box_WatchZones_New_Preview.BackColor = Color.Black;
@@ -685,28 +832,34 @@ namespace VideoImageDeltaApp.Forms
 
         private void Clean_WatchZones()
         {
-            var s = (Models.Screen)ListBox_Screens.SelectedItem;
-            Models.Anchor anchor = Models.Anchor.TopLeft;
-            if (s.ScreenType != ScreenType.Dynamic)
+            if (!SelectedScreen.UseAdvanced)
             {
-                anchor = Models.Anchor.Undefined;
+                ScaleType_Radio_Manager(ScaleType.Undefined);
+                GroupBox_WatchZones_ScaleType.Hide();
+
+                Anchor_Radio_Manager(Models.Anchor.Undefined);
                 Label_WatchZones_Anchor.Hide();
                 TableLayoutPanel_WatchZones_Anchor.Hide();
-            } else
+            }
+            else
             {
+                ScaleType_Radio_Manager(ScaleType.Scale);
+                GroupBox_WatchZones_ScaleType.Show();
+
+                Anchor_Radio_Manager(Models.Anchor.TopLeft);
                 Label_WatchZones_Anchor.Show();
                 TableLayoutPanel_WatchZones_Anchor.Show();
             }
-            Anchor_Radio_Manager(anchor);
+
             TextBox_WatchZones_Name.Text = null;
-            Numeric_WatchZones_X.Value = 0;
-            Numeric_WatchZones_Y.Value = 0;
-            Numeric_WatchZones_Width.Value = 100;
-            Numeric_WatchZones_Height.Value = 100;
+            Numeric_WatchZones_X.Value = 0m;
+            Numeric_WatchZones_Y.Value = 0m;
+            Numeric_WatchZones_Width.Value = 100m;
+            Numeric_WatchZones_Height.Value = 100m;
 
             Box_WatchZones_Main.BackgroundImage = null;
             Box_WatchZones_Preview.BackColor = Color.Black;
-            //Button_WatchZones_SSAAI.Enabled = false;
+            //Button_WatchZones_SSAAI.Enabled = false; // Why did I comment this out?
         }
 
         private void Clean_Watches_New()
@@ -714,12 +867,10 @@ namespace VideoImageDeltaApp.Forms
             Anchor_Radio_Manager_New(Models.Anchor.TopLeft);
             TextBox_Watches_New_Name.Text = null;
             Numeric_Watches_New_Frequency.Value = 10;
-            Numeric_Watches_New_Rescan_Range.Value = 1000;
-            ComboBox_Watches_New_Rescan_Type.Text = "Both";
             PictureBox_Watches_New.Image = null;
             ListBox_Watches_New_Images.Items.Clear();
 
-            var wz = (WatchZone)ListBox_WatchZones.SelectedItem;
+            var wz = SelectedWatchZone;
             var ratio = wz.Geometry.Ratio;
             ratio = ratio / (200d / 120d);
             if (ratio > 1d)
@@ -736,7 +887,7 @@ namespace VideoImageDeltaApp.Forms
 
         private void Button_Plus_WatchZones_Click(object sender, EventArgs e)
         {
-            if (ListBox_GameProfile.SelectedItem == null)
+            if (ListBox_GameProfiles.SelectedItem == null)
             {
                 Utilities.Error(46212);
             }
@@ -755,30 +906,41 @@ namespace VideoImageDeltaApp.Forms
         {
             string name = TextBox_WatchZones_New_Name.Text;
             name = name.Trim();
-            Models.Anchor anchor = Selected_Anchor_Radio_New();
+            ScaleType scaleType;
+            Models.Anchor anchor;
             double      x = (double)Numeric_WatchZones_New_X.Value; 
             double      y = (double)Numeric_WatchZones_New_Y.Value;
             double  width = (double)Numeric_WatchZones_New_Width.Value;
             double height = (double)Numeric_WatchZones_New_Height.Value;
 
-            if (ListBox_GameProfile.SelectedItem == null)
+            if (SelectedScreen.UseAdvanced)
             {
-                Utilities.Error(17944);
+                scaleType = Selected_ScaleType_Radio_New();
+                if (scaleType != ScaleType.Scale)
+                {
+                    anchor = Selected_Anchor_Radio_New();
+                }
+                else
+                {
+                    anchor = Models.Anchor.Undefined;
+                }
             }
-            if (ListBox_Screens.SelectedItem == null)
+            else
             {
-                Utilities.Error(17945);
+                scaleType = ScaleType.Undefined;
+                anchor = Models.Anchor.Undefined;
             }
-            else if (String.IsNullOrWhiteSpace(name))
+
+            if (String.IsNullOrWhiteSpace(name))
             {
                 Utilities.Flicker(TextBox_Screens_New_Name, 250, Color.FromArgb(255, 64, 64));
             }
             else
             {
-                var s = (Models.Screen)ListBox_Screens.SelectedItem;
+                var s = SelectedScreen;
                 Geometry geo;
                 geo = new Geometry(x, y, width, height, anchor);
-                var wz = new WatchZone(name, geo);
+                var wz = new WatchZone(name, scaleType, geo);
                 s.WatchZones.Add(wz);
                 Update_WatchZones();
                 ListBox_WatchZones.SelectedIndex = ListBox_WatchZones.Items.Count - 1;
@@ -799,7 +961,7 @@ namespace VideoImageDeltaApp.Forms
 
         private void Update_WatchZones_New_Preview() // Add async later
         {
-            if (ListBox_GameProfile.SelectedItem == null)
+            if (ListBox_GameProfiles.SelectedItem == null)
             {
                 Utilities.Error(46214);
             }
@@ -807,12 +969,15 @@ namespace VideoImageDeltaApp.Forms
             {
                 Utilities.Error(46215);
             }
-            else if (TableLayoutPanel_WatchZones_New.Width > 0 && Panel_WatchZones_New.Visible == true) // Stop minimize bug
+            else if (TableLayoutPanel_WatchZones_New.Visible && TableLayoutPanel_WatchZones_New.Width > 0 && Panel_WatchZones_New.Visible == true) // Stop minimize bug
             {
-                GameProfile gp = (GameProfile)ListBox_GameProfile.SelectedItem;
-                int i = gp.Screens.IndexOf((Models.Screen)ListBox_Screens.SelectedItem);
-                double screenWidth = gp.Screens[i].Geometry.Width;
-                double screenHeight = gp.Screens[i].Geometry.Height;
+                double screenWidth = 1920d;
+                double screenHeight = 1080d;
+                if (SelectedScreen.Geometry != null)
+                {
+                    screenWidth = SelectedScreen.Geometry.Width;
+                    screenHeight = SelectedScreen.Geometry.Height;
+                }
 
                 // Shouldn't be hard-coded (among other things...)
                 double panelWidth  = Math.Min(TableLayoutPanel_WatchZones_New.Width  - 310d, screenWidth);
@@ -853,14 +1018,11 @@ namespace VideoImageDeltaApp.Forms
 
                 if (anchor != Models.Anchor.Undefined)
                 {
-                         if ( anchor.HasFlag(Models.Anchor.Right))  { x = screenWidth  - x -  width; }
+                         if ( anchor.HasFlag(Models.Anchor.Right))  { x = screenWidth  + x -  width; }
                     else if (!anchor.HasFlag(Models.Anchor.Left))   { x = screenWidth  / 2d + x -  width / 2d; }
-                         if ( anchor.HasFlag(Models.Anchor.Bottom)) { y = screenHeight - y - height; }
+                         if ( anchor.HasFlag(Models.Anchor.Bottom)) { y = screenHeight + y - height; }
                     else if (!anchor.HasFlag(Models.Anchor.Top))    { y = screenHeight / 2d + y - height / 2d; }
                 }
-
-                if (x < 0d) { x = screenWidth  + x; } // I don't think this even works for x and y.
-                if (y < 0d) { y = screenHeight + y; }
 
                 if ( width < 0d) {  width = screenWidth  +  width; }
                 if (height < 0d) { height = screenHeight + height; }
@@ -877,7 +1039,7 @@ namespace VideoImageDeltaApp.Forms
 
         private void Update_WatchZones_Preview()
         {
-            if (ListBox_GameProfile.SelectedItem == null)
+            if (ListBox_GameProfiles.SelectedItem == null)
             {
                 Utilities.Error(46314);
             }
@@ -885,12 +1047,15 @@ namespace VideoImageDeltaApp.Forms
             {
                 Utilities.Error(46315);
             }
-            else if (TableLayoutPanel_WatchZones.Width > 0 && Panel_WatchZones.Visible == true) // Stops minimize bug
+            else if (TableLayoutPanel_WatchZones.Visible && TableLayoutPanel_WatchZones.Width > 0 && Panel_WatchZones.Visible == true) // Stops minimize bug
             {
-                GameProfile gp = (GameProfile)ListBox_GameProfile.SelectedItem;
-                int i = gp.Screens.IndexOf((Models.Screen)ListBox_Screens.SelectedItem);
-                double screenWidth = gp.Screens[i].Geometry.Width;
-                double screenHeight = gp.Screens[i].Geometry.Height;
+                double screenWidth = 1920d;
+                double screenHeight = 1080d;
+                if (SelectedScreen.Geometry != null)
+                {
+                    screenWidth = SelectedScreen.Geometry.Width;
+                    screenHeight = SelectedScreen.Geometry.Height;
+                }
 
                 // Shouldn't be hard-coded (among other things...)
                 double panelWidth = Math.Min(TableLayoutPanel_WatchZones.Width - 310d, screenWidth);
@@ -931,14 +1096,11 @@ namespace VideoImageDeltaApp.Forms
 
                 if (anchor != Models.Anchor.Undefined)
                 {
-                         if ( anchor.HasFlag(Models.Anchor.Right))  { x = screenWidth  - x -  width; }
+                         if ( anchor.HasFlag(Models.Anchor.Right))  { x = screenWidth  + x -  width; }
                     else if (!anchor.HasFlag(Models.Anchor.Left))   { x = screenWidth  / 2d + x -  width / 2d; }
-                         if ( anchor.HasFlag(Models.Anchor.Bottom)) { y = screenHeight - y - height; }
+                         if ( anchor.HasFlag(Models.Anchor.Bottom)) { y = screenHeight + y - height; }
                     else if (!anchor.HasFlag(Models.Anchor.Top))    { y = screenHeight / 2d + y - height / 2d; }
                 }
-
-                if (x < 0d) { x = screenWidth + x; } // I don't think this even works for x and y.
-                if (y < 0d) { y = screenHeight + y; }
 
                 if (width < 0d) { width = screenWidth + width; }
                 if (height < 0d) { height = screenHeight + height; }
@@ -955,7 +1117,7 @@ namespace VideoImageDeltaApp.Forms
 
         private void Button_Minus_WatchZones_Click(object sender, EventArgs e)
         {
-            if (ListBox_GameProfile.SelectedItem == null)
+            if (ListBox_GameProfiles.SelectedItem == null)
             {
                 Utilities.Error(18046);
             }
@@ -965,10 +1127,11 @@ namespace VideoImageDeltaApp.Forms
             }
             else if (ListBox_WatchZones.SelectedItem != null)
             {
-                Models.Screen s = (Models.Screen)ListBox_Screens.SelectedItem;
+                Models.Screen s = SelectedScreen;
                 s.WatchZones.Remove((WatchZone)ListBox_WatchZones.SelectedItem);
                 Update_WatchZones();
                 Clean_WatchZones_New();
+                Hide_Watches();
                 Show_Panel(Panel_WatchZones_New, Button_WatchZones_New_Add, TextBox_WatchZones_New_Name);
             }
         }
@@ -977,46 +1140,44 @@ namespace VideoImageDeltaApp.Forms
         {
             string name = TextBox_WatchZones_Name.Text;
             name = name.Trim();
-            Models.Anchor anchor = Selected_Anchor_Radio();
-            short      x = (short)Numeric_WatchZones_X.Value;
-            short      y = (short)Numeric_WatchZones_Y.Value;
-            short  width = (short)Numeric_WatchZones_Width.Value;
-            short height = (short)Numeric_WatchZones_Height.Value;
+            ScaleType scaleType;
+            Models.Anchor anchor;
+            double x = (double)Numeric_WatchZones_X.Value;
+            double y = (double)Numeric_WatchZones_Y.Value;
+            double width = (double)Numeric_WatchZones_Width.Value;
+            double height = (double)Numeric_WatchZones_Height.Value;
 
-            if (ListBox_GameProfile.SelectedItem == null)
+            if (SelectedScreen.UseAdvanced)
             {
-                Utilities.Error(48210);
-            }
-            else if (ListBox_Screens.SelectedItem == null)
-            {
-                Utilities.Error(48211);
-            }
-            else if (ListBox_Screens.SelectedItem == null)
-            {
-                Utilities.Error(48212);
-            }
-            else if (String.IsNullOrWhiteSpace(name))
-            {
-                Utilities.Flicker(TextBox_WatchZones_Name, 250, Color.FromArgb(255, 64, 64));
+                scaleType = Selected_ScaleType_Radio();
+                if (scaleType != ScaleType.Scale)
+                {
+                    anchor = Selected_Anchor_Radio();
+                }
+                else
+                {
+                    anchor = Models.Anchor.Undefined;
+                }
             }
             else
             {
-                var wz = (WatchZone)ListBox_WatchZones.SelectedItem;
+                scaleType = ScaleType.Undefined;
+                anchor = Models.Anchor.Undefined;
+            }
+
+            if (String.IsNullOrWhiteSpace(name))
+            {
+                Utilities.Flicker(TextBox_Screens_Name, 250, Color.FromArgb(255, 64, 64));
+            }
+            else
+            {
+                var wz = SelectedWatchZone;
                 wz.Name = name;
+                wz.ScaleType = scaleType;
                 wz.Geometry = new Geometry(x, y, width, height, anchor);
-                Update_WatchZones();
+                //Update_WatchZones();
                 ListBox_WatchZones.SelectedItem = wz;
             }
-        }
-
-        private void CheckBox_Watches_New_Frequency_Click(object sender, EventArgs e)
-        {
-            Numeric_Watches_New_Frequency.Enabled = !CheckBox_Watches_New_Frequency.Checked;
-        }
-
-        private void CheckBox_Watches_Frequency_Click(object sender, EventArgs e)
-        {
-            Numeric_Watches_Frequency.Enabled = !CheckBox_Watches_Frequency.Checked;
         }
 
         private void ListBox_Watches_New_Images_SelectedIndexChanged(object sender, EventArgs e)
@@ -1036,7 +1197,7 @@ namespace VideoImageDeltaApp.Forms
 
         private void Button_Minus_Watches_New_Images_Click(object sender, EventArgs e)
         {
-            if (ListBox_GameProfile.SelectedItem == null)
+            if (ListBox_GameProfiles.SelectedItem == null)
             {
                 Utilities.Error(90001);
             }
@@ -1095,7 +1256,7 @@ namespace VideoImageDeltaApp.Forms
 
         private void Button_Minus_Watches_Images_Click(object sender, EventArgs e)
         {
-            if (ListBox_GameProfile.SelectedItem == null)
+            if (ListBox_GameProfiles.SelectedItem == null)
             {
                 Utilities.Error(90001);
             }
@@ -1142,16 +1303,14 @@ namespace VideoImageDeltaApp.Forms
         {
             string name = TextBox_Watches_New_Name.Text;
             name = name.Trim();
-            int frequency = (int)Numeric_Watches_New_Frequency.Value;
-            ScanType rescanType;
-            int rescanRange = (int)Numeric_Watches_New_Rescan_Range.Value;
+            double frequency = (double)Numeric_Watches_New_Frequency.Value;
             List<WatchImage> Images = new List<WatchImage>();
 
             if (ListBox_Watches_New_Images.Items.Count <= 0)
             {
                 Utilities.Flicker(ListBox_Watches_New_Images, 500, Color.FromArgb(255, 64, 64));
             }
-            else if (ListBox_GameProfile.SelectedItem == null)
+            else if (ListBox_GameProfiles.SelectedItem == null)
             {
                 Utilities.Error(27944);
             }
@@ -1167,14 +1326,10 @@ namespace VideoImageDeltaApp.Forms
             {
                 Utilities.Flicker(TextBox_Screens_New_Name, 250, Color.FromArgb(255, 64, 64));
             }
-            else if (!ScanType.TryParse(ComboBox_Watches_New_Rescan_Type.Text, out rescanType))
-            {
-                Utilities.Flicker(ComboBox_Watches_New_Rescan_Type, 250, Color.FromArgb(255, 64, 64));
-            }
             else
             {
-                var wz = (WatchZone)ListBox_WatchZones.SelectedItem;
-                var w = new Watcher(name, frequency, rescanType, TimeSpan.FromMilliseconds(rescanRange));
+                var wz = SelectedWatchZone;
+                var w = new Watcher(name, frequency);
                 foreach (WatchImage i in ListBox_Watches_New_Images.Items)
                 {
                     i.Clear();
@@ -1194,22 +1349,9 @@ namespace VideoImageDeltaApp.Forms
             if (ListBox_Watches.SelectedItem != null)
             {
                 Show_Panel(Panel_Watches, Button_Watches_Update, TextBox_Watches_Name);
-                var w = (Watcher)ListBox_Watches.SelectedItem;
+                var w = SelectedWatcher;
                 TextBox_Watches_Name.Text = w.Name;
-                if (w.Frequency == null)
-                {
-                    CheckBox_Watches_Frequency.Checked = true;
-                    Numeric_Watches_Frequency.Enabled = false;
-                    Numeric_Watches_Frequency.Value = 0;
-                }
-                else
-                {
-                    CheckBox_Watches_Frequency.Checked = false;
-                    Numeric_Watches_Frequency.Enabled = true;
-                    Numeric_Watches_Frequency.Value = (decimal)w.Frequency;
-                }
-                Numeric_Watches_Rescan_Range.Value = (decimal)w.RescanRange.TotalMilliseconds;
-                ComboBox_Watches_Rescan_Type.Text = w.RescanType.ToString();
+                Numeric_Watches_Frequency.Value = (decimal)w.Frequency;
                 foreach (var i in w.Images)
                 {
                     ListBox_Watches_Images.Items.Add(i);
@@ -1217,7 +1359,7 @@ namespace VideoImageDeltaApp.Forms
                 ListBox_Watches_Images.SelectedIndex = ListBox_Watches_Images.Items.Count - 1;
 
 
-                var wz = (WatchZone)ListBox_WatchZones.SelectedItem;
+                var wz = SelectedWatchZone;
                 var ratio = wz.Geometry.Ratio;
                 ratio = ratio / (200d / 120d);
                 if (ratio > 1d)
@@ -1240,7 +1382,7 @@ namespace VideoImageDeltaApp.Forms
 
         private void Button_Minus_Watches_Click(object sender, EventArgs e)
         {
-            if (ListBox_GameProfile.SelectedItem == null)
+            if (ListBox_GameProfiles.SelectedItem == null)
             {
                 Utilities.Error(18057);
             }
@@ -1254,8 +1396,7 @@ namespace VideoImageDeltaApp.Forms
             }
             else if (ListBox_Watches.SelectedItem != null)
             {
-                WatchZone wz = (WatchZone)ListBox_WatchZones.SelectedItem;
-                wz.Watches.Remove((Watcher)ListBox_Watches.SelectedItem);
+                ListBox_Watches.Items.Remove((Watcher)ListBox_Watches.SelectedItem);
                 Update_Watches();
                 Clean_Watches_New();
                 Show_Panel(Panel_Watches_New, Button_Watches_New_Create, TextBox_Watches_New_Name);
@@ -1264,7 +1405,7 @@ namespace VideoImageDeltaApp.Forms
 
         private void Button_Plus_Watches_Click(object sender, EventArgs e)
         {
-            if (ListBox_GameProfile.SelectedItem == null)
+            if (ListBox_GameProfiles.SelectedItem == null)
             {
                 Utilities.Error(48212);
             }
@@ -1312,46 +1453,50 @@ namespace VideoImageDeltaApp.Forms
             };
             sfd.ShowDialog();
 
-            var image = Box_WatchZones_New_Main.BackgroundImage;
-
-            GameProfile gp = (GameProfile)ListBox_GameProfile.SelectedItem;
-            int i = gp.Screens.IndexOf((Models.Screen)ListBox_Screens.SelectedItem);
-            double screenWidth = gp.Screens[i].Geometry.Width;
-            double screenHeight = gp.Screens[i].Geometry.Height;
-
-            Models.Anchor anchor = Selected_Anchor_Radio_New();
-            double      x = (double)Numeric_WatchZones_New_X.Value;
-            double      y = (double)Numeric_WatchZones_New_Y.Value;
-            double  width = (double)Numeric_WatchZones_New_Width.Value;
-            double height = (double)Numeric_WatchZones_New_Height.Value;
-
-            double scaleWidth = image.Width / screenWidth;
-            double scaleHeight = image.Height / screenHeight;
-
-            if (anchor != Models.Anchor.Undefined)
+            if (sfd.FileName != "")
             {
-                if (anchor.HasFlag(Models.Anchor.Right)) { x = screenWidth - x - width; }
-                else if (!anchor.HasFlag(Models.Anchor.Left)) { x = screenWidth / 2d + x - width / 2d; }
-                if (anchor.HasFlag(Models.Anchor.Bottom)) { y = screenHeight - y - height; }
-                else if (!anchor.HasFlag(Models.Anchor.Top)) { y = screenHeight / 2d + y - height / 2d; }
+                var image = Box_WatchZones_New_Main.BackgroundImage;
+
+                double screenWidth = 1920d;
+                double screenHeight = 1080d;
+                if (SelectedScreen.Geometry != null)
+                {
+                    screenWidth = SelectedScreen.Geometry.Width;
+                    screenHeight = SelectedScreen.Geometry.Height;
+                }
+
+                Models.Anchor anchor = Selected_Anchor_Radio_New();
+                double x = (double)Numeric_WatchZones_New_X.Value;
+                double y = (double)Numeric_WatchZones_New_Y.Value;
+                double width = (double)Numeric_WatchZones_New_Width.Value;
+                double height = (double)Numeric_WatchZones_New_Height.Value;
+
+                double scaleWidth = image.Width / screenWidth;
+                double scaleHeight = image.Height / screenHeight;
+
+                if (anchor != Models.Anchor.Undefined)
+                {
+                    if (anchor.HasFlag(Models.Anchor.Right)) { x = screenWidth + x - width; }
+                    else if (!anchor.HasFlag(Models.Anchor.Left)) { x = screenWidth / 2d + x - width / 2d; }
+                    if (anchor.HasFlag(Models.Anchor.Bottom)) { y = screenHeight + y - height; }
+                    else if (!anchor.HasFlag(Models.Anchor.Top)) { y = screenHeight / 2d + y - height / 2d; }
+                }
+
+                if (width < 0d) { width = screenWidth + width; }
+                if (height < 0d) { height = screenHeight + height; }
+
+                x *= scaleWidth;
+                y *= scaleHeight;
+                width *= scaleWidth;
+                height *= scaleHeight;
+
+                var image2 = new MagickImage((Bitmap)image);
+                // Wanted to do distorted rescaling. Don't think the library can do it.
+                var geo = new MagickGeometry((int)Math.Round(x), (int)Math.Round(y), (int)Math.Round(width), (int)Math.Round(height));
+                image2.Crop(geo, Gravity.Northwest);
+                image2.Write(sfd.FileName);
             }
-
-            if (x < 0d) { x = screenWidth + x; } // I don't think this even works for x and y.
-            if (y < 0d) { y = screenHeight + y; }
-
-            if (width < 0d) { width = screenWidth + width; }
-            if (height < 0d) { height = screenHeight + height; }
-
-                 x *= scaleWidth;
-                 y *= scaleHeight;
-             width *= scaleWidth;
-            height *= scaleHeight;
-
-            var image2 = new MagickImage((Bitmap)image);
-            // Wanted to do distorted rescaling. Don't think the library can do it.
-            var geo = new MagickGeometry((int)Math.Round(x), (int)Math.Round(y), (int)Math.Round(width), (int)Math.Round(height));
-            image2.Crop(geo, Gravity.Northwest);
-            image2.Write(sfd.FileName);
+            sfd.Dispose();
         }
 
         private void Button_WatchZones_URI_Click(object sender, EventArgs e)
@@ -1383,46 +1528,50 @@ namespace VideoImageDeltaApp.Forms
             };
             sfd.ShowDialog();
 
-            var image = Box_WatchZones_Main.BackgroundImage;
-
-            GameProfile gp = (GameProfile)ListBox_GameProfile.SelectedItem;
-            int i = gp.Screens.IndexOf((Models.Screen)ListBox_Screens.SelectedItem);
-            double screenWidth = gp.Screens[i].Geometry.Width;
-            double screenHeight = gp.Screens[i].Geometry.Height;
-
-            Models.Anchor anchor = Selected_Anchor_Radio();
-            double x = (double)Numeric_WatchZones_X.Value;
-            double y = (double)Numeric_WatchZones_Y.Value;
-            double width = (double)Numeric_WatchZones_Width.Value;
-            double height = (double)Numeric_WatchZones_Height.Value;
-
-            double scaleWidth = image.Width / screenWidth;
-            double scaleHeight = image.Height / screenHeight;
-
-            if (anchor != Models.Anchor.Undefined)
+            if (sfd.FileName != "")
             {
-                if (anchor.HasFlag(Models.Anchor.Right)) { x = screenWidth - x - width; }
-                else if (!anchor.HasFlag(Models.Anchor.Left)) { x = screenWidth / 2d + x - width / 2d; }
-                if (anchor.HasFlag(Models.Anchor.Bottom)) { y = screenHeight - y - height; }
-                else if (!anchor.HasFlag(Models.Anchor.Top)) { y = screenHeight / 2d + y - height / 2d; }
+                var image = Box_WatchZones_Main.BackgroundImage;
+
+                double screenWidth = 1920d;
+                double screenHeight = 1080d;
+                if (SelectedScreen.Geometry != null)
+                {
+                    screenWidth = SelectedScreen.Geometry.Width;
+                    screenHeight = SelectedScreen.Geometry.Height;
+                }
+
+                Models.Anchor anchor = Selected_Anchor_Radio();
+                double x = (double)Numeric_WatchZones_X.Value;
+                double y = (double)Numeric_WatchZones_Y.Value;
+                double width = (double)Numeric_WatchZones_Width.Value;
+                double height = (double)Numeric_WatchZones_Height.Value;
+
+                double scaleWidth = image.Width / screenWidth;
+                double scaleHeight = image.Height / screenHeight;
+
+                if (anchor != Models.Anchor.Undefined)
+                {
+                    if (anchor.HasFlag(Models.Anchor.Right)) { x = screenWidth + x - width; }
+                    else if (!anchor.HasFlag(Models.Anchor.Left)) { x = screenWidth / 2d + x - width / 2d; }
+                    if (anchor.HasFlag(Models.Anchor.Bottom)) { y = screenHeight + y - height; }
+                    else if (!anchor.HasFlag(Models.Anchor.Top)) { y = screenHeight / 2d + y - height / 2d; }
+                }
+
+                if (width < 0d) { width = screenWidth + width; }
+                if (height < 0d) { height = screenHeight + height; }
+
+                x *= scaleWidth;
+                y *= scaleHeight;
+                width *= scaleWidth;
+                height *= scaleHeight;
+
+                var image2 = new MagickImage((Bitmap)image);
+                // Wanted to do distorted rescaling. Don't think the library can do it.
+                var geo = new MagickGeometry((int)Math.Round(x), (int)Math.Round(y), (int)Math.Round(width), (int)Math.Round(height));
+                image2.Crop(geo, Gravity.Northwest);
+                image2.Write(sfd.FileName);
             }
-
-            if (x < 0d) { x = screenWidth + x; } // I don't think this even works for x and y.
-            if (y < 0d) { y = screenHeight + y; }
-
-            if (width < 0d) { width = screenWidth + width; }
-            if (height < 0d) { height = screenHeight + height; }
-
-            x *= scaleWidth;
-            y *= scaleHeight;
-            width *= scaleWidth;
-            height *= scaleHeight;
-
-            var image2 = new MagickImage((Bitmap)image);
-            // Wanted to do distorted rescaling. Don't think the library can do it.
-            var geo = new MagickGeometry((int)Math.Round(x), (int)Math.Round(y), (int)Math.Round(width), (int)Math.Round(height));
-            image2.Crop(geo, Gravity.Northwest);
-            image2.Write(sfd.FileName);
+            sfd.Dispose();
         }
 
         private void Numeric_WatchZones_New_X_ValueChanged(object sender, EventArgs e)
@@ -1473,6 +1622,23 @@ namespace VideoImageDeltaApp.Forms
         {
             int len = ((NumericUpDown)sender).Value.ToString().Length;
             ((NumericUpDown)sender).Select(0, len);
+        }
+
+        // If the window is mazimized or restored, do thing.
+        protected override void WndProc(ref Message m)
+        {
+            base.WndProc(ref m);
+            if (m.Msg == 0x0112)
+            {
+                if (m.WParam == new IntPtr(0xF030) || m.WParam == new IntPtr(0xF120))
+                {
+                    if (SelectedGameProfile != null && SelectedScreen != null)
+                    {
+                        Update_WatchZones_New_Preview();
+                        Update_WatchZones_Preview();
+                    }
+                }
+            }
         }
 
     }
