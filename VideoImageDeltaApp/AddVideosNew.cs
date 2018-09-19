@@ -1,4 +1,8 @@
-﻿using Hudl.FFmpeg;
+﻿/**
+ * I meant to use this one as my new window but accidentally began work on the original lol
+ */
+
+using Hudl.FFmpeg;
 using Hudl.FFmpeg.Command;
 using Hudl.FFmpeg.Metadata;
 using Hudl.FFmpeg.Metadata.Interfaces;
@@ -44,45 +48,21 @@ using VideoImageDeltaApp;
 using VideoImageDeltaApp.Forms;
 using VideoImageDeltaApp.Models;
 
-using Screen = VideoImageDeltaApp.Models.Screen;
-
 namespace VideoImageDeltaApp
 {
-    public partial class AddVideos : Form
+    public partial class AddVideosNew : Form
     {
         private bool seenWarning = false;
 
-        public AddVideos()
+        public AddVideosNew()
         {
             InitializeComponent();
 
             foreach (var v in Program.Videos)
-            {
-                ListView_Videos.Items.Add(new ListVideo(v));
-            }
-
-            foreach (var gp in Program.GameProfiles)
-            {
-                DropBox_GameProfile.Items.Add(gp);
-            }
-            if (DropBox_GameProfile.Items.Count > 0)
-            {
-                DropBox_GameProfile.SelectedIndex = 0;
-                DropBox_GameProfile.Enabled = true;
-            }
-            else
-            {
-                DropBox_GameProfile.Enabled = false;
-            }
-
-            if (DropBox_GameProfile.Items.Count > 0)
-            {
-                DropBox_GameProfile.SelectedIndex = DropBox_GameProfile.Items.Count - 1;
-            }
-
+                ListView_Main.Items.Add(new ListVideo(v));
         }
 
-        private void AddVideos_Load(object sender, EventArgs e)
+        private void AddVideosNew_Load(object sender, EventArgs e)
         {
             Hide_Core();
         }
@@ -96,7 +76,7 @@ namespace VideoImageDeltaApp
         private void Form_Closing(object sender, FormClosingEventArgs e)
         {
             Program.Videos.Clear();
-            foreach (ListVideo lv in ListView_Videos.Items)
+            foreach (ListVideo lv in ListView_Main.Items)
                 Program.Videos.Add(lv.Video);
             if (Box_Main.BackgroundImage != null)
                 Box_Main.BackgroundImage.Dispose();
@@ -126,7 +106,7 @@ namespace VideoImageDeltaApp
                     bool abort = false;
                     foreach (var f in ofd.FileNames)
                     {
-retry:
+                        retry:
                         VideoProfile vp;
                         XmlSerializer serializer = new XmlSerializer(typeof(VideoProfile));
                         using (StreamReader reader = new StreamReader(f))
@@ -134,7 +114,8 @@ retry:
                             try
                             {
                                 vp = (VideoProfile)serializer.Deserialize(reader);
-                            } catch
+                            }
+                            catch
                             {
                                 DialogResult dr = MessageBox.Show(f + "is either not a Video profile or has been corrupted.",
                                     "Error", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error);
@@ -169,10 +150,12 @@ retry:
                             {
                                 abort = true;
                                 break;
-                            } else if (dr == DialogResult.Retry)
+                            }
+                            else if (dr == DialogResult.Retry)
                             {
                                 goto retry;
-                            } else
+                            }
+                            else
                             {
                                 continue;
                             }
@@ -184,14 +167,14 @@ retry:
 
                     if (!abort)
                     {
-                        foreach(var lv in SelectedListVideos)
+                        foreach (var lv in SelectedListVideos)
                         {
                             var i = lv.Index;
                             foreach (Feed f in feeds)
                             {
                                 lv.Video.Feeds.Add(f);
-                                lv.RefreshValues();
-                                ListView_Videos.Items[i] = lv;
+                                lv.UpdateValues();
+                                ListView_Main.Items[i] = lv;
                             }
                         }
                         ListBox_Feeds.SelectedIndex = ListBox_Feeds.Items.Count - 1;
@@ -241,7 +224,7 @@ retry:
             get
             {
                 var l = new List<ListVideo>();
-                foreach (ListVideo lv in ListView_Videos.Items)
+                foreach (ListVideo lv in ListView_Main.Items)
                 {
                     l.Add(lv);
                 }
@@ -267,7 +250,7 @@ retry:
             get
             {
                 var l = new List<ListVideo>();
-                foreach (ListVideo lv in ListView_Videos.SelectedItems)
+                foreach (ListVideo lv in ListView_Main.SelectedItems)
                 {
                     l.Add(lv);
                 }
@@ -275,9 +258,12 @@ retry:
             }
             set
             {
-                foreach (ListVideo vlv in value)
+                foreach (ListVideo lv in ListView_Main.SelectedItems)
                 {
-                    ListView_Videos.Items[vlv.Index] = vlv;
+                    foreach (ListVideo vlv in value)
+                    {
+                        ListView_Main.Items[vlv.Index] = vlv;
+                    }
                 }
             }
         }
@@ -287,7 +273,7 @@ retry:
             get
             {
                 var l = new List<Video>();
-                foreach (ListVideo lv in ListView_Videos.SelectedItems)
+                foreach (ListVideo lv in ListView_Main.SelectedItems)
                 {
                     l.Add(lv.Video);
                 }
@@ -299,18 +285,19 @@ retry:
         {
             get
             {
-                if (ListView_Videos.SelectedItems.Count > 0)
+                if (ListView_Main.SelectedItems.Count > 0)
                 {
-                    return (ListVideo)ListView_Videos.SelectedItems[0];
-                } else
+                    return (ListVideo)ListView_Main.SelectedItems[0];
+                }
+                else
                 {
                     return null;
                 }
             }
             set
             {
-                var i = ListView_Videos.SelectedItems[0].Index;
-                ListView_Videos.Items[i] = value;
+                var i = ListView_Main.SelectedItems[0].Index;
+                ListView_Main.Items[i] = value;
             }
         }
 
@@ -318,65 +305,9 @@ retry:
         {
             get
             {
-                if (ListView_Videos.SelectedItems.Count > 0)
+                if (ListView_Main.SelectedItems.Count > 0)
                 {
                     return SelectedListVideo.Video;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
-
-        public GameProfile SelectedGameProfile
-        {
-            get
-            {
-                if (DropBox_GameProfile.SelectedIndex > -1)
-                {
-                    return (GameProfile)DropBox_GameProfile.SelectedItem;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
-
-        public Feed SelectedFeed
-        {
-            get
-            {
-                if (ListBox_Feeds.SelectedItems.Count > 0)
-                {
-                    return (Feed)ListBox_Feeds.SelectedItem;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            set
-            {
-                var i = SelectedVideo.Feeds.IndexOf(SelectedVideo.Feeds.Where(x => x.Name == value.Name).First());
-                SelectedVideo.Feeds[i] = value;
-                ListBox_Feeds.SelectedItem = value;
-            }
-        }
-
-        public List<Screen> CheckedScreens
-        {
-            get
-            {
-                if (CheckedListBox_Screens.CheckedItems.Count > 0)
-                {
-                    var l = new List<Screen>();
-                    foreach (Screen lv in CheckedListBox_Screens.CheckedItems)
-                    {
-                        l.Add(lv);
-                    }
-                    return l;
                 }
                 else
                 {
@@ -388,23 +319,23 @@ retry:
         // If nothing is selected, show nothing on the bottom panel.
         public void Hide_Core()
         {
-            ListView_Videos.SelectedItems.Clear();
+            ListView_Main.SelectedItems.Clear();
             AcceptButton = null;
-            SplitContainer_Core.Panel2Collapsed = true;
+            Panel_Core.Hide();
         }
 
         public void Show_Core()
         {
-            SplitContainer_Core.Panel2Collapsed = false;
+            Panel_Core.Show();
             AcceptButton = Button_Add_Feed;
-            if (ListView_Videos.SelectedItems.Count == 1)
+            if (ListView_Main.SelectedItems.Count == 1)
             {
                 TimeSpan timestamp = new TimeSpan(SelectedVideo.Duration.Ticks * 2L / 3L);
                 oldTimestamp = timestamp.ToString().Substring(0, 8);
                 TextBox_Timestamp.Text = oldTimestamp;
             }
         }
-        
+
         // Previously caused memory leaks. *Should* be under control now.
         private void Display_Thumbnail(Video v, TimeSpan timestamp)
         {
@@ -420,13 +351,15 @@ retry:
                     Box_Main.BackgroundImage = i;
                     Box_Preview.BackColor = Color.FromArgb(127, 255, 0, 255);
                     Label_Failed.Hide();
-                } else
+                }
+                else
                 {
                     Box_Main.BackgroundImage = null;
                     Box_Preview.BackColor = Color.Black;
                     Label_Failed.Show();
                 }
-            } else
+            }
+            else
             {
                 // File can't be found. Options are remove, retry, or ignore (which will cause problems later).
                 // Would like "re-assign to different file" or something.
@@ -440,9 +373,10 @@ retry:
                 if (dr == DialogResult.Retry)
                 {
                     Display_Thumbnail(v, timestamp);
-                } else if (dr == DialogResult.Abort)
+                }
+                else if (dr == DialogResult.Abort)
                 {
-                    ListView_Videos.SelectedItems[0].Remove();
+                    ListView_Main.SelectedItems[0].Remove();
                 }
             }
             Update_Preview_Box();
@@ -450,8 +384,7 @@ retry:
 
         private void Update_Preview_Box()
         {
-            // Stops minimize bug
-            if (Panel_Back.Width > 0 && SplitContainer_Core.Panel2Collapsed == false && SelectedVideo != null)
+            if (TableLayoutPanel_Single.Width > 0 && Panel_Core.Visible == true) // Stops minimize bug
             {
                 double screenWidth = SelectedVideo.Geometry.Width;
                 double screenHeight = SelectedVideo.Geometry.Height;
@@ -490,6 +423,8 @@ retry:
             double scaleWidth = Box_Main.Size.Width / screenWidth;
             double scaleHeight = Box_Main.Size.Height / screenHeight;
 
+            //Box_Preview.Anchor = (AnchorStyles)anchor;
+
             if (x < 0d) { x = screenWidth + x; } // I don't think this even works for x and y.
             if (y < 0d) { y = screenHeight + y; }
 
@@ -522,23 +457,23 @@ retry:
             {
                 // There's probably an array function that does this better...
                 bool exists = false;
-                foreach (ListVideo lv in ListView_Videos.Items) { if (f == lv.Video.FilePath) exists = true; }
+                foreach (ListVideo lv in ListView_Main.Items) { if (f == lv.Video.FilePath) exists = true; }
                 if (exists) { added = true; continue; }
 
                 Video v = Video.Create(f);
                 if (v != null)
                 {
                     var lv = new ListVideo(v);
-                    ListView_Videos.Items.Add(lv);
+                    ListView_Main.Items.Add(lv);
                     added = true;
                 }
             }
 
             if (added)
             {
-                ListView_Videos.SelectedItems.Clear();
+                ListView_Main.SelectedItems.Clear();
 
-                foreach (ListVideo lv in ListView_Videos.Items)
+                foreach (ListVideo lv in ListView_Main.Items)
                 {
                     if (ofd.FileNames.Contains(lv.Video.FilePath))
                     {
@@ -546,19 +481,19 @@ retry:
                     }
                 }
 
-                ListView_Videos.Focus();
+                ListView_Main.Focus();
             }
         }
 
-        private void ListView_Video_Column_Click(object sender, ColumnClickEventArgs e)
+        private void ListView_Main_Column_Click(object sender, ColumnClickEventArgs e)
         {
             // ListViewItemComparer Isn't found, searching gave no results.
-            // It's the only thing that lets this work without a bunch of lines, so fuck.
+            // It's the only thing that lets this work, so fuck.
         }
 
-        private void ListView_Video_SelectedIndexChanged(object sender, EventArgs e)
+        private void ListView_Main_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ListView_Videos.SelectedItems.Count > 0)
+            if (ListView_Main.SelectedItems.Count > 0)
             {
                 Show_Core();
                 Clean_Inputs();
@@ -567,39 +502,19 @@ retry:
                 {
                     ListBox_Feeds.Items.Add(f);
                 }
-
-                if (SelectedVideo.GameProfile != null && SelectedVideos.All(x => x.GameProfile == SelectedVideo.GameProfile))
-                {
-                    var i = DropBox_GameProfile.Items.IndexOf(SelectedVideo.GameProfile);
-                    DropBox_GameProfile.SelectedIndex = i;
-                }
-                else
-                {
-                    DropBox_GameProfile.SelectedIndex = -1;
-                }
             }
             else
             {
                 Hide_Core();
             }
 
-            if (ListBox_Feeds.SelectedItems.Count > 0)
-                FillScreenBox();
-            else
-            {
-                CheckedListBox_Screens.Items.Clear();
-
-            }
-
-
-            Enable_VandG_Pair();
         }
 
         private void Clean_Inputs()
         {
             TextBox_Name.Text = null;
             CheckBox_Timer.Checked = false;
-            //CheckBox_Perfect.Checked = false;
+            CheckBox_Perfect.Checked = false;
             Numeric_X.Value = 0m;
             Numeric_Y.Value = 0m;
             Numeric_Width.Value = 100m;
@@ -615,7 +530,7 @@ retry:
             {
                 TextBox_Name.Text = f.Name;
                 CheckBox_Timer.Checked = f.UseOCR;
-                //CheckBox_Perfect.Checked = f.AccurateCapture;
+                CheckBox_Perfect.Checked = f.AccurateCapture;
                 Numeric_X.Value = (decimal)f.Geometry.X;
                 Numeric_Y.Value = (decimal)f.Geometry.Y;
                 Numeric_Width.Value = (decimal)f.Geometry.Width;
@@ -633,12 +548,12 @@ retry:
             }
         }
 
-        private void ListView_Video_KeyDown(object sender, KeyEventArgs e)
+        private void ListView_Main_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Delete && ListView_Videos.SelectedItems.Count > 0)
+            if (e.KeyCode == Keys.Delete && ListView_Main.SelectedItems.Count > 0)
             {
                 string plural = "this video";
-                if (ListView_Videos.SelectedItems.Count > 1)
+                if (ListView_Main.SelectedItems.Count > 1)
                     plural = "these videos";
 
                 DialogResult dr = MessageBox.Show(
@@ -650,9 +565,9 @@ retry:
 
                 if (dr == DialogResult.Yes)
                 {
-                    foreach (ListVideo lv in ListView_Videos.SelectedItems)
+                    foreach (ListVideo lv in ListView_Main.SelectedItems)
                     {
-                        ListView_Videos.Items.Remove(lv);
+                        ListView_Main.Items.Remove(lv);
                     }
                 }
             }
@@ -684,8 +599,8 @@ retry:
 
         private void CheckBox_Timer_CheckedChanged(object sender, EventArgs e)
         {
-            //CheckBox_Perfect.Enabled = !CheckBox_Timer.Checked;
-            //CheckBox_Perfect.Checked = CheckBox_Timer.Checked;
+            CheckBox_Perfect.Enabled = !CheckBox_Timer.Checked;
+            CheckBox_Perfect.Checked = CheckBox_Timer.Checked;
         }
 
         /******************************************************************/
@@ -734,10 +649,8 @@ retry:
 
             Numeric_X.Value = Math.Max(0m, Math.Round(Math.Min(selectionStart.X, mouseX) * widthMultiplier));
             Numeric_Y.Value = Math.Max(0m, Math.Round(Math.Min(selectionStart.Y, mouseY) * heightMultiplier));
-            Numeric_Width.Value =
-                Math.Min(screenWidth - Numeric_X.Value, Math.Round(Math.Abs(selectionStart.X - mouseX) * widthMultiplier));
-            Numeric_Height.Value =
-                Math.Min(screenHeight - Numeric_Y.Value, Math.Round(Math.Abs(selectionStart.Y - mouseY) * heightMultiplier));
+            Numeric_Width.Value = Math.Min(screenWidth - Numeric_X.Value, Math.Round(Math.Abs(selectionStart.X - mouseX) * widthMultiplier));
+            Numeric_Height.Value = Math.Min(screenHeight - Numeric_Y.Value, Math.Round(Math.Abs(selectionStart.Y - mouseY) * heightMultiplier));
 
             Update_Preview();
         }
@@ -756,12 +669,14 @@ retry:
                 {
                     TextBox_Timestamp.BackColor = Color.White;
                     Display_Thumbnail(SelectedVideo, timestamp);
-                    TrackBar_Thumbnail.Value = (int)Math.Round(((timestamp.TotalSeconds / SelectedVideo.Duration.TotalSeconds) * 100 ));
-                } else
+                    TrackBar_Thumbnail.Value = (int)Math.Round(((timestamp.TotalSeconds / SelectedVideo.Duration.TotalSeconds) * 100));
+                }
+                else
                 {
                     TextBox_Timestamp.BackColor = Color.FromArgb(224, 64, 64);
                 }
-            } else
+            }
+            else
             {
                 TextBox_Timestamp.BackColor = Color.FromArgb(224, 64, 64);
             }
@@ -785,7 +700,7 @@ retry:
             string name = TextBox_Name.Text;
             name = name.Trim();
             bool useOCR = CheckBox_Timer.Checked;
-            //bool accurateCapture = CheckBox_Perfect.Checked;
+            bool accurateCapture = CheckBox_Perfect.Checked;
 
             int x = (int)Numeric_X.Value;
             int y = (int)Numeric_Y.Value;
@@ -809,7 +724,7 @@ retry:
                 }
             }
 
-            var feed = new Feed(name, useOCR, geo, gameGeo);
+            var feed = new Feed(name, useOCR, accurateCapture, geo, gameGeo);
 
             if (String.IsNullOrWhiteSpace(name))
             {
@@ -827,14 +742,14 @@ retry:
                 if (dr == DialogResult.Yes)
                 {
                     SelectedVideo.Feeds[exists] = feed;
-                    SelectedListVideo.RefreshValues();
+                    SelectedListVideo.UpdateValues();
                     ListBox_Feeds.Items[exists] = feed;
                 }
             }
             else
             {
                 SelectedVideo.Feeds.Add(feed);
-                SelectedListVideo.RefreshValues();
+                SelectedListVideo.UpdateValues();
                 ListBox_Feeds.Items.Add(feed);
             }
         }
@@ -842,10 +757,6 @@ retry:
         private void ListBox_Feeds_SelectedIndexChanged(object sender, EventArgs e)
         {
             Update_Inputs();
-            if (ListBox_Feeds.SelectedItems.Count > 0)
-                FillScreenBox();
-            else
-                CheckedListBox_Screens.Items.Clear();
         }
 
         private void TextBox_Auto_Selector(object sender, EventArgs e)
@@ -862,10 +773,7 @@ retry:
         // Used over ValueChanged to avoid feedback loop
         private void TrackBar_Thumbnail_MouseUp(object sender, MouseEventArgs e)
         {
-            TextBox_Timestamp.Text =
-                TimeSpan.FromSeconds(SelectedVideo.Duration.TotalSeconds * TrackBar_Thumbnail.Value / 100)
-                .ToString()
-                .Substring(0 ,8);
+            TextBox_Timestamp.Text = TimeSpan.FromSeconds(SelectedVideo.Duration.TotalSeconds * TrackBar_Thumbnail.Value / 100).ToString().Substring(0, 8);
         }
 
         private void TrackBar_Thumbnail_KeyUp(object sender, KeyEventArgs e)
@@ -879,7 +787,7 @@ retry:
             {
                 SelectedVideo.Feeds.RemoveAt(ListBox_Feeds.SelectedIndex);
                 ListBox_Feeds.Items.RemoveAt(ListBox_Feeds.SelectedIndex);
-                SelectedListVideo.RefreshValues();
+                SelectedListVideo.UpdateValues();
             }
         }
 
@@ -897,7 +805,8 @@ retry:
                 Label_Game_Height.Show();
                 Numeric_Game_Width.Show();
                 Numeric_Game_Height.Show();
-            } else
+            }
+            else
             {
                 Label_Game_Width.Hide();
                 Label_Game_Height.Hide();
@@ -906,153 +815,6 @@ retry:
                 Numeric_Game_Width.Value = 0m;
                 Numeric_Game_Height.Value = 0m;
             }
-        }
-
-        private void SplitContainer_Core_SplitterMoved(object sender, SplitterEventArgs e)
-        {
-            Update_Preview_Box();
-        }
-
-        private void Enable_VandG_Pair()
-        {
-            Button_Pair_VandG.Enabled = (ListView_Videos.SelectedItems.Count > 0 && DropBox_GameProfile.SelectedIndex > -1);
-
-            if (SelectedListVideos != null && SelectedGameProfile != null && SelectedVideos.All(x => x.GameProfile == SelectedGameProfile))
-            {
-                //FillScreenBox();
-                Button_Pair_VandG.Text = "Unpair";
-            } else
-            {
-                CheckedListBox_Screens.Items.Clear();
-                Button_Pair_VandG.Text = "Pair";
-            }
-
-        }
-
-        private void ComboBox_GameProfile_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            Enable_VandG_Pair();
-        }
-
-        private void Button_Pair_VandG_Click(object sender, EventArgs e)
-        {
-            if (SelectedVideos.All(x => x.GameProfile == SelectedGameProfile))
-            {
-                DialogResult dr = MessageBox.Show(
-                    "Are you sure you want to unpair the Video(s) from the Game Profile?" +
-                    "\n\rThis will remove all Feed-Screen connections.",
-                    "Question",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question
-                    );
-                if (dr == DialogResult.Yes)
-                {
-                    foreach (var lv in SelectedListVideos)
-                    {
-                        var i = lv.Index;
-                        ((ListVideo)ListView_Videos.Items[i]).Video.GameProfile = null;
-                        ((ListVideo)ListView_Videos.Items[i]).RefreshValues();
-                    }
-                }
-            }
-            else
-            { // Todo: Add something that prompts for replacing.
-                var lvs = SelectedListVideos;
-                var toRemove = new List<int>(); // Can't do it inline...
-                foreach (var lv in lvs)
-                {
-                    if (lv.Video.GameProfile != SelectedGameProfile)
-                    {
-                        lv.Video.GameProfile = SelectedGameProfile;
-
-                        foreach (var f in lv.Video.Feeds)
-                        {
-                            f.GameProfile = SelectedGameProfile;
-
-                            if (CheckBox_AutoMatch.Checked)
-                            {
-                                var l = SelectedGameProfile.Screens.Where(x => x.Name == f.Name);
-                                if (l.Count() > 0) 
-                                    f.Screens.Add(l.First());
-                            }
-                        }
-                        lv.RefreshValues();
-                    }
-                    else
-                    {
-                        toRemove.Add(lvs.IndexOf(lv));
-                    }
-                }
-                toRemove.Reverse();
-                foreach (var i in toRemove)
-                {
-                    lvs.RemoveAt(i);
-                }
-                SelectedListVideos = lvs;
-                //FillScreenBox();
-            }
-        }
-
-        private void FillScreenBox()
-        {
-            CheckedListBox_Screens.Items.Clear();
-            if (SelectedGameProfile != null && SelectedVideo != null && SelectedVideo.Feeds != null)
-            {
-                foreach (var s in SelectedGameProfile.Screens)
-                {
-                    CheckedListBox_Screens.Items.Add(s);
-
-                    if (SelectedVideo.Feeds.Any(x => x.Screens.Any(y => y == s))) // Is this right?
-                        CheckedListBox_Screens_ItemCheckManuel(CheckedListBox_Screens.Items.Count - 1, CheckState.Checked);
-
-                    DropBox_Watch_Preview.Items.Clear();
-                    var dropDownWidth = 168;
-                    foreach (var wz in s.WatchZones)
-                    {
-                        foreach (var w in wz.Watches)
-                        {
-                            foreach (var wi in w.Images)
-                            {
-                                wi.SetName(s, wz, w); // Help, need not-hacky method to display a better string.
-                                DropBox_Watch_Preview.Items.Add(wi);
-                                dropDownWidth = Math.Max(dropDownWidth, TextRenderer.MeasureText(wi.Name, DropBox_Watch_Preview.Font).Width);
-                            }
-                        }
-                    }
-                    DropBox_Watch_Preview.DropDownWidth = dropDownWidth;
-                }
-            }
-        }
-
-        private void CheckedListBox_Screens_ItemCheck(object sender, ItemCheckEventArgs e)
-        {
-            // Switch off event handler
-            CheckedListBox_Screens.ItemCheck -= CheckedListBox_Screens_ItemCheck;
-            CheckedListBox_Screens.SetItemCheckState(e.Index, e.NewValue);
-            // Switch on event handler
-            CheckedListBox_Screens.ItemCheck += CheckedListBox_Screens_ItemCheck;
-
-            ((Feed)ListBox_Feeds.SelectedItem).Screens = CheckedScreens;
-            foreach (ListVideo lv in ListView_Videos.SelectedItems)
-            {
-                var i = lv.Index;
-                var i2 = ((ListVideo)ListView_Videos.Items[i]).Video.Feeds.IndexOf((Feed)ListBox_Feeds.SelectedItem);
-                foreach (Screen s in CheckedListBox_Screens.CheckedItems)
-                {
-                    ((Feed)((ListVideo)ListView_Videos.Items[i]).Video.Feeds[i2]).AddScreen(s);
-                }
-            }
-            //var tmp = SelectedVideo.Feeds;
-        }
-
-        private void CheckedListBox_Screens_ItemCheckManuel(int index, CheckState state)
-        {
-            CheckedListBox clb = CheckedListBox_Screens;
-            // Switch off event handler
-            clb.ItemCheck -= CheckedListBox_Screens_ItemCheck;
-            clb.SetItemCheckState(index, state);
-            // Switch on event handler
-            clb.ItemCheck += CheckedListBox_Screens_ItemCheck;
         }
     }
 

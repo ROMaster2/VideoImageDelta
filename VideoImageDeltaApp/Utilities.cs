@@ -75,6 +75,14 @@ namespace VideoImageDeltaApp
             t.Start();
         }
 
+        public static int StringLengthInPixels(Font font, string str)
+        {
+            using (Graphics graphics = Graphics.FromImage(new Bitmap(1, 1)))
+            {
+                SizeF size = graphics.MeasureString(str, font);
+                return (int)Math.Ceiling(size.Width);
+            }
+        }
 
         public double Percentile(double[] sequence, double excelPercentile)
         {

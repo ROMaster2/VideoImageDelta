@@ -61,7 +61,7 @@ namespace VideoImageDeltaApp
                     {
                         if (f.Name == s.Name)
                         {
-                            f.Screen = s;
+                            //f.Screen = s;
                             break;
                         }
                     }

@@ -70,6 +70,7 @@ namespace VideoImageDeltaApp.Forms
 
         private void Button_Import_Click(object sender, EventArgs e)
         {
+            /*
             var fileDialog = new OpenFileDialog()
             {
                 Filter = "XML Files|*.xml",
@@ -80,25 +81,12 @@ namespace VideoImageDeltaApp.Forms
             {
                 // Process XML
             }
-
+            */
         }
 
         private void Button_Export_Click(object sender, EventArgs e)
         {
 
-        }
-
-        private void Button_Process_Click(object sender, EventArgs e)
-        {
-            //Test.RunTest(Program.Videos, Program.GameProfiles);
-        }
-
-        private void Button_Minus_Videos_Click(object sender, EventArgs e)
-        {
-            /*if (ListBox_Videos.SelectedItem != null)
-            {
-                ListBox_Videos.Items.RemoveAt(ListBox_Videos.SelectedIndex);
-            }*/
         }
 
         private void Button_Watch_Click(object sender, EventArgs e)
@@ -112,5 +100,11 @@ namespace VideoImageDeltaApp.Forms
             AddVideos w = new AddVideos();
             w.Show();
         }
+
+        private void Button_Process_Click(object sender, EventArgs e)
+        {
+            //Test.RunTest(Program.Videos, Program.GameProfiles);
+        }
+
     }
 }

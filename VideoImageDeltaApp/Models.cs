@@ -179,6 +179,92 @@ namespace VideoImageDeltaApp.Models
         }
     }
 
+    /*
+    // Pair by names for now. How can you avoid unnecessary duplication and desyncs from changes?
+    public class Pair
+    {
+        public Pair (Video video, GameProfile gameProfile, bool auto = true)
+        {
+            Video = video;
+            GameProfile = gameProfile;
+        }
+
+        private string _Video;
+        public Video Video
+        {
+            get
+            {
+                return Program.Videos.Where(x => x.FilePath == _Video).First();
+            }
+            set
+            {
+                _Video = value.FilePath;
+            }
+        }
+
+        private string _GameProfile;
+        public GameProfile GameProfile
+        {
+            get
+            {
+                var l = Program.GameProfiles.Where(x => x.Name == _GameProfile);
+                if (l.Count() == 0)
+                {
+                    return new GameProfile("Not set");
+                }
+                else
+                    return l.First();
+            }
+            set
+            {
+                if (value == null)
+                    _GameProfile = null;
+                else
+                    _GameProfile = value.Name;
+            }
+        }
+
+        public List<SubPair> SubPairs { get; set; } = new List<SubPair>();
+
+        public class SubPair
+        {
+            public SubPair(Feed feed, Screen screen)
+            {
+                Feed = feed;
+                Screen = screen;
+            }
+
+            private string _Feed;
+            public Feed Feed
+            {
+                get
+                {
+                    var v = Program.Videos.Where(x => x.FilePath == _Video).First();
+                    return v.Feeds.Where(x => x.Name == _Feed).First();
+                }
+                set
+                {
+                    _Feed = value.Name;
+                }
+            }
+
+            private string _Screen;
+            public Screen Screen
+            {
+                get
+                {
+                    var gp = Program.GameProfiles.Where(x => x.Name == _GameProfile).First();
+                    return gp.Screens.Where(x => x.Name == _Screen).First();
+                }
+                set
+                {
+                    _Screen = value.Name;
+                }
+            }
+
+        }
+    }
+    */
     public class VideoProfile
     {
         public VideoProfile(string name, Video video)
@@ -281,7 +367,32 @@ namespace VideoImageDeltaApp.Models
             }
         }
 
+        private string _GameProfile;
+        public GameProfile GameProfile
+        {
+            get
+            {
+                var l = Program.GameProfiles.Where(x => x.Name == _GameProfile);
+                if (l.Count() == 0)
+                    return null;
+                else
+                    return l.First();
+            }
+            set
+            {
+                if (value == null)
+                    _GameProfile = null;
+                else
+                    _GameProfile = value.Name;
+            }
+        }
+
         public List<Feed> Feeds { get; set; } = new List<Feed>();
+
+        public bool IsSynced()
+        {
+            return Feeds.Count > 0 && Feeds.All(x => x.Screens.Count > 0);
+        }
         
         public Image GetThumbnail(TimeSpan timestamp)
         {
@@ -290,11 +401,13 @@ namespace VideoImageDeltaApp.Models
             return RawFFmpeg.GetThumbnail(FilePath, new System.Windows.Size(Geometry.Width, Geometry.Height),timestamp);
         }
 
-        // Full name would be CalculateChildAdjustedGeometry, but that's a mouthful too many characters.
+        // Full name would be CalculateChildAdjustedGeometry, but that's a mouthful and too many characters.
         /// <summary>
         /// Cache the geometry adjustments needed to position and size images to their spot on the video.
         /// This is done so it's not crunched every single process cycle.
         /// Warning: Could break if negative offsets are used. Need to test.
+        /// WARNING: This alters the GameProfile's WatchZone's AdjGeo, which affects EVERY VIDEO using that GameProfile.
+        /// Todo: That MUST be fixed.
         /// </summary>
         public void CalcChildAdjGeo()
         {
@@ -316,41 +429,45 @@ namespace VideoImageDeltaApp.Models
 
             foreach (var f in Feeds)
             {
-                Geometry GameGeometry = f.Screen.Geometry;
-                if (f.GameGeometry.Width > 0d && f.GameGeometry.Height > 0d) GameGeometry = f.GameGeometry;
-
-                double xScale = GameGeometry.Width / f.Geometry.Width;
-                double yScale = GameGeometry.Height / f.Geometry.Height;
-                foreach (var wz in f.Screen.WatchZones)
+                foreach (var s in f.Screens)
                 {
-                    double _x = wz.Geometry.X;
-                    double _y = wz.Geometry.Y;
-                    double _width = wz.Geometry.Width;
-                    double _height = wz.Geometry.Height;
+                    Geometry GameGeometry = s.Geometry;
+                    if (f.GameGeometry.Width > 0d && f.GameGeometry.Height > 0d) GameGeometry = f.GameGeometry;
 
-                    if (wz.ScaleType == ScaleType.Scale)
+                    double xScale = GameGeometry.Width / f.Geometry.Width;
+                    double yScale = GameGeometry.Height / f.Geometry.Height;
+                    foreach (var wz in s.WatchZones)
                     {
-                        _x *= xScale;
-                        _y *= yScale;
-                        _width *= xScale;
-                        _height *= yScale;
-                    } else if(wz.ScaleType == ScaleType.KeepRatio)
-                    {
-                        double scale = Math.Min(xScale, yScale); // Min or Max?
-                        _x *= scale;
-                        _y *= scale;
-                        _width *= scale;
-                        _height *= scale;
+                        double _x = wz.Geometry.X;
+                        double _y = wz.Geometry.Y;
+                        double _width = wz.Geometry.Width;
+                        double _height = wz.Geometry.Height;
+
+                        if (wz.ScaleType == ScaleType.Scale)
+                        {
+                            _x *= xScale;
+                            _y *= yScale;
+                            _width *= xScale;
+                            _height *= yScale;
+                        }
+                        else if (wz.ScaleType == ScaleType.KeepRatio)
+                        {
+                            double scale = Math.Min(xScale, yScale); // Min or Max?
+                            _x *= scale;
+                            _y *= scale;
+                            _width *= scale;
+                            _height *= scale;
+                        }
+
+                        var newGeo = new Geometry(_x, _y, _width, _height, wz.Geometry.Anchor).WithoutAnchor(GameGeometry);
+
+                        newGeo.X = newGeo.X / GameGeometry.Width * f.Geometry.Width + f.Geometry.X - this.AdjustedGeometry.X;
+                        newGeo.Y = newGeo.Y / GameGeometry.Height * f.Geometry.Height + f.Geometry.Y - this.AdjustedGeometry.Y;
+                        newGeo.Width = newGeo.Width / GameGeometry.Width * f.Geometry.Width;
+                        newGeo.Height = newGeo.Height / GameGeometry.Height * f.Geometry.Height;
+
+                        wz.AdjustedGeometry = newGeo;
                     }
-
-                    var newGeo = new Geometry(_x, _y, _width, _height, wz.Geometry.Anchor).WithoutAnchor(GameGeometry);
-
-                    newGeo.X = newGeo.X / GameGeometry.Width * f.Geometry.Width + f.Geometry.X - this.AdjustedGeometry.X;
-                    newGeo.Y = newGeo.Y / GameGeometry.Height * f.Geometry.Height + f.Geometry.Y - this.AdjustedGeometry.Y;
-                    newGeo.Width = newGeo.Width / GameGeometry.Width * f.Geometry.Width;
-                    newGeo.Height = newGeo.Height / GameGeometry.Height * f.Geometry.Height;
-
-                    wz.AdjustedGeometry = newGeo;
                 }
             }
         }
@@ -364,11 +481,10 @@ namespace VideoImageDeltaApp.Models
 
     public class Feed
     {
-        public Feed(string name, bool useOCR, bool accurateCapture, Geometry geometry, Geometry gameGeometry = null)
+        public Feed(string name, bool useOCR, Geometry geometry, Geometry gameGeometry = null)
         {
             Name = name;
             UseOCR = useOCR;
-            AccurateCapture = accurateCapture;
             Geometry = geometry;
             GameGeometry = gameGeometry;
         }
@@ -378,12 +494,64 @@ namespace VideoImageDeltaApp.Models
         public string Name { get; set; }
         [XmlElement("IsTimer")]
         public bool UseOCR { get; set; }
-        [XmlElement("PerfectCapture")]
-        public bool AccurateCapture { get; set; }
         public Geometry Geometry { get; set; }
         public Geometry GameGeometry { get; set; }
 
-        public Screen Screen { get; set; } // Experimenting
+        private string _GameProfile;
+        public GameProfile GameProfile
+        {
+            get
+            {
+                var l = Program.GameProfiles.Where(x => x.Name == _GameProfile);
+                if (l.Count() == 0)
+                    return new GameProfile("foobar1");
+                else
+                    return l.First();
+            }
+            set
+            {
+                if (value == null)
+                    _GameProfile = null;
+                else
+                    _GameProfile = value.Name;
+            }
+        }
+
+        private List<string> _Screens = new List<string>();
+        public List<Screen> Screens
+        {
+            get
+            {
+                var gps = Program.GameProfiles.Where(x => x.Name == _GameProfile);
+                if (gps.Count() == 0)
+                    return new List<Screen>();
+                else
+                {
+                    var ss = new List<Screen>();
+                    foreach (var s in _Screens)
+                    {
+                        ss.Add(gps.First().Screens.Where(x => x.Name == s).First());
+                    }
+                    return ss;
+                }
+            }
+            set
+            {
+                if (value != null)
+                {
+                    foreach (var s in value)
+                    {
+                        _Screens.Clear();
+                        _Screens.Add(s.Name);
+                    }
+                }
+            }
+        }
+
+        public void AddScreen(Screen screen)
+        {
+            _Screens.Add(screen.Name);
+        }
 
         override public string ToString()
         { // Figure out how to get + and - to appear based on value.
@@ -391,31 +559,7 @@ namespace VideoImageDeltaApp.Models
         }
 
     }
-    /*
-    public class VideoProfilePair
-    {
-        public VideoProfilePair(Video video, GameProfile gameProfile)
-        {
-            Video = video;
-            GameProfile = gameProfile;
-        }
 
-        public Video Video;
-        public GameProfile GameProfile;
-    }
-
-    public class FeedScreenPair
-    {
-        public FeedScreenPair(Feed feed, Screen screen)
-        {
-            Feed = feed;
-            Screen = screen;
-        }
-
-        public Feed Feed;
-        public Screen Screen;
-    }
-    */
     public class GameProfile
     {
         public GameProfile(string name)
@@ -556,6 +700,23 @@ namespace VideoImageDeltaApp.Models
             }
         }
 
+        public string FileName
+        {
+            get
+            {
+                var i = FilePath.LastIndexOf('\\');
+                return FilePath.Substring(i + 1, FilePath.Length - i - 1);
+            }
+        }
+
+        [XmlIgnore]
+        public string Name { get; internal set; }
+
+        public void SetName(Screen screen, WatchZone watchZone, Watcher watcher)
+        {
+            Name = screen.Name + "/" + watchZone.Name + "/" + watcher.Name + " - " + FileName;
+        }
+
         public void Clear()
         {
             image = null;
@@ -563,8 +724,10 @@ namespace VideoImageDeltaApp.Models
 
         override public string ToString()
         {
-            var i = FilePath.LastIndexOf('\\');
-            return FilePath.Substring(i + 1, FilePath.Length - i - 1);
+            if (!string.IsNullOrWhiteSpace(Name))
+                return Name;
+            else
+                return FileName;
         }
 
     }
@@ -580,14 +743,20 @@ namespace VideoImageDeltaApp.Models
             SubItems.Add(Video.Geometry.Height.ToString());
             SubItems.Add(Video.Duration.ToString().Substring(0, 8));
             SubItems.Add("");
-            UpdateFeeds();
+            SubItems.Add("");
+            SubItems.Add("");
+            RefreshValues();
         }
 
         public Video Video { get; }
 
-        public void UpdateFeeds()
+        public void RefreshValues()
         {
+            // What's a better method? lol
             SubItems.RemoveAt(SubItems.Count - 1);
+            SubItems.RemoveAt(SubItems.Count - 1);
+            SubItems.RemoveAt(SubItems.Count - 1);
+
             if (Video.Feeds.Count > 1)
             {
                 string s = null;
@@ -610,10 +779,16 @@ namespace VideoImageDeltaApp.Models
             }
             else
             {
-                SubItems.Add("Not Set");
+                SubItems.Add("None Set");
             }
+
+            if (Video.GameProfile != null)
+                SubItems.Add(Video.GameProfile.Name);
+            else
+                SubItems.Add("Not Set");
+
+            SubItems.Add(Video.IsSynced() ? "Yes" : "No");
 
         }
     }
-
 }

@@ -111,13 +111,6 @@
       <DependentUpon>AddWatchers.cs</DependentUpon>
     </Compile>
     <Compile Include="Rect.cs" />
-    <Compile Include="ModelsNew.cs" />
-    <Compile Include="PairVideosAndGames.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="PairVideosAndGames.Designer.cs">
-      <DependentUpon>PairVideosAndGames.cs</DependentUpon>
-    </Compile>
     <Compile Include="ProcessSettings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -126,6 +119,12 @@
     </Compile>
     <Compile Include="Test.cs" />
     <Compile Include="FFmpeg.cs" />
+    <Compile Include="TestUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TestUI.Designer.cs">
+      <DependentUpon>TestUI.cs</DependentUpon>
+    </Compile>
     <Compile Include="Utilities.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
@@ -145,9 +144,6 @@
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PairVideosAndGames.resx">
-      <DependentUpon>PairVideosAndGames.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="ProcessSettings.resx">
       <DependentUpon>ProcessSettings.cs</DependentUpon>
     </EmbeddedResource>
@@ -161,6 +157,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="TestUI.resx">
+      <DependentUpon>TestUI.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

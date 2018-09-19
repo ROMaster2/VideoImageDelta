@@ -10,7 +10,7 @@ namespace VideoImageDeltaApp
     {
         public static List<Video> Videos = new List<Video>();
         public static List<GameProfile> GameProfiles = new List<GameProfile>();
-
+        
         [STAThread]
         static void Main()
         {

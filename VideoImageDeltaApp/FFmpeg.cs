@@ -207,49 +207,51 @@ namespace VideoImageDeltaApp
         public static Image FFCommand2(string process, TimeSpan timestamp, string videoPath, System.Windows.Size size, string parameters)
         {
             Array.Clear(imageCache, 0, MAX_IMAGE_SIZE);
-            NamedPipeServerStream p_from_ffmpeg;
-            p_from_ffmpeg = new NamedPipeServerStream(
-                "from_ffmpeg",
-                PipeDirection.InOut,
-                1,
-                PipeTransmissionMode.Byte,
-                PipeOptions.WriteThrough,
-                MAX_IMAGE_SIZE,
-                MAX_IMAGE_SIZE);
-
-            string start = timestamp.ToString().Substring(0, 8);
-            string args = String.Format(@"-ss {0} -i ""{1}"" {2}", start, videoPath, parameters);
-
-            Process pProcess = new Process();
-            pProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            pProcess.StartInfo.FileName = process;
-            pProcess.StartInfo.Arguments = args;
-            pProcess.StartInfo.UseShellExecute = false;
-            pProcess.StartInfo.RedirectStandardOutput = true;
-            pProcess.StartInfo.RedirectStandardError = true;
-            pProcess.StartInfo.CreateNoWindow = true;
-            pProcess.Start();
-
-            p_from_ffmpeg.WaitForConnection();
-
-            pProcess.WaitForExit();
-
-            int imageSize = (int)(size.Width * size.Height) * 3;
-            p_from_ffmpeg.Read(imageCache, 0, imageSize + 128); // 128 is added for bmp overhead
-            object t;
-
-            try
+            object t = null;
+            using (NamedPipeServerStream p_from_ffmpeg = new NamedPipeServerStream(
+                    "from_ffmpeg",
+                    PipeDirection.InOut,
+                    1,
+                    PipeTransmissionMode.Byte,
+                    PipeOptions.WriteThrough,
+                    MAX_IMAGE_SIZE,
+                    MAX_IMAGE_SIZE)
+                )
             {
-                t = Image.FromStream(new MemoryStream(imageCache));
-            }
-            catch (ArgumentException e)
-            { // Don't stop the program because it failed to load the thumbnail. Just return blank.
-                Debug.Write(e);
-                t = null;
-            }
 
-            pProcess.Dispose();
-            p_from_ffmpeg.Dispose();
+                string start = timestamp.ToString().Substring(0, 8);
+                string args = String.Format(@"-ss {0} -i ""{1}"" {2}", start, videoPath, parameters);
+
+                using (Process pProcess = new Process())
+                {
+                    pProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    pProcess.StartInfo.FileName = process;
+                    pProcess.StartInfo.Arguments = args;
+                    pProcess.StartInfo.UseShellExecute = false;
+                    pProcess.StartInfo.RedirectStandardOutput = true;
+                    pProcess.StartInfo.RedirectStandardError = true;
+                    pProcess.StartInfo.CreateNoWindow = true;
+                    pProcess.Start();
+
+                    p_from_ffmpeg.WaitForConnection();
+
+                    pProcess.WaitForExit();
+
+                    int imageSize = (int)(size.Width * size.Height) * 3;
+                    p_from_ffmpeg.Read(imageCache, 0, imageSize + 128); // 128 is added for bmp overhead
+
+                    try
+                    {
+                        t = Image.FromStream(new MemoryStream(imageCache));
+                    }
+                    catch (ArgumentException e)
+                    { // Don't stop the program because it failed to load the thumbnail. Just return blank.
+                        Debug.Write(e);
+                        t = null;
+                    }
+                }
+
+            }
 
             return (Image)t;
         }
