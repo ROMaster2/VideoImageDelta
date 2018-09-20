@@ -408,28 +408,28 @@ namespace VideoImageDeltaApp
             {
                 case PreviewType.Video:
                     PreviewBoxGeometryBefore = SelectedVideo.Geometry;
-                    PreviewBoxGeometryRescale = null;
-                    PreviewBoxGeometryAfter = null;
+                    PreviewBoxGeometryRescale = PreviewBoxGeometryBefore;
+                    PreviewBoxGeometryAfter = PreviewBoxGeometryRescale;
                     break;
                 case PreviewType.Feed:
                     PreviewBoxGeometryBefore = new Geometry(x, y, width, height);
-                    PreviewBoxGeometryRescale = null;
-                    PreviewBoxGeometryAfter = null;
+                    PreviewBoxGeometryRescale = PreviewBoxGeometryBefore;
+                    PreviewBoxGeometryAfter = PreviewBoxGeometryRescale;
                     break;
                 case PreviewType.Screen:
                     PreviewBoxGeometryBefore = new Geometry(x, y, width, height);
                     if (gameWidth > 0 && gameHeight > 0)
                         PreviewBoxGeometryRescale = new Geometry(gameWidth, gameHeight);
                     else
-                        PreviewBoxGeometryRescale = null;
-                    PreviewBoxGeometryAfter = null;
+                        PreviewBoxGeometryRescale = PreviewBoxGeometryBefore;
+                    PreviewBoxGeometryAfter = PreviewBoxGeometryRescale;
                     break;
                 case PreviewType.WatchZone:
                     PreviewBoxGeometryBefore = new Geometry(x, y, width, height);
                     if (gameWidth > 0 && gameHeight > 0)
                         PreviewBoxGeometryRescale = new Geometry(gameWidth, gameHeight);
                     else
-                        PreviewBoxGeometryRescale = new Geometry(width, height);
+                        PreviewBoxGeometryRescale = PreviewBoxGeometryBefore;
 
                     if (DropBox_Watch_Preview.SelectedIndex > -1 && SelectedGameProfile != null)
                     {
@@ -451,66 +451,70 @@ namespace VideoImageDeltaApp
                     }
                     else
                     {
-                        PreviewBoxGeometryAfter = null;
+                        PreviewBoxGeometryAfter = PreviewBoxGeometryRescale;
                     }
                     break;
                 default:
                     PreviewBoxGeometryBefore = SelectedVideo.Geometry;
-                    PreviewBoxGeometryRescale = null;
-                    PreviewBoxGeometryAfter = null;
+                    PreviewBoxGeometryRescale = PreviewBoxGeometryBefore;
+                    PreviewBoxGeometryAfter = PreviewBoxGeometryRescale;
                     break;
             }
 
         }
 
-        public Image RescaleThumbnail(Image image)
+        public Image RescaleThumbnail(Image image) { return RescaleThumbnail(image, false); }
+
+        public Image RescaleThumbnail(Image image, bool force)
         {
             CalcPreviewBoxGeometry();
-            if (PreviewBoxGeometryBefore == null || PreviewBoxGeometryBefore == SelectedVideo.Geometry)
+            if (!force && (PreviewBoxGeometryBefore == null || PreviewBoxGeometryBefore == SelectedVideo.Geometry))
                 return image;
             else
             {
-                var mi = new MagickImage((Bitmap)image);
-
-                int x = (int)PreviewBoxGeometryBefore.X;
-                int y = (int)PreviewBoxGeometryBefore.Y;
-                int w = (int)PreviewBoxGeometryBefore.Width;
-                int h = (int)PreviewBoxGeometryBefore.Height;
-                mi.Crop(new MagickGeometry(x, y, w, h), Gravity.Northwest);
-                mi.RePage();
-                if (PreviewBoxGeometryRescale == null)
-                    return mi.ToBitmap();
-                else
+                using (var mi = new MagickImage((Bitmap)image))
                 {
-                    w = (int)PreviewBoxGeometryRescale.Width;
-                    h = (int)PreviewBoxGeometryRescale.Height;
-                    mi.Resize(w, h);
+
+                    int x = (int)PreviewBoxGeometryBefore.X;
+                    int y = (int)PreviewBoxGeometryBefore.Y;
+                    int w = (int)PreviewBoxGeometryBefore.Width;
+                    int h = (int)PreviewBoxGeometryBefore.Height;
+                    mi.Crop(new MagickGeometry(x, y, w, h), Gravity.Northwest);
                     mi.RePage();
-                    if (PreviewBoxGeometryAfter == null)
+                    if (!force && (PreviewBoxGeometryRescale == null || PreviewBoxGeometryRescale == SelectedVideo.Geometry))
                         return mi.ToBitmap();
                     else
                     {
-                        x = (int)PreviewBoxGeometryAfter.X;
-                        y = (int)PreviewBoxGeometryAfter.Y;
-                        w = (int)PreviewBoxGeometryAfter.Width;
-                        h = (int)PreviewBoxGeometryAfter.Height;
-                        Gravity g = Gravity.Undefined;
-                        switch (PreviewBoxGeometryAfter.Anchor)
-                        {
-                            case Models.Anchor.TopLeft:     g = Gravity.Northwest; break;
-                            case Models.Anchor.Top:         g = Gravity.North;     break;
-                            case Models.Anchor.TopRight:    g = Gravity.Northeast; break;
-                            case Models.Anchor.Left:        g = Gravity.West;      break;
-                            case Models.Anchor.Center:      g = Gravity.Center;    break;
-                            case Models.Anchor.Right:       g = Gravity.East;      break;
-                            case Models.Anchor.BottomLeft:  g = Gravity.Southwest; break;
-                            case Models.Anchor.Bottom:      g = Gravity.South;     break;
-                            case Models.Anchor.BottomRight: g = Gravity.Southeast; break;
-                            default:                        g = Gravity.Undefined; break;
-                        }
-                        mi.Crop(new MagickGeometry(x, y, w, h), g);
+                        w = (int)PreviewBoxGeometryRescale.Width;
+                        h = (int)PreviewBoxGeometryRescale.Height;
+                        mi.Resize(w, h);
                         mi.RePage();
-                        return mi.ToBitmap();
+                        if (!force && (PreviewBoxGeometryAfter == null || PreviewBoxGeometryAfter == PreviewBoxGeometryRescale))
+                            return mi.ToBitmap();
+                        else
+                        {
+                            x = (int)PreviewBoxGeometryAfter.X;
+                            y = (int)PreviewBoxGeometryAfter.Y;
+                            w = (int)PreviewBoxGeometryAfter.Width;
+                            h = (int)PreviewBoxGeometryAfter.Height;
+                            Gravity g = Gravity.Undefined;
+                            switch (PreviewBoxGeometryAfter.Anchor)
+                            {
+                                case Models.Anchor.TopLeft: g = Gravity.Northwest; break;
+                                case Models.Anchor.Top: g = Gravity.North; break;
+                                case Models.Anchor.TopRight: g = Gravity.Northeast; break;
+                                case Models.Anchor.Left: g = Gravity.West; break;
+                                case Models.Anchor.Center: g = Gravity.Center; break;
+                                case Models.Anchor.Right: g = Gravity.East; break;
+                                case Models.Anchor.BottomLeft: g = Gravity.Southwest; break;
+                                case Models.Anchor.Bottom: g = Gravity.South; break;
+                                case Models.Anchor.BottomRight: g = Gravity.Southeast; break;
+                                default: g = Gravity.Undefined; break;
+                            }
+                            mi.Crop(new MagickGeometry(x, y, w, h), g);
+                            mi.RePage();
+                            return mi.ToBitmap();
+                        }
                     }
                 }
             }
@@ -545,7 +549,70 @@ namespace VideoImageDeltaApp
                 {
                     Box_Main.BackgroundImage.Dispose();
                 }
-                Image i = RescaleThumbnail(v.GetThumbnail(timestamp));
+
+                Image i = v.GetThumbnail(timestamp);
+                Image i3 = (Image)i.Clone();
+
+                if (DropBox_Watch_Preview.SelectedIndex > -1)
+                {
+                    Bitmap i2 = new Bitmap(1, 1);
+                    // Using strings to store this stuff is a bad idea...
+                    string[] words = DropBox_Watch_Preview.Text.Split('/');
+                    if (words.Count() != 3)
+                        throw new Exception("Slashes were used on variable names.");
+                    var sl = SelectedGameProfile.Screens.Where(z => z.Name == words[0]);
+                    if (sl.Count() > 0)
+                    {
+                        var wzl = sl.First().WatchZones.Where(z => z.Name == words[1]);
+                        if (wzl.Count() > 0)
+                        {
+                            var words2 = words[2].Split(new string[] { " - " }, StringSplitOptions.None);
+                            if (words2.Count() != 2)
+                                throw new Exception("\" - \" was used in a Watcher or File name.");
+                            var wl = wzl.First().Watches.Where(z => z.Name == words2[0]);
+                            if (wl.Count() > 0)
+                            {
+                                var il = wl.First().Images.Where(z => z.FileName == words2[1]);
+                                if (il.Count() > 0)
+                                {
+                                    i2 = (Bitmap)il.First().Image;
+                                }
+                                else
+                                    throw new Exception("The Image no longer exists." +
+                                        "\r\nException handling for this hasn't been fully implemented. Hope you don't crash!");
+                            }
+                            else
+                                throw new Exception("Despite being selectable, the Watcher does not exist.");
+                        }
+                        else
+                            throw new Exception("Despite being selectable, the WatchZone does not exist.");
+                    }
+                    else
+                        throw new Exception("Despite being selectable, the Screen does not exist.");
+
+                    using (MagickImage mi2 = new MagickImage((Bitmap)RescaleThumbnail(i3, true)))
+                    {
+                        using (MagickImage mi1 = new MagickImage(i2)) // Why you no crop?
+                        {
+                            // Make error metric selectable in the future.
+                            double delta = mi1.Compare(mi2, ErrorMetric.MeanSquared);
+                            delta = 100 - Math.Round(delta * 100, 4);
+                            Label_Delta_Number.Text = delta.ToString().PadRight(7,'0') + "%";
+                            Label_Delta_Number.Show();
+                            mi1.Write(@"D:\debug1.bmp");
+                            mi2.Write(@"D:\debug2.bmp");
+                        }
+                    }
+                    i2 = null;
+                    i3 = null;
+                }
+                else
+                {
+                    Label_Delta_Number.Text = null;
+                }
+
+                i = RescaleThumbnail(i);
+
                 if (i != null)
                 {
                     Box_Main.BackgroundImage = i;
@@ -586,13 +653,15 @@ namespace VideoImageDeltaApp
             {
                 double screenWidth = PreviewBoxGeometryBefore.Width;
                 double screenHeight = PreviewBoxGeometryBefore.Height;
-                if (SelectedPreviewType == PreviewType.Screen)
+                if (SelectedPreviewType == PreviewType.Screen && PreviewBoxGeometryRescale != null)
                 {
                     screenWidth = PreviewBoxGeometryRescale.Width;
                     screenHeight = PreviewBoxGeometryRescale.Height;
 
                 }
-                else if (SelectedPreviewType == PreviewType.WatchZone && DropBox_Watch_Preview.Text != null)
+                else if (SelectedPreviewType == PreviewType.WatchZone &&
+                    DropBox_Watch_Preview.Text != null &&
+                    PreviewBoxGeometryAfter != null)
                 {
                     screenWidth = PreviewBoxGeometryAfter.Width;
                     screenHeight = PreviewBoxGeometryAfter.Height;
@@ -626,10 +695,43 @@ namespace VideoImageDeltaApp
             double width = (double)Numeric_Width.Value;
             double height = (double)Numeric_Height.Value;
 
+            double reScaleWidth = 1;
+            double reScaleHeight = 1;
+
+            if (SelectedPreviewType == PreviewType.Feed)
+            {
+                x -= PreviewBoxGeometryBefore.X;
+                y -= PreviewBoxGeometryBefore.Y;
+            }
+            else if (SelectedPreviewType == PreviewType.Screen && PreviewBoxGeometryRescale != null)
+            {
+                x = 0;
+                y = 0;
+                screenWidth = PreviewBoxGeometryRescale.Width;
+                screenHeight = PreviewBoxGeometryRescale.Height;
+                reScaleWidth = PreviewBoxGeometryRescale.Width / PreviewBoxGeometryBefore.Width;
+                reScaleHeight = PreviewBoxGeometryRescale.Height / PreviewBoxGeometryBefore.Height;
+            }
+            else if (SelectedPreviewType == PreviewType.WatchZone &&
+                DropBox_Watch_Preview.Text != null &&
+                PreviewBoxGeometryAfter != null)
+            {
+                // Anchors make this complicated
+                // Width and Height are good but X and Y need work.
+                reScaleWidth = PreviewBoxGeometryRescale.Width / PreviewBoxGeometryBefore.Width;
+                reScaleHeight = PreviewBoxGeometryRescale.Height / PreviewBoxGeometryBefore.Height;
+                //var tmp = PreviewBoxGeometryAfter.WithoutAnchor(PreviewBoxGeometryRescale);
+                x = 0;
+                y = 0;
+                screenWidth = PreviewBoxGeometryAfter.Width;
+                screenHeight = PreviewBoxGeometryAfter.Height;
+            }
+
+
             Size size = new Size();
             Point point = new Point();
-            double scaleWidth = Box_Main.Size.Width / screenWidth;
-            double scaleHeight = Box_Main.Size.Height / screenHeight;
+            double scaleWidth = Box_Main.Size.Width / screenWidth * reScaleWidth;
+            double scaleHeight = Box_Main.Size.Height / screenHeight * reScaleHeight;
 
             if (x < 0d) { x = screenWidth + x; } // I don't think this even works for x and y.
             if (y < 0d) { y = screenHeight + y; }
@@ -737,7 +839,6 @@ namespace VideoImageDeltaApp
         {
             TextBox_Name.Text = null;
             CheckBox_Timer.Checked = false;
-            //CheckBox_Perfect.Checked = false;
             Numeric_X.Value = 0m;
             Numeric_Y.Value = 0m;
             Numeric_Width.Value = 100m;
@@ -753,12 +854,11 @@ namespace VideoImageDeltaApp
             {
                 TextBox_Name.Text = f.Name;
                 CheckBox_Timer.Checked = f.UseOCR;
-                //CheckBox_Perfect.Checked = f.AccurateCapture;
                 Numeric_X.Value = (decimal)f.Geometry.X;
                 Numeric_Y.Value = (decimal)f.Geometry.Y;
                 Numeric_Width.Value = (decimal)f.Geometry.Width;
                 Numeric_Height.Value = (decimal)f.Geometry.Height;
-                if (f.GameGeometry != null && CheckBox_Advanced.Checked)
+                if (f.GameGeometry != null)
                 {
                     Numeric_Game_Width.Value = (decimal)f.GameGeometry.Width;
                     Numeric_Game_Height.Value = (decimal)f.GameGeometry.Height;
@@ -894,8 +994,8 @@ namespace VideoImageDeltaApp
                 {
                     TextBox_Timestamp.BackColor = Color.White;
                     Display_Thumbnail(SelectedVideo, timestamp);
-                    TrackBar_Thumbnail.Value =
-                        (int)Math.Round(timestamp.TotalSeconds / SelectedVideo.Duration.TotalSeconds * TrackBar_Thumbnail.Maximum);
+                    TrackBar_Timestamp.Value =
+                        (int)Math.Round(timestamp.TotalSeconds / SelectedVideo.Duration.TotalSeconds * TrackBar_Timestamp.Maximum);
                 } else
                 {
                     TextBox_Timestamp.BackColor = Color.FromArgb(224, 64, 64);
@@ -991,17 +1091,17 @@ namespace VideoImageDeltaApp
         }
 
         // Used over ValueChanged to avoid feedback loop
-        private void TrackBar_Thumbnail_MouseUp(object sender, MouseEventArgs e)
+        private void TrackBar_Timestamp_MouseUp(object sender, MouseEventArgs e)
         {
-            var seconds = SelectedVideo.Duration.TotalSeconds * TrackBar_Thumbnail.Value / TrackBar_Thumbnail.Maximum;
+            var seconds = SelectedVideo.Duration.TotalSeconds * TrackBar_Timestamp.Value / TrackBar_Timestamp.Maximum;
             seconds = Math.Floor(seconds * SelectedVideo.FrameRate) / SelectedVideo.FrameRate;
             var timestamp = TimeSpan.FromSeconds(Math.Min(SelectedVideo.Duration.TotalSeconds, Math.Max(seconds, 0d)));
             TextBox_Timestamp.Text = timestamp.ToString(@"hh\:mm\:ss\.fff", CultureInfo.CurrentCulture);
         }
 
-        private void TrackBar_Thumbnail_KeyUp(object sender, KeyEventArgs e)
+        private void TrackBar_Timestamp_KeyUp(object sender, KeyEventArgs e)
         {
-            TrackBar_Thumbnail_MouseUp(null, null);
+            TrackBar_Timestamp_MouseUp(null, null);
         }
 
         private void Button_Minus_Feeds_Click(object sender, EventArgs e)
@@ -1018,8 +1118,8 @@ namespace VideoImageDeltaApp
         {
             if (!seenWarning)
             {
-                DialogResult dr = MessageBox.Show("Only use these options if you understand what they do.",
-                    "Warning", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                //DialogResult dr = MessageBox.Show("Only use these options if you understand what they do.",
+                //    "Warning", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 seenWarning = true;
             }
             if (CheckBox_Advanced.Checked)
@@ -1217,6 +1317,11 @@ namespace VideoImageDeltaApp
         private void DropBox_Preview_Type_SelectedIndexChanged(object sender, EventArgs e)
         {
             TextBox_Timestamp_TextChanged(null, null);
+        }
+
+        private void Calculate_Delta()
+        {
+
         }
     }
 

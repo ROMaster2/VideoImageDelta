@@ -68,11 +68,14 @@
             this.TextBox_Name = new System.Windows.Forms.TextBox();
             this.Label_Name = new System.Windows.Forms.Label();
             this.Panel_Feeds = new System.Windows.Forms.Panel();
+            this.Label_Delta_Number = new System.Windows.Forms.Label();
+            this.Label_Delta = new System.Windows.Forms.Label();
+            this.Label_Preview_Type = new System.Windows.Forms.Label();
+            this.DropBox_Watch_Preview = new System.Windows.Forms.ComboBox();
             this.Label_Timestamp = new System.Windows.Forms.Label();
             this.DropBox_Preview_Type = new System.Windows.Forms.ComboBox();
             this.TextBox_Timestamp = new System.Windows.Forms.TextBox();
-            this.TrackBar_Thumbnail = new System.Windows.Forms.TrackBar();
-            this.DropBox_Watch_Preview = new System.Windows.Forms.ComboBox();
+            this.TrackBar_Timestamp = new System.Windows.Forms.TrackBar();
             this.CheckedListBox_Screens = new System.Windows.Forms.CheckedListBox();
             this.ListBox_Feeds = new System.Windows.Forms.ListBox();
             this.Panel_Back = new System.Windows.Forms.Panel();
@@ -92,7 +95,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_Y)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_X)).BeginInit();
             this.Panel_Feeds.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.TrackBar_Thumbnail)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.TrackBar_Timestamp)).BeginInit();
             this.Panel_Back.SuspendLayout();
             this.Box_Main.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SplitContainer_Core)).BeginInit();
@@ -185,6 +188,8 @@
             // 
             this.CheckBox_Advanced.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.CheckBox_Advanced.AutoSize = true;
+            this.CheckBox_Advanced.Checked = true;
+            this.CheckBox_Advanced.CheckState = System.Windows.Forms.CheckState.Checked;
             this.CheckBox_Advanced.Location = new System.Drawing.Point(816, 6);
             this.CheckBox_Advanced.Name = "CheckBox_Advanced";
             this.CheckBox_Advanced.Size = new System.Drawing.Size(144, 17);
@@ -367,33 +372,31 @@
             // Numeric_Game_Height
             // 
             this.Numeric_Game_Height.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Numeric_Game_Height.Location = new System.Drawing.Point(100, 120);
+            this.Numeric_Game_Height.Location = new System.Drawing.Point(98, 120);
             this.Numeric_Game_Height.Maximum = new decimal(new int[] {
             4320,
             0,
             0,
             0});
             this.Numeric_Game_Height.Name = "Numeric_Game_Height";
-            this.Numeric_Game_Height.Size = new System.Drawing.Size(60, 20);
+            this.Numeric_Game_Height.Size = new System.Drawing.Size(64, 20);
             this.Numeric_Game_Height.TabIndex = 10;
             this.Numeric_Game_Height.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.Numeric_Game_Height.Visible = false;
             this.Numeric_Game_Height.Enter += new System.EventHandler(this.Numeric_Auto_Selector);
             // 
             // Numeric_Game_Width
             // 
             this.Numeric_Game_Width.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Numeric_Game_Width.Location = new System.Drawing.Point(16, 120);
+            this.Numeric_Game_Width.Location = new System.Drawing.Point(14, 120);
             this.Numeric_Game_Width.Maximum = new decimal(new int[] {
             7680,
             0,
             0,
             0});
             this.Numeric_Game_Width.Name = "Numeric_Game_Width";
-            this.Numeric_Game_Width.Size = new System.Drawing.Size(60, 20);
+            this.Numeric_Game_Width.Size = new System.Drawing.Size(64, 20);
             this.Numeric_Game_Width.TabIndex = 9;
             this.Numeric_Game_Width.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.Numeric_Game_Width.Visible = false;
             this.Numeric_Game_Width.Enter += new System.EventHandler(this.Numeric_Auto_Selector);
             // 
             // Label_Game_Height
@@ -405,7 +408,6 @@
             this.Label_Game_Height.Size = new System.Drawing.Size(69, 13);
             this.Label_Game_Height.TabIndex = 216;
             this.Label_Game_Height.Text = "Game Height";
-            this.Label_Game_Height.Visible = false;
             // 
             // Label_Game_Width
             // 
@@ -416,7 +418,6 @@
             this.Label_Game_Width.Size = new System.Drawing.Size(66, 13);
             this.Label_Game_Width.TabIndex = 215;
             this.Label_Game_Width.Text = "Game Width";
-            this.Label_Game_Width.Visible = false;
             // 
             // CheckBox_Timer
             // 
@@ -444,7 +445,7 @@
             // Numeric_Height
             // 
             this.Numeric_Height.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Numeric_Height.Location = new System.Drawing.Point(100, 74);
+            this.Numeric_Height.Location = new System.Drawing.Point(98, 74);
             this.Numeric_Height.Maximum = new decimal(new int[] {
             4320,
             0,
@@ -456,7 +457,7 @@
             0,
             -2147483648});
             this.Numeric_Height.Name = "Numeric_Height";
-            this.Numeric_Height.Size = new System.Drawing.Size(60, 20);
+            this.Numeric_Height.Size = new System.Drawing.Size(64, 20);
             this.Numeric_Height.TabIndex = 8;
             this.Numeric_Height.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.Numeric_Height.Value = new decimal(new int[] {
@@ -470,7 +471,7 @@
             // Numeric_Width
             // 
             this.Numeric_Width.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Numeric_Width.Location = new System.Drawing.Point(16, 74);
+            this.Numeric_Width.Location = new System.Drawing.Point(14, 74);
             this.Numeric_Width.Maximum = new decimal(new int[] {
             7680,
             0,
@@ -482,7 +483,7 @@
             0,
             -2147483648});
             this.Numeric_Width.Name = "Numeric_Width";
-            this.Numeric_Width.Size = new System.Drawing.Size(60, 20);
+            this.Numeric_Width.Size = new System.Drawing.Size(64, 20);
             this.Numeric_Width.TabIndex = 7;
             this.Numeric_Width.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.Numeric_Width.Value = new decimal(new int[] {
@@ -496,7 +497,7 @@
             // Numeric_Y
             // 
             this.Numeric_Y.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Numeric_Y.Location = new System.Drawing.Point(100, 28);
+            this.Numeric_Y.Location = new System.Drawing.Point(98, 28);
             this.Numeric_Y.Maximum = new decimal(new int[] {
             4320,
             0,
@@ -508,7 +509,7 @@
             0,
             -2147483648});
             this.Numeric_Y.Name = "Numeric_Y";
-            this.Numeric_Y.Size = new System.Drawing.Size(60, 20);
+            this.Numeric_Y.Size = new System.Drawing.Size(64, 20);
             this.Numeric_Y.TabIndex = 6;
             this.Numeric_Y.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.Numeric_Y.ValueChanged += new System.EventHandler(this.Numeric_ValueChanged);
@@ -517,7 +518,7 @@
             // Numeric_X
             // 
             this.Numeric_X.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Numeric_X.Location = new System.Drawing.Point(16, 28);
+            this.Numeric_X.Location = new System.Drawing.Point(14, 28);
             this.Numeric_X.Maximum = new decimal(new int[] {
             7680,
             0,
@@ -529,7 +530,7 @@
             0,
             -2147483648});
             this.Numeric_X.Name = "Numeric_X";
-            this.Numeric_X.Size = new System.Drawing.Size(60, 20);
+            this.Numeric_X.Size = new System.Drawing.Size(64, 20);
             this.Numeric_X.TabIndex = 5;
             this.Numeric_X.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.Numeric_X.ValueChanged += new System.EventHandler(this.Numeric_ValueChanged);
@@ -600,21 +601,67 @@
             this.Panel_Feeds.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.Panel_Feeds.Controls.Add(this.Label_Delta_Number);
+            this.Panel_Feeds.Controls.Add(this.Label_Delta);
+            this.Panel_Feeds.Controls.Add(this.Label_Preview_Type);
             this.Panel_Feeds.Controls.Add(this.DropBox_Watch_Preview);
             this.Panel_Feeds.Controls.Add(this.Label_Timestamp);
             this.Panel_Feeds.Controls.Add(this.DropBox_Preview_Type);
             this.Panel_Feeds.Controls.Add(this.TextBox_Timestamp);
-            this.Panel_Feeds.Controls.Add(this.TrackBar_Thumbnail);
-            this.Panel_Feeds.Location = new System.Drawing.Point(3, 167);
+            this.Panel_Feeds.Controls.Add(this.TrackBar_Timestamp);
+            this.Panel_Feeds.Location = new System.Drawing.Point(3, 115);
             this.Panel_Feeds.Name = "Panel_Feeds";
-            this.Panel_Feeds.Size = new System.Drawing.Size(168, 123);
+            this.Panel_Feeds.Size = new System.Drawing.Size(168, 175);
             this.Panel_Feeds.TabIndex = 6;
+            // 
+            // Label_Delta_Number
+            // 
+            this.Label_Delta_Number.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.Label_Delta_Number.Location = new System.Drawing.Point(99, 135);
+            this.Label_Delta_Number.Name = "Label_Delta_Number";
+            this.Label_Delta_Number.Size = new System.Drawing.Size(66, 13);
+            this.Label_Delta_Number.TabIndex = 222;
+            this.Label_Delta_Number.Text = "420.69%";
+            this.Label_Delta_Number.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.Label_Delta_Number.Visible = false;
+            // 
+            // Label_Delta
+            // 
+            this.Label_Delta.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.Label_Delta.AutoSize = true;
+            this.Label_Delta.Location = new System.Drawing.Point(5, 134);
+            this.Label_Delta.Name = "Label_Delta";
+            this.Label_Delta.Size = new System.Drawing.Size(66, 13);
+            this.Label_Delta.TabIndex = 221;
+            this.Label_Delta.Text = "Delta Check";
+            // 
+            // Label_Preview_Type
+            // 
+            this.Label_Preview_Type.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.Label_Preview_Type.AutoSize = true;
+            this.Label_Preview_Type.Location = new System.Drawing.Point(48, 8);
+            this.Label_Preview_Type.Name = "Label_Preview_Type";
+            this.Label_Preview_Type.Size = new System.Drawing.Size(72, 13);
+            this.Label_Preview_Type.TabIndex = 220;
+            this.Label_Preview_Type.Text = "Preview Type";
+            // 
+            // DropBox_Watch_Preview
+            // 
+            this.DropBox_Watch_Preview.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.DropBox_Watch_Preview.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.DropBox_Watch_Preview.FormattingEnabled = true;
+            this.DropBox_Watch_Preview.Location = new System.Drawing.Point(3, 151);
+            this.DropBox_Watch_Preview.Name = "DropBox_Watch_Preview";
+            this.DropBox_Watch_Preview.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.DropBox_Watch_Preview.Size = new System.Drawing.Size(162, 21);
+            this.DropBox_Watch_Preview.TabIndex = 218;
+            this.DropBox_Watch_Preview.SelectedIndexChanged += new System.EventHandler(this.DropBox_Watch_Preview_SelectedIndexChanged);
             // 
             // Label_Timestamp
             // 
             this.Label_Timestamp.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Label_Timestamp.AutoSize = true;
-            this.Label_Timestamp.Location = new System.Drawing.Point(30, 33);
+            this.Label_Timestamp.Location = new System.Drawing.Point(30, 61);
             this.Label_Timestamp.Name = "Label_Timestamp";
             this.Label_Timestamp.Size = new System.Drawing.Size(110, 13);
             this.Label_Timestamp.TabIndex = 214;
@@ -622,7 +669,7 @@
             // 
             // DropBox_Preview_Type
             // 
-            this.DropBox_Preview_Type.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.DropBox_Preview_Type.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.DropBox_Preview_Type.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.DropBox_Preview_Type.FormattingEnabled = true;
             this.DropBox_Preview_Type.Items.AddRange(new object[] {
@@ -630,7 +677,7 @@
             "Feed",
             "Screen",
             "WatchZone"});
-            this.DropBox_Preview_Type.Location = new System.Drawing.Point(3, 3);
+            this.DropBox_Preview_Type.Location = new System.Drawing.Point(3, 25);
             this.DropBox_Preview_Type.Name = "DropBox_Preview_Type";
             this.DropBox_Preview_Type.Size = new System.Drawing.Size(162, 21);
             this.DropBox_Preview_Type.TabIndex = 219;
@@ -639,39 +686,27 @@
             // TextBox_Timestamp
             // 
             this.TextBox_Timestamp.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.TextBox_Timestamp.Location = new System.Drawing.Point(45, 49);
+            this.TextBox_Timestamp.Location = new System.Drawing.Point(45, 77);
             this.TextBox_Timestamp.MaxLength = 12;
             this.TextBox_Timestamp.Name = "TextBox_Timestamp";
             this.TextBox_Timestamp.Size = new System.Drawing.Size(80, 20);
             this.TextBox_Timestamp.TabIndex = 2;
-            this.TextBox_Timestamp.Text = "01:23:45.000";
+            this.TextBox_Timestamp.Text = "01:23:45.678";
             this.TextBox_Timestamp.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.TextBox_Timestamp.TextChanged += new System.EventHandler(this.TextBox_Timestamp_TextChanged);
             // 
-            // TrackBar_Thumbnail
+            // TrackBar_Timestamp
             // 
-            this.TrackBar_Thumbnail.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.TrackBar_Thumbnail.Location = new System.Drawing.Point(1, 69);
-            this.TrackBar_Thumbnail.Maximum = 150;
-            this.TrackBar_Thumbnail.Name = "TrackBar_Thumbnail";
-            this.TrackBar_Thumbnail.Size = new System.Drawing.Size(164, 45);
-            this.TrackBar_Thumbnail.TabIndex = 215;
-            this.TrackBar_Thumbnail.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.TrackBar_Thumbnail.Value = 4;
-            this.TrackBar_Thumbnail.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TrackBar_Thumbnail_KeyUp);
-            this.TrackBar_Thumbnail.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TrackBar_Thumbnail_MouseUp);
-            // 
-            // DropBox_Watch_Preview
-            // 
-            this.DropBox_Watch_Preview.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.DropBox_Watch_Preview.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.DropBox_Watch_Preview.FormattingEnabled = true;
-            this.DropBox_Watch_Preview.Location = new System.Drawing.Point(3, 99);
-            this.DropBox_Watch_Preview.Name = "DropBox_Watch_Preview";
-            this.DropBox_Watch_Preview.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.DropBox_Watch_Preview.Size = new System.Drawing.Size(162, 21);
-            this.DropBox_Watch_Preview.TabIndex = 218;
-            this.DropBox_Watch_Preview.SelectedIndexChanged += new System.EventHandler(this.DropBox_Watch_Preview_SelectedIndexChanged);
+            this.TrackBar_Timestamp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.TrackBar_Timestamp.Location = new System.Drawing.Point(1, 97);
+            this.TrackBar_Timestamp.Maximum = 150;
+            this.TrackBar_Timestamp.Name = "TrackBar_Timestamp";
+            this.TrackBar_Timestamp.Size = new System.Drawing.Size(164, 45);
+            this.TrackBar_Timestamp.TabIndex = 215;
+            this.TrackBar_Timestamp.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.TrackBar_Timestamp.Value = 4;
+            this.TrackBar_Timestamp.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TrackBar_Timestamp_KeyUp);
+            this.TrackBar_Timestamp.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TrackBar_Timestamp_MouseUp);
             // 
             // CheckedListBox_Screens
             // 
@@ -680,9 +715,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.CheckedListBox_Screens.FormattingEnabled = true;
             this.CheckedListBox_Screens.IntegralHeight = false;
-            this.CheckedListBox_Screens.Location = new System.Drawing.Point(3, 85);
+            this.CheckedListBox_Screens.Location = new System.Drawing.Point(3, 59);
             this.CheckedListBox_Screens.Name = "CheckedListBox_Screens";
-            this.CheckedListBox_Screens.Size = new System.Drawing.Size(168, 76);
+            this.CheckedListBox_Screens.Size = new System.Drawing.Size(168, 50);
             this.CheckedListBox_Screens.TabIndex = 217;
             this.CheckedListBox_Screens.MouseUp += new System.Windows.Forms.MouseEventHandler(this.CheckedListBox_Screens_MouseUp);
             // 
@@ -695,7 +730,7 @@
             this.ListBox_Feeds.IntegralHeight = false;
             this.ListBox_Feeds.Location = new System.Drawing.Point(3, 3);
             this.ListBox_Feeds.Name = "ListBox_Feeds";
-            this.ListBox_Feeds.Size = new System.Drawing.Size(168, 76);
+            this.ListBox_Feeds.Size = new System.Drawing.Size(168, 50);
             this.ListBox_Feeds.TabIndex = 216;
             this.ListBox_Feeds.SelectedIndexChanged += new System.EventHandler(this.ListBox_Feeds_SelectedIndexChanged);
             this.ListBox_Feeds.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ListBox_Feeds_KeyDown);
@@ -810,8 +845,7 @@
             this.TableLayoutPanel_Preview_Options.RowCount = 3;
             this.TableLayoutPanel_Preview_Options.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.TableLayoutPanel_Preview_Options.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.TableLayoutPanel_Preview_Options.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 129F));
-            this.TableLayoutPanel_Preview_Options.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.TableLayoutPanel_Preview_Options.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 180F));
             this.TableLayoutPanel_Preview_Options.Size = new System.Drawing.Size(174, 293);
             this.TableLayoutPanel_Preview_Options.TabIndex = 8;
             // 
@@ -845,7 +879,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.Numeric_X)).EndInit();
             this.Panel_Feeds.ResumeLayout(false);
             this.Panel_Feeds.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.TrackBar_Thumbnail)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.TrackBar_Timestamp)).EndInit();
             this.Panel_Back.ResumeLayout(false);
             this.Panel_Back.PerformLayout();
             this.Box_Main.ResumeLayout(false);
@@ -896,7 +930,7 @@
         private System.Windows.Forms.Label Label_Failed;
         private System.Windows.Forms.TextBox TextBox_Timestamp;
         private System.Windows.Forms.Label Label_Timestamp;
-        private System.Windows.Forms.TrackBar TrackBar_Thumbnail;
+        private System.Windows.Forms.TrackBar TrackBar_Timestamp;
         private System.Windows.Forms.CheckBox CheckBox_Advanced;
         private System.Windows.Forms.NumericUpDown Numeric_Game_Height;
         private System.Windows.Forms.NumericUpDown Numeric_Game_Width;
@@ -917,5 +951,8 @@
         private System.Windows.Forms.SplitContainer SplitContainer_Core;
         private System.Windows.Forms.TableLayoutPanel TableLayoutPanel_Options;
         private System.Windows.Forms.TableLayoutPanel TableLayoutPanel_Preview_Options;
+        private System.Windows.Forms.Label Label_Delta_Number;
+        private System.Windows.Forms.Label Label_Delta;
+        private System.Windows.Forms.Label Label_Preview_Type;
     }
 }

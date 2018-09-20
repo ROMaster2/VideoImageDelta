@@ -148,7 +148,6 @@ namespace VideoImageDeltaApp.Models
             double _y;
 
             if (Anchor == Anchor.Undefined || 
-                Anchor == Anchor.Center ||
                 Anchor.HasFlag(Anchor.Left))
             {
                 _x = X;
@@ -161,7 +160,6 @@ namespace VideoImageDeltaApp.Models
             }
 
             if (Anchor == Anchor.Undefined || 
-                Anchor == Anchor.Center ||
                 Anchor.HasFlag(Anchor.Top))
             {
                 _y = Y;
