@@ -103,7 +103,7 @@ namespace VideoImageDeltaApp.Forms
 
         private void Button_Process_Click(object sender, EventArgs e)
         {
-            //Test.RunTest(Program.Videos, Program.GameProfiles);
+            Test.Run();
         }
 
     }

@@ -44,10 +44,28 @@ using VideoImageDeltaApp;
 using VideoImageDeltaApp.Forms;
 using VideoImageDeltaApp.Models;
 
+using Screen = VideoImageDeltaApp.Models.Screen;
+
 namespace VideoImageDeltaApp
 {
     class Test
     {
+        public static void Run()
+        {
+            Program.Videos[0].Feeds[0].ClearScreens();
+            //Program.Videos[0].Feeds[0]._Screens.Clear();
+
+            var tmp1 = Program.Videos[0].Feeds[0].Screens;
+            var tmp2 = Program.Videos[0].Feeds[0].ScreensRaw;
+            var tmp3 = Program.GameProfiles[0].Screens;
+
+            Program.Videos[0].Feeds[0].AddScreen(Program.GameProfiles[0].Screens[0]);
+
+            var tmp4 = Program.Videos[0].Feeds[0].Screens;
+            var tmp5 = Program.Videos[0].Feeds[0].ScreensRaw;
+            var tmp6 = Program.GameProfiles[0].Screens;
+        }
+
         static public void RunTest(List<Video> videos, List<GameProfile> gameProfiles)
         {
             // Force pair Feeds and Screens on matching names for testing. UI later.

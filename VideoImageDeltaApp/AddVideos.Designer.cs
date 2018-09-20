@@ -43,7 +43,7 @@
             this.VideoDuration = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.VideoFeeds = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.VideoGameProfiles = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ColumnIsSynced = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.VideoIsSynced = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Panel_GameProfile_Options = new System.Windows.Forms.Panel();
             this.CheckBox_AutoMatch = new System.Windows.Forms.CheckBox();
             this.Button_Pair_VandG = new System.Windows.Forms.Button();
@@ -208,7 +208,7 @@
             this.VideoDuration,
             this.VideoFeeds,
             this.VideoGameProfiles,
-            this.ColumnIsSynced});
+            this.VideoIsSynced});
             this.ListView_Videos.FullRowSelect = true;
             this.ListView_Videos.HideSelection = false;
             this.ListView_Videos.LabelWrap = false;
@@ -261,10 +261,10 @@
             this.VideoGameProfiles.Text = "Game Profiles";
             this.VideoGameProfiles.Width = 96;
             // 
-            // ColumnIsSynced
+            // VideoIsSynced
             // 
-            this.ColumnIsSynced.Text = "Synced?";
-            this.ColumnIsSynced.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.VideoIsSynced.Text = "Synced?";
+            this.VideoIsSynced.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // Panel_GameProfile_Options
             // 
@@ -324,7 +324,7 @@
             this.DropBox_GameProfile.Name = "DropBox_GameProfile";
             this.DropBox_GameProfile.Size = new System.Drawing.Size(120, 21);
             this.DropBox_GameProfile.TabIndex = 0;
-            this.DropBox_GameProfile.SelectedIndexChanged += new System.EventHandler(this.ComboBox_GameProfile_SelectedIndexChanged);
+            this.DropBox_GameProfile.SelectedIndexChanged += new System.EventHandler(this.DropBox_GameProfile_SelectedIndexChanged);
             // 
             // Panel_Input
             // 
@@ -600,13 +600,14 @@
             this.Panel_Feeds.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.Panel_Feeds.Controls.Add(this.DropBox_Watch_Preview);
             this.Panel_Feeds.Controls.Add(this.Label_Timestamp);
             this.Panel_Feeds.Controls.Add(this.DropBox_Preview_Type);
             this.Panel_Feeds.Controls.Add(this.TextBox_Timestamp);
             this.Panel_Feeds.Controls.Add(this.TrackBar_Thumbnail);
-            this.Panel_Feeds.Location = new System.Drawing.Point(3, 3);
+            this.Panel_Feeds.Location = new System.Drawing.Point(3, 167);
             this.Panel_Feeds.Name = "Panel_Feeds";
-            this.Panel_Feeds.Size = new System.Drawing.Size(168, 94);
+            this.Panel_Feeds.Size = new System.Drawing.Size(168, 123);
             this.Panel_Feeds.TabIndex = 6;
             // 
             // Label_Timestamp
@@ -624,19 +625,26 @@
             this.DropBox_Preview_Type.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.DropBox_Preview_Type.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.DropBox_Preview_Type.FormattingEnabled = true;
-            this.DropBox_Preview_Type.Location = new System.Drawing.Point(65, 3);
+            this.DropBox_Preview_Type.Items.AddRange(new object[] {
+            "Video",
+            "Feed",
+            "Screen",
+            "WatchZone"});
+            this.DropBox_Preview_Type.Location = new System.Drawing.Point(3, 3);
             this.DropBox_Preview_Type.Name = "DropBox_Preview_Type";
-            this.DropBox_Preview_Type.Size = new System.Drawing.Size(100, 21);
+            this.DropBox_Preview_Type.Size = new System.Drawing.Size(162, 21);
             this.DropBox_Preview_Type.TabIndex = 219;
+            this.DropBox_Preview_Type.SelectedIndexChanged += new System.EventHandler(this.DropBox_Preview_Type_SelectedIndexChanged);
             // 
             // TextBox_Timestamp
             // 
             this.TextBox_Timestamp.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.TextBox_Timestamp.Location = new System.Drawing.Point(51, 49);
+            this.TextBox_Timestamp.Location = new System.Drawing.Point(45, 49);
+            this.TextBox_Timestamp.MaxLength = 12;
             this.TextBox_Timestamp.Name = "TextBox_Timestamp";
-            this.TextBox_Timestamp.Size = new System.Drawing.Size(69, 20);
+            this.TextBox_Timestamp.Size = new System.Drawing.Size(80, 20);
             this.TextBox_Timestamp.TabIndex = 2;
-            this.TextBox_Timestamp.Text = "01:23:45";
+            this.TextBox_Timestamp.Text = "01:23:45.000";
             this.TextBox_Timestamp.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.TextBox_Timestamp.TextChanged += new System.EventHandler(this.TextBox_Timestamp_TextChanged);
             // 
@@ -644,7 +652,7 @@
             // 
             this.TrackBar_Thumbnail.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.TrackBar_Thumbnail.Location = new System.Drawing.Point(1, 69);
-            this.TrackBar_Thumbnail.Maximum = 100;
+            this.TrackBar_Thumbnail.Maximum = 150;
             this.TrackBar_Thumbnail.Name = "TrackBar_Thumbnail";
             this.TrackBar_Thumbnail.Size = new System.Drawing.Size(164, 45);
             this.TrackBar_Thumbnail.TabIndex = 215;
@@ -658,11 +666,12 @@
             this.DropBox_Watch_Preview.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.DropBox_Watch_Preview.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.DropBox_Watch_Preview.FormattingEnabled = true;
-            this.DropBox_Watch_Preview.Location = new System.Drawing.Point(3, 268);
+            this.DropBox_Watch_Preview.Location = new System.Drawing.Point(3, 99);
             this.DropBox_Watch_Preview.Name = "DropBox_Watch_Preview";
-            this.DropBox_Watch_Preview.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.DropBox_Watch_Preview.Size = new System.Drawing.Size(168, 21);
+            this.DropBox_Watch_Preview.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.DropBox_Watch_Preview.Size = new System.Drawing.Size(162, 21);
             this.DropBox_Watch_Preview.TabIndex = 218;
+            this.DropBox_Watch_Preview.SelectedIndexChanged += new System.EventHandler(this.DropBox_Watch_Preview_SelectedIndexChanged);
             // 
             // CheckedListBox_Screens
             // 
@@ -671,11 +680,11 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.CheckedListBox_Screens.FormattingEnabled = true;
             this.CheckedListBox_Screens.IntegralHeight = false;
-            this.CheckedListBox_Screens.Location = new System.Drawing.Point(3, 185);
+            this.CheckedListBox_Screens.Location = new System.Drawing.Point(3, 85);
             this.CheckedListBox_Screens.Name = "CheckedListBox_Screens";
             this.CheckedListBox_Screens.Size = new System.Drawing.Size(168, 76);
             this.CheckedListBox_Screens.TabIndex = 217;
-            this.CheckedListBox_Screens.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.CheckedListBox_Screens_ItemCheck);
+            this.CheckedListBox_Screens.MouseUp += new System.Windows.Forms.MouseEventHandler(this.CheckedListBox_Screens_MouseUp);
             // 
             // ListBox_Feeds
             // 
@@ -684,11 +693,12 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ListBox_Feeds.FormattingEnabled = true;
             this.ListBox_Feeds.IntegralHeight = false;
-            this.ListBox_Feeds.Location = new System.Drawing.Point(3, 103);
+            this.ListBox_Feeds.Location = new System.Drawing.Point(3, 3);
             this.ListBox_Feeds.Name = "ListBox_Feeds";
             this.ListBox_Feeds.Size = new System.Drawing.Size(168, 76);
             this.ListBox_Feeds.TabIndex = 216;
             this.ListBox_Feeds.SelectedIndexChanged += new System.EventHandler(this.ListBox_Feeds_SelectedIndexChanged);
+            this.ListBox_Feeds.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ListBox_Feeds_KeyDown);
             // 
             // Panel_Back
             // 
@@ -792,17 +802,16 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TableLayoutPanel_Preview_Options.ColumnCount = 1;
             this.TableLayoutPanel_Preview_Options.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.TableLayoutPanel_Preview_Options.Controls.Add(this.Panel_Feeds, 0, 0);
-            this.TableLayoutPanel_Preview_Options.Controls.Add(this.DropBox_Watch_Preview, 0, 3);
-            this.TableLayoutPanel_Preview_Options.Controls.Add(this.CheckedListBox_Screens, 0, 2);
-            this.TableLayoutPanel_Preview_Options.Controls.Add(this.ListBox_Feeds, 0, 1);
+            this.TableLayoutPanel_Preview_Options.Controls.Add(this.CheckedListBox_Screens, 0, 1);
+            this.TableLayoutPanel_Preview_Options.Controls.Add(this.Panel_Feeds, 0, 2);
+            this.TableLayoutPanel_Preview_Options.Controls.Add(this.ListBox_Feeds, 0, 0);
             this.TableLayoutPanel_Preview_Options.Location = new System.Drawing.Point(626, 3);
             this.TableLayoutPanel_Preview_Options.Name = "TableLayoutPanel_Preview_Options";
-            this.TableLayoutPanel_Preview_Options.RowCount = 4;
-            this.TableLayoutPanel_Preview_Options.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.TableLayoutPanel_Preview_Options.RowCount = 3;
             this.TableLayoutPanel_Preview_Options.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.TableLayoutPanel_Preview_Options.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.TableLayoutPanel_Preview_Options.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
+            this.TableLayoutPanel_Preview_Options.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 129F));
+            this.TableLayoutPanel_Preview_Options.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.TableLayoutPanel_Preview_Options.Size = new System.Drawing.Size(174, 293);
             this.TableLayoutPanel_Preview_Options.TabIndex = 8;
             // 
@@ -899,7 +908,7 @@
         private System.Windows.Forms.Label Label_GameProfile;
         private System.Windows.Forms.ComboBox DropBox_GameProfile;
         private System.Windows.Forms.ColumnHeader VideoGameProfiles;
-        private System.Windows.Forms.ColumnHeader ColumnIsSynced;
+        private System.Windows.Forms.ColumnHeader VideoIsSynced;
         private System.Windows.Forms.Button Button_AutoAlign;
         private System.Windows.Forms.ListBox ListBox_Feeds;
         private System.Windows.Forms.ComboBox DropBox_Preview_Type;

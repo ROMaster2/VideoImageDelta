@@ -75,13 +75,15 @@ namespace VideoImageDeltaApp
             t.Start();
         }
 
-        public static int StringLengthInPixels(Font font, string str)
+        public static string PrefixNumber(decimal number, int precision = 2, string specifier = "G")
         {
-            using (Graphics graphics = Graphics.FromImage(new Bitmap(1, 1)))
-            {
-                SizeF size = graphics.MeasureString(str, font);
-                return (int)Math.Ceiling(size.Width);
-            }
+            number = Math.Round(number, precision);
+            var str = number.ToString(specifier, CultureInfo.CurrentCulture);
+            if (number >= 0)
+                str = "+" + str;
+            else
+                str = "-" + str;
+            return str;
         }
 
         public double Percentile(double[] sequence, double excelPercentile)

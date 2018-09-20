@@ -387,11 +387,11 @@ namespace VideoImageDeltaApp.Models
             }
         }
 
-        public List<Feed> Feeds { get; set; } = new List<Feed>();
+        public List<Feed> Feeds = new List<Feed>();
 
         public bool IsSynced()
         {
-            return Feeds.Count > 0 && Feeds.All(x => x.Screens.Count > 0);
+            return Feeds.Count > 0 && Feeds.All(x => x.GameProfile != null) && Feeds.All(x => x.Screens.Count > 0);
         }
         
         public Image GetThumbnail(TimeSpan timestamp)
@@ -497,6 +497,18 @@ namespace VideoImageDeltaApp.Models
         public Geometry Geometry { get; set; }
         public Geometry GameGeometry { get; set; }
 
+        public string FullName
+        {
+            get
+            {
+                string start = Geometry.Width.ToString() + "x" + Geometry.Height.ToString();
+                string middle = null;
+                if (Geometry.HasPoint() || Geometry.HasAnchor())
+                    middle = Utilities.PrefixNumber((decimal)Geometry.X) + Utilities.PrefixNumber((decimal)Geometry.Y);
+                return Name + " - " + start + middle;
+            }
+        }
+
         private string _GameProfile;
         public GameProfile GameProfile
         {
@@ -504,7 +516,7 @@ namespace VideoImageDeltaApp.Models
             {
                 var l = Program.GameProfiles.Where(x => x.Name == _GameProfile);
                 if (l.Count() == 0)
-                    return new GameProfile("foobar1");
+                    return null;
                 else
                     return l.First();
             }
@@ -517,14 +529,23 @@ namespace VideoImageDeltaApp.Models
             }
         }
 
+        // Would be private, but then methods like Add and Clear won't passthrough...
         private List<string> _Screens = new List<string>();
-        public List<Screen> Screens
+        public IReadOnlyList<string> ScreensRaw
+        {
+            get
+            {
+                return _Screens.AsReadOnly();
+            }
+        }
+        public IReadOnlyList<Screen> Screens
         {
             get
             {
                 var gps = Program.GameProfiles.Where(x => x.Name == _GameProfile);
                 if (gps.Count() == 0)
-                    return new List<Screen>();
+                    throw new ArgumentException("Game Profile is not set.");
+                    //return new List<Screen>().AsReadOnly();
                 else
                 {
                     var ss = new List<Screen>();
@@ -532,30 +553,24 @@ namespace VideoImageDeltaApp.Models
                     {
                         ss.Add(gps.First().Screens.Where(x => x.Name == s).First());
                     }
-                    return ss;
-                }
-            }
-            set
-            {
-                if (value != null)
-                {
-                    foreach (var s in value)
-                    {
-                        _Screens.Clear();
-                        _Screens.Add(s.Name);
-                    }
+                    return ss.AsReadOnly();
                 }
             }
         }
 
         public void AddScreen(Screen screen)
         {
-            _Screens.Add(screen.Name);
+            if (!_Screens.Exists(x => x == screen.Name))
+                _Screens.Add(screen.Name);
+        }
+        public void ClearScreens()
+        {
+            _Screens.Clear();
         }
 
         override public string ToString()
-        { // Figure out how to get + and - to appear based on value.
-            return Geometry.Width.ToString() + "x" + Geometry.Height.ToString() + " " + Name;
+        {
+            return FullName;
         }
 
     }
@@ -730,6 +745,15 @@ namespace VideoImageDeltaApp.Models
                 return FileName;
         }
 
+    }
+
+    public enum PreviewType
+    {
+        Video,
+        Feed,
+        Screen,
+        WatchZone,
+        Watcher
     }
 
     public class ListVideo : ListViewItem
