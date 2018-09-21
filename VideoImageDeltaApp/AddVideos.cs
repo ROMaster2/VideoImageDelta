@@ -178,6 +178,20 @@ namespace VideoImageDeltaApp
                         }
                         if (abort) break;
 
+                        if (SelectedVideo.GameProfile != null)
+                        {
+                            vp.Feeds.ForEach(x => x.GameProfile = SelectedVideo.GameProfile);
+                            if (CheckBox_AutoMatch.Checked)
+                            {
+                                foreach (var feed in vp.Feeds)
+                                {
+                                    var l = SelectedGameProfile.Screens.Where(y => y.Name == feed.Name);
+                                    if (l.Count() > 0)
+                                        feed.AddScreen(l.First());
+                                }
+                            }
+                        }
+
                         feeds.AddRange(vp.Feeds);
                     }
 
@@ -394,7 +408,7 @@ namespace VideoImageDeltaApp
         public Geometry PreviewBoxGeometryRescale = null;
         public Geometry PreviewBoxGeometryAfter = null;
 
-        public void CalcPreviewBoxGeometry()
+        public void CalcPreviewBoxGeometry(bool force = false)
         {
             double x = (double)Numeric_X.Value;
             double y = (double)Numeric_Y.Value;
@@ -404,73 +418,103 @@ namespace VideoImageDeltaApp
                 (double)Numeric_Height.Value : SelectedVideo.Geometry.Height - (double)Numeric_Height.Value;
             double gameWidth = (double)Numeric_Game_Width.Value;
             double gameHeight = (double)Numeric_Game_Height.Value;
-            switch (SelectedPreviewType)
-            {
-                case PreviewType.Video:
-                    PreviewBoxGeometryBefore = SelectedVideo.Geometry;
-                    PreviewBoxGeometryRescale = PreviewBoxGeometryBefore;
-                    PreviewBoxGeometryAfter = PreviewBoxGeometryRescale;
-                    break;
-                case PreviewType.Feed:
-                    PreviewBoxGeometryBefore = new Geometry(x, y, width, height);
-                    PreviewBoxGeometryRescale = PreviewBoxGeometryBefore;
-                    PreviewBoxGeometryAfter = PreviewBoxGeometryRescale;
-                    break;
-                case PreviewType.Screen:
-                    PreviewBoxGeometryBefore = new Geometry(x, y, width, height);
-                    if (gameWidth > 0 && gameHeight > 0)
-                        PreviewBoxGeometryRescale = new Geometry(gameWidth, gameHeight);
-                    else
-                        PreviewBoxGeometryRescale = PreviewBoxGeometryBefore;
-                    PreviewBoxGeometryAfter = PreviewBoxGeometryRescale;
-                    break;
-                case PreviewType.WatchZone:
-                    PreviewBoxGeometryBefore = new Geometry(x, y, width, height);
-                    if (gameWidth > 0 && gameHeight > 0)
-                        PreviewBoxGeometryRescale = new Geometry(gameWidth, gameHeight);
-                    else
-                        PreviewBoxGeometryRescale = PreviewBoxGeometryBefore;
 
-                    if (DropBox_Watch_Preview.SelectedIndex > -1 && SelectedGameProfile != null)
+            // Look, I just don't know where to put these methods sometimes.
+            if (force)
+            {
+                PreviewBoxGeometryBefore = new Geometry(x, y, width, height);
+                if (gameWidth > 0 && gameHeight > 0)
+                    PreviewBoxGeometryRescale = new Geometry(gameWidth, gameHeight);
+                else
+                    PreviewBoxGeometryRescale = PreviewBoxGeometryBefore;
+
+                if (DropBox_Watch_Preview.SelectedIndex > -1 && SelectedGameProfile != null)
+                {
+                    // Using strings to store this stuff is a bad idea...
+                    string[] words = DropBox_Watch_Preview.Text.Split('/');
+                    if (words.Count() != 3)
+                        throw new Exception("Slashes were used on variable names.");
+                    var sl = SelectedGameProfile.Screens.Where(z => z.Name == words[0]);
+                    if (sl.Count() > 0)
                     {
-                        // Using strings to store this stuff is a bad idea...
-                        string[] words = DropBox_Watch_Preview.Text.Split('/');
-                        if (words.Count() != 3)
-                            throw new Exception("Slashes were used on variable names.");
-                        var sl = SelectedGameProfile.Screens.Where(z => z.Name == words[0]);
-                        if (sl.Count() > 0)
+                        var wzl = sl.First().WatchZones.Where(z => z.Name == words[1]);
+                        if (wzl.Count() > 0)
+                            PreviewBoxGeometryAfter = wzl.First().Geometry;
+                        else
+                            throw new Exception("Despite being selectable, the WatchZone does not exist.");
+                    }
+                    else
+                        throw new Exception("Despite being selectable, the Screen does not exist.");
+                }
+                else
+                {
+                    PreviewBoxGeometryAfter = PreviewBoxGeometryRescale;
+                }
+            }
+            else
+                switch (SelectedPreviewType)
+                {
+                    case PreviewType.Video:
+                        PreviewBoxGeometryBefore = SelectedVideo.Geometry;
+                        PreviewBoxGeometryRescale = PreviewBoxGeometryBefore;
+                        PreviewBoxGeometryAfter = PreviewBoxGeometryRescale;
+                        break;
+                    case PreviewType.Feed:
+                        PreviewBoxGeometryBefore = new Geometry(x, y, width, height);
+                        PreviewBoxGeometryRescale = PreviewBoxGeometryBefore;
+                        PreviewBoxGeometryAfter = PreviewBoxGeometryRescale;
+                        break;
+                    case PreviewType.Screen:
+                        PreviewBoxGeometryBefore = new Geometry(x, y, width, height);
+                        if (gameWidth > 0 && gameHeight > 0)
+                            PreviewBoxGeometryRescale = new Geometry(gameWidth, gameHeight);
+                        else
+                            PreviewBoxGeometryRescale = PreviewBoxGeometryBefore;
+                        PreviewBoxGeometryAfter = PreviewBoxGeometryRescale;
+                        break;
+                    case PreviewType.WatchZone:
+                        PreviewBoxGeometryBefore = new Geometry(x, y, width, height);
+                        if (gameWidth > 0 && gameHeight > 0)
+                            PreviewBoxGeometryRescale = new Geometry(gameWidth, gameHeight);
+                        else
+                            PreviewBoxGeometryRescale = PreviewBoxGeometryBefore;
+
+                        if (DropBox_Watch_Preview.SelectedIndex > -1 && SelectedGameProfile != null)
                         {
-                            var wzl = sl.First().WatchZones.Where(z => z.Name == words[1]);
-                            if (wzl.Count() > 0)
-                                PreviewBoxGeometryAfter = wzl.First().Geometry;
+                            // Using strings to store this stuff is a bad idea...
+                            string[] words = DropBox_Watch_Preview.Text.Split('/');
+                            if (words.Count() != 3)
+                                throw new Exception("Slashes were used on variable names.");
+                            var sl = SelectedGameProfile.Screens.Where(z => z.Name == words[0]);
+                            if (sl.Count() > 0)
+                            {
+                                var wzl = sl.First().WatchZones.Where(z => z.Name == words[1]);
+                                if (wzl.Count() > 0)
+                                    PreviewBoxGeometryAfter = wzl.First().Geometry;
+                                else
+                                    throw new Exception("Despite being selectable, the WatchZone does not exist.");
+                            }
                             else
-                                throw new Exception("Despite being selectable, the WatchZone does not exist.");
+                                throw new Exception("Despite being selectable, the Screen does not exist.");
                         }
                         else
-                            throw new Exception("Despite being selectable, the Screen does not exist.");
-                    }
-                    else
-                    {
+                        {
+                            PreviewBoxGeometryAfter = PreviewBoxGeometryRescale;
+                        }
+                        break;
+                    default:
+                        PreviewBoxGeometryBefore = SelectedVideo.Geometry;
+                        PreviewBoxGeometryRescale = PreviewBoxGeometryBefore;
                         PreviewBoxGeometryAfter = PreviewBoxGeometryRescale;
-                    }
-                    break;
-                default:
-                    PreviewBoxGeometryBefore = SelectedVideo.Geometry;
-                    PreviewBoxGeometryRescale = PreviewBoxGeometryBefore;
-                    PreviewBoxGeometryAfter = PreviewBoxGeometryRescale;
-                    break;
-            }
+                        break;
+                }
 
         }
 
-        public Image RescaleThumbnail(Image image) { return RescaleThumbnail(image, false); }
-
-        public Image RescaleThumbnail(Image image, bool force)
+        public Image RescaleThumbnail(Image image, bool force = false)
         {
-            CalcPreviewBoxGeometry();
-            if (!force && (PreviewBoxGeometryBefore == null || PreviewBoxGeometryBefore == SelectedVideo.Geometry))
-                return image;
-            else
+            CalcPreviewBoxGeometry(force);
+            if (force || (PreviewBoxGeometryBefore != null && PreviewBoxGeometryBefore != SelectedVideo.Geometry))
             {
                 using (var mi = new MagickImage((Bitmap)image))
                 {
@@ -481,17 +525,13 @@ namespace VideoImageDeltaApp
                     int h = (int)PreviewBoxGeometryBefore.Height;
                     mi.Crop(new MagickGeometry(x, y, w, h), Gravity.Northwest);
                     mi.RePage();
-                    if (!force && (PreviewBoxGeometryRescale == null || PreviewBoxGeometryRescale == SelectedVideo.Geometry))
-                        return mi.ToBitmap();
-                    else
+                    if (force || (PreviewBoxGeometryRescale != null && PreviewBoxGeometryRescale != SelectedVideo.Geometry))
                     {
                         w = (int)PreviewBoxGeometryRescale.Width;
                         h = (int)PreviewBoxGeometryRescale.Height;
                         mi.Resize(w, h);
                         mi.RePage();
-                        if (!force && (PreviewBoxGeometryAfter == null || PreviewBoxGeometryAfter == PreviewBoxGeometryRescale))
-                            return mi.ToBitmap();
-                        else
+                        if (force || (PreviewBoxGeometryAfter != null && PreviewBoxGeometryAfter != PreviewBoxGeometryRescale))
                         {
                             x = (int)PreviewBoxGeometryAfter.X;
                             y = (int)PreviewBoxGeometryAfter.Y;
@@ -515,9 +555,15 @@ namespace VideoImageDeltaApp
                             mi.RePage();
                             return mi.ToBitmap();
                         }
+                        else
+                            return mi.ToBitmap();
                     }
+                    else
+                        return mi.ToBitmap();
                 }
             }
+            else
+                return image;
         }
 
         // If nothing is selected, show nothing on the bottom panel.
@@ -551,7 +597,8 @@ namespace VideoImageDeltaApp
                 }
 
                 Image i = v.GetThumbnail(timestamp);
-                Image i3 = (Image)i.Clone();
+                Bitmap i3 = (Bitmap)RescaleThumbnail((Image)i.Clone(), true);
+                
 
                 if (DropBox_Watch_Preview.SelectedIndex > -1)
                 {
@@ -590,12 +637,18 @@ namespace VideoImageDeltaApp
                     else
                         throw new Exception("Despite being selectable, the Screen does not exist.");
 
-                    using (MagickImage mi2 = new MagickImage((Bitmap)RescaleThumbnail(i3, true)))
+                    using (MagickImage mi2 = new MagickImage(i3))
                     {
                         using (MagickImage mi1 = new MagickImage(i2)) // Why you no crop?
                         {
                             // Make error metric selectable in the future.
                             double delta = mi1.Compare(mi2, ErrorMetric.MeanSquared);
+                            if (delta <= 0.025) Label_Delta_Number.ForeColor = Color.Cyan;
+                            else if (delta <= 0.1) Label_Delta_Number.ForeColor = Color.Green;
+                            else if (delta <= 0.25) Label_Delta_Number.ForeColor = Color.FromArgb(255, 192, 0);
+                            else if (delta <= 0.5) Label_Delta_Number.ForeColor = Color.OrangeRed;
+                            else Label_Delta_Number.ForeColor = Color.DarkRed;
+
                             delta = 100 - Math.Round(delta * 100, 4);
                             Label_Delta_Number.Text = delta.ToString().PadRight(7,'0') + "%";
                             Label_Delta_Number.Show();
@@ -985,7 +1038,7 @@ namespace VideoImageDeltaApp
         private void TextBox_Timestamp_TextChanged(object sender, EventArgs e)
         {
             string str = TextBox_Timestamp.Text;
-            bool isValid = Validate_Timestamp_Text(str);
+            bool isValid = Validate_Timestamp_Text(str) && SelectedVideo != null;
             if (isValid)
             {
                 oldTimestamp = str;
@@ -1041,6 +1094,7 @@ namespace VideoImageDeltaApp
             }
 
             var feed = new Feed(name, useOCR, geo, gameGeo);
+            feed.GameProfile = SelectedGameProfile;
 
             if (String.IsNullOrWhiteSpace(name))
             {
@@ -1074,9 +1128,13 @@ namespace VideoImageDeltaApp
         {
             Update_Inputs();
             if (ListBox_Feeds.SelectedItems.Count > 0)
+            {
                 FillScreenBox();
+            }
             else
+            {
                 CheckedListBox_Screens.Items.Clear();
+            }
         }
 
         private void TextBox_Auto_Selector(object sender, EventArgs e)
@@ -1124,17 +1182,25 @@ namespace VideoImageDeltaApp
             }
             if (CheckBox_Advanced.Checked)
             {
+                Numeric_X.DecimalPlaces = 2;
+                Numeric_Y.DecimalPlaces = 2;
+                Numeric_Width.DecimalPlaces = 2;
+                Numeric_Height.DecimalPlaces = 2;
                 Label_Game_Width.Show();
                 Label_Game_Height.Show();
                 Numeric_Game_Width.Show();
                 Numeric_Game_Height.Show();
             } else
             {
+                Numeric_X.DecimalPlaces = 0;
+                Numeric_Y.DecimalPlaces = 0;
+                Numeric_Width.DecimalPlaces = 0;
+                Numeric_Height.DecimalPlaces = 0;
                 Label_Game_Width.Hide();
                 Label_Game_Height.Hide();
                 Numeric_Game_Width.Hide();
                 Numeric_Game_Height.Hide();
-                Numeric_Game_Width.Value = 0m;
+                Numeric_Game_Width.Value = 0m; // Keep?
                 Numeric_Game_Height.Value = 0m;
             }
         }
@@ -1226,7 +1292,6 @@ namespace VideoImageDeltaApp
                 {
                     SelectedListVideos.RemoveAt(i);
                 }
-                //FillScreenBox();
             }
         }
 
@@ -1239,7 +1304,8 @@ namespace VideoImageDeltaApp
                 {
                     CheckedListBox_Screens.Items.Add(s);
 
-                    if (SelectedVideo.Feeds.Any(x => x.ScreensRaw.Any(y => y == s.Name))) // Is this right?
+                    // Okay, the "SelectedVideo.GameProfile != null" shouldn't be necessary. There's a bug afoot.
+                    if (SelectedVideo.GameProfile != null && SelectedVideo.Feeds.Any(x => x.Screens.Any(y => y == s))) // Is this right?
                         CheckedListBox_Screens.SetItemCheckState(CheckedListBox_Screens.Items.Count - 1, CheckState.Checked);
 
                     DropBox_Watch_Preview.Items.Clear();
@@ -1257,7 +1323,14 @@ namespace VideoImageDeltaApp
                         }
                     }
                     DropBox_Watch_Preview.DropDownWidth = dropDownWidth;
+                    DropBox_Watch_Preview.Enabled = true;
+                    DropBox_Watch_Preview.SelectedIndex = 0;
                 }
+            }
+            else
+            {
+                DropBox_Watch_Preview.Enabled = false;
+                DropBox_Watch_Preview.SelectedIndex = -1;
             }
         }
 
@@ -1283,9 +1356,7 @@ namespace VideoImageDeltaApp
                     }
                     //SelectedVideo.Feeds[i]._Screens.Add(s.Name);
                 }
-                var tmp1 = ((Feed)ListBox_Feeds.SelectedItem).Screens;
-                var tmp2 = ((Feed)ListBox_Feeds.SelectedItem).ScreensRaw;
-                var tmp3 = SelectedVideo.Feeds;
+                SelectedListVideo.RefreshValues();
             }
         }
 
@@ -1319,9 +1390,10 @@ namespace VideoImageDeltaApp
             TextBox_Timestamp_TextChanged(null, null);
         }
 
-        private void Calculate_Delta()
+        private void DropBox_Watch_Preview_TextChanged(object sender, EventArgs e)
         {
-
+            Button_AutoAlign.Enabled = DropBox_Watch_Preview.SelectedIndex > -1;
+            CheckBox_Display.Enabled = DropBox_Watch_Preview.SelectedIndex > -1;
         }
     }
 
