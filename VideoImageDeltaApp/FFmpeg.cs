@@ -242,7 +242,7 @@ namespace VideoImageDeltaApp
 
                     try
                     {
-                        t = Image.FromStream(new MemoryStream(imageCache));
+                        t = Image.FromStream(new MemoryStream(imageCache), true, true);
                     }
                     catch (ArgumentException e)
                     { // Don't stop the program because it failed to load the thumbnail. Just return blank.

@@ -39,7 +39,9 @@ namespace VideoImageDeltaApp.Forms
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.Button_Videos = new System.Windows.Forms.Button();
             this.Button_Watch = new System.Windows.Forms.Button();
-            this.listView1 = new System.Windows.Forms.ListView();
+            this.ListView_Main = new System.Windows.Forms.ListView();
+            this.ColumnVideo = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ColumnGameProfile = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -141,23 +143,38 @@ namespace VideoImageDeltaApp.Forms
             this.Button_Watch.UseVisualStyleBackColor = true;
             this.Button_Watch.Click += new System.EventHandler(this.Button_Watch_Click);
             // 
-            // listView1
+            // ListView_Main
             // 
-            this.listView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.ListView_Main.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.listView1.Location = new System.Drawing.Point(12, 44);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(600, 354);
-            this.listView1.TabIndex = 3;
-            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.ListView_Main.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.ColumnVideo,
+            this.ColumnGameProfile});
+            this.ListView_Main.FullRowSelect = true;
+            this.ListView_Main.GridLines = true;
+            this.ListView_Main.Location = new System.Drawing.Point(12, 44);
+            this.ListView_Main.Name = "ListView_Main";
+            this.ListView_Main.Size = new System.Drawing.Size(600, 354);
+            this.ListView_Main.TabIndex = 3;
+            this.ListView_Main.UseCompatibleStateImageBehavior = false;
+            this.ListView_Main.View = System.Windows.Forms.View.Details;
+            // 
+            // ColumnVideo
+            // 
+            this.ColumnVideo.Width = 360;
+            // 
+            // ColumnGameProfile
+            // 
+            this.ColumnGameProfile.Text = "Game Profile";
+            this.ColumnGameProfile.Width = 120;
             // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(624, 442);
-            this.Controls.Add(this.listView1);
+            this.Controls.Add(this.ListView_Main);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.Button_Help);
             this.Controls.Add(this.Button_Process);
@@ -182,7 +199,9 @@ namespace VideoImageDeltaApp.Forms
         private TableLayoutPanel tableLayoutPanel1;
         private Button Button_Videos;
         private Button Button_Watch;
-        private ListView listView1;
+        private ListView ListView_Main;
+        private ColumnHeader ColumnVideo;
+        private ColumnHeader ColumnGameProfile;
     }
 }
 

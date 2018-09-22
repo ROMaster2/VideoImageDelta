@@ -683,6 +683,8 @@ namespace VideoImageDeltaApp.Models
         public double Frequency { get; set; } = 1d;
         public List<WatchImage> Images { get; set; } = new List<WatchImage>(); // To expand
 
+        public ColorSpace ColorSpace { get; set; } = ColorSpace.RGB;
+
         override public string ToString()
         {
             return Name;
@@ -696,6 +698,8 @@ namespace VideoImageDeltaApp.Models
         {
             FilePath = filePath;
         }
+
+        // Todo: Add exception handling when file does not exist anymore.
 
         internal WatchImage() { }
 
@@ -728,6 +732,15 @@ namespace VideoImageDeltaApp.Models
         public void SetName(Screen screen, WatchZone watchZone, Watcher watcher)
         {
             Name = screen.Name + "/" + watchZone.Name + "/" + watcher.Name + " - " + FileName;
+        }
+
+        public void TransparencyRate()
+        {
+            using (MagickImage i = new MagickImage(FilePath))
+            {
+                //i.Trans;
+            }
+
         }
 
         public void Clear()
@@ -809,7 +822,7 @@ namespace VideoImageDeltaApp.Models
             else
                 SubItems.Add("Not Set");
 
-            SubItems.Add(Video.IsSynced() ? "Yes" : "No");
+            SubItems.Add(Video.IsSynced() ? "✔" : "");
 
         }
     }

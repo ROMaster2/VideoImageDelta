@@ -68,6 +68,7 @@
             this.Label_Name = new System.Windows.Forms.Label();
             this.Button_AutoAlign = new System.Windows.Forms.Button();
             this.Panel_Feeds = new System.Windows.Forms.Panel();
+            this.CheckBox_Display = new System.Windows.Forms.CheckBox();
             this.Label_Delta_Number = new System.Windows.Forms.Label();
             this.Label_Delta = new System.Windows.Forms.Label();
             this.Label_Preview_Type = new System.Windows.Forms.Label();
@@ -85,7 +86,6 @@
             this.SplitContainer_Core = new System.Windows.Forms.SplitContainer();
             this.TableLayoutPanel_Options = new System.Windows.Forms.TableLayoutPanel();
             this.TableLayoutPanel_Preview_Options = new System.Windows.Forms.TableLayoutPanel();
-            this.CheckBox_Display = new System.Windows.Forms.CheckBox();
             this.TableLayoutPanel_Upper.SuspendLayout();
             this.Panel_GameProfile_Options.SuspendLayout();
             this.Panel_Input.SuspendLayout();
@@ -620,6 +620,18 @@
             this.Panel_Feeds.Size = new System.Drawing.Size(168, 207);
             this.Panel_Feeds.TabIndex = 6;
             // 
+            // CheckBox_Display
+            // 
+            this.CheckBox_Display.AutoSize = true;
+            this.CheckBox_Display.Enabled = false;
+            this.CheckBox_Display.Location = new System.Drawing.Point(83, 169);
+            this.CheckBox_Display.Name = "CheckBox_Display";
+            this.CheckBox_Display.Size = new System.Drawing.Size(83, 30);
+            this.CheckBox_Display.TabIndex = 223;
+            this.CheckBox_Display.Text = "Display\r\nImage Delta";
+            this.CheckBox_Display.UseVisualStyleBackColor = true;
+            this.CheckBox_Display.CheckedChanged += new System.EventHandler(this.CheckBox_Display_CheckedChanged);
+            // 
             // Label_Delta_Number
             // 
             this.Label_Delta_Number.Anchor = System.Windows.Forms.AnchorStyles.None;
@@ -855,17 +867,6 @@
             this.TableLayoutPanel_Preview_Options.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 213F));
             this.TableLayoutPanel_Preview_Options.Size = new System.Drawing.Size(174, 293);
             this.TableLayoutPanel_Preview_Options.TabIndex = 8;
-            // 
-            // CheckBox_Display
-            // 
-            this.CheckBox_Display.AutoSize = true;
-            this.CheckBox_Display.Enabled = false;
-            this.CheckBox_Display.Location = new System.Drawing.Point(83, 169);
-            this.CheckBox_Display.Name = "CheckBox_Display";
-            this.CheckBox_Display.Size = new System.Drawing.Size(83, 30);
-            this.CheckBox_Display.TabIndex = 223;
-            this.CheckBox_Display.Text = "Display\r\nImage Delta";
-            this.CheckBox_Display.UseVisualStyleBackColor = true;
             // 
             // AddVideos
             // 

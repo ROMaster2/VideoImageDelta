@@ -92,18 +92,35 @@ namespace VideoImageDeltaApp.Forms
         private void Button_Watch_Click(object sender, EventArgs e)
         {
             AddWatchers w = new AddWatchers();
-            w.Show();
+            w.ShowDialog();
+            Update_ListView_Main();
         }
 
         private void Button_Videos_Click(object sender, EventArgs e)
         {
             AddVideos w = new AddVideos();
-            w.Show();
+            w.ShowDialog();
+            Update_ListView_Main();
         }
 
         private void Button_Process_Click(object sender, EventArgs e)
         {
             Test.Run();
+        }
+
+        private void Update_ListView_Main()
+        {
+            ListView_Main.Items.Clear();
+            var l = Program.Videos.Where(x => x.IsSynced());
+            foreach(var v in l)
+            {
+                var lv = new ListVideo(v);
+                lv.SubItems.Clear();
+                lv.Text = v.FilePath;
+                lv.SubItems.Add(v.GameProfile.Name);
+                ListView_Main.Items.Add(lv);
+            }
+            ListView_Main.Refresh();
         }
 
     }

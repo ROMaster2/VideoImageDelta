@@ -652,6 +652,11 @@ namespace VideoImageDeltaApp
                             delta = 100 - Math.Round(delta * 100, 4);
                             Label_Delta_Number.Text = delta.ToString().PadRight(7,'0') + "%";
                             Label_Delta_Number.Show();
+                            if (CheckBox_Display.Checked)
+                            {
+                                mi1.Composite(mi2, CompositeOperator.Difference);
+                                i = ((MagickImage)mi1.Clone()).ToBitmap();
+                            }
                             mi1.Write(@"D:\debug1.bmp");
                             mi2.Write(@"D:\debug2.bmp");
                         }
@@ -663,8 +668,8 @@ namespace VideoImageDeltaApp
                 {
                     Label_Delta_Number.Text = null;
                 }
-
-                i = RescaleThumbnail(i);
+                if (!CheckBox_Display.Checked)
+                    i = RescaleThumbnail(i);
 
                 if (i != null)
                 {
@@ -1394,6 +1399,18 @@ namespace VideoImageDeltaApp
         {
             Button_AutoAlign.Enabled = DropBox_Watch_Preview.SelectedIndex > -1;
             CheckBox_Display.Enabled = DropBox_Watch_Preview.SelectedIndex > -1;
+        }
+
+        private void CheckBox_Display_CheckedChanged(object sender, EventArgs e)
+        {
+            if (CheckBox_Display.Checked)
+            {
+                Box_Preview.Hide();
+                DropBox_Preview_Type.SelectedIndex = DropBox_Preview_Type.Items.Count - 1;
+            }
+            else
+                Box_Preview.Show();
+            TextBox_Timestamp_TextChanged(null, null);
         }
     }
 
