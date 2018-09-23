@@ -317,6 +317,11 @@ namespace VideoImageDeltaApp.Models
             {
                 RawMetadata = metaData;
 
+                Duration = TimeSpan.FromSeconds(
+            (double)RawVideoMetadata.duration_ts * (double)Utilities.DivideString(RawVideoMetadata.time_base)
+            );
+                if (Duration == TimeSpan.Zero) Duration = RawFFmpeg.GetDuration(FilePath);
+
                 Geometry = new Geometry(RawVideoMetadata.width, RawVideoMetadata.height);
             }
             else
@@ -333,12 +338,10 @@ namespace VideoImageDeltaApp.Models
         public Geometry AdjustedGeometry { get; set; }
 
         public streamType RawVideoMetadata { get { return RawMetadata.streams.Where(x => x.codec_type == "video").First(); } }
-        public TimeSpan Duration { get { return TimeSpan.FromSeconds(
-            (double)RawVideoMetadata.duration_ts * (double)Utilities.DivideString(RawVideoMetadata.time_base)
-            ); } }
+        public TimeSpan Duration { get; }
         public double FrameRate { get { return (double)Utilities.DivideString(RawVideoMetadata.r_frame_rate); } }
 
-        public int FrameCount { get { return Convert.ToInt32(FrameRate * Duration.TotalSeconds); } }
+        public int FrameCount { get { return (int)(FrameRate * Duration.TotalSeconds); } }
 
         private string _GameProfile;
         public GameProfile GameProfile
@@ -364,7 +367,7 @@ namespace VideoImageDeltaApp.Models
 
         public bool IsSynced()
         {
-            return Feeds.Count > 0 && Feeds.All(x => x.GameProfile != null) && Feeds.All(x => x.Screens.Count > 0);
+            return Feeds.Count > 0 && Feeds.All(x => x.GameProfile != null) && Feeds.All(x => x.Screens.Count > 0 || x.UseOCR);
         }
         
         public Image GetThumbnail(TimeSpan timestamp)
@@ -454,12 +457,13 @@ namespace VideoImageDeltaApp.Models
 
     public class Feed
     {
-        public Feed(string name, bool useOCR, Geometry geometry, Geometry gameGeometry = null)
+        public Feed(string name, bool useOCR, Geometry geometry, Geometry gameGeometry = null, GameProfile gameProfile = null)
         {
             Name = name;
             UseOCR = useOCR;
             Geometry = geometry;
             GameGeometry = gameGeometry;
+            GameProfile = gameProfile;
         }
 
         internal Feed() { }

@@ -107,6 +107,8 @@ namespace VideoImageDeltaApp.Forms
                 lv.SubItems.Add(v.GameProfile.Name);
                 ListView_Main.Items.Add(lv);
             }
+
+            Button_Process.Enabled = ListView_Main.Items.Count > 0;
         }
 
     }

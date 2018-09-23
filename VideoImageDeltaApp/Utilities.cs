@@ -30,6 +30,9 @@ using VideoImageDeltaApp;
 using VideoImageDeltaApp.Forms;
 using VideoImageDeltaApp.Models;
 
+using Tesseract;
+using Tesseract.Interop;
+
 namespace VideoImageDeltaApp
 {
     public class Utilities
@@ -146,6 +149,39 @@ namespace VideoImageDeltaApp
                 i /= decimal.Parse(s[n]);
             }
             return i;
+        }
+
+        public static void ReadImage(Image image, Geometry geo, out string text, out float confidence)
+        {
+            try
+            {
+                image.Save(@"D:\debug3.bmp");
+                using (var engine = new TesseractEngine(@"./tessdata", "eng", @"./tessdata/digits"))
+                {
+                    /*using (var mi = new MagickImage((Bitmap)image))
+                    {
+                        var i = new FredsImageMagickScripts.TextCleanerScript();
+                        i.
+                    }*/
+                    using (var img = PixConverter.ToPix((Bitmap)image))
+                    {
+                        using (var page = engine.Process(img, new Tesseract.Rect((int)geo.X, (int)geo.Y, (int)geo.Width, (int)geo.Height)))
+                        {
+                            text = page.GetText();
+                            confidence = page.GetMeanConfidence();
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Trace.TraceError(e.ToString());
+                Debug.WriteLine("Unexpected Error: " + e.Message);
+                Debug.WriteLine("Details: ");
+                Debug.WriteLine(e.ToString());
+                text = "";
+                confidence = 0f;
+            }
         }
 
     }

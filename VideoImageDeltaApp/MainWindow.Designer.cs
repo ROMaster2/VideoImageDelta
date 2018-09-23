@@ -96,6 +96,7 @@ namespace VideoImageDeltaApp.Forms
             // 
             this.Button_Process.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.Button_Process.AutoSize = true;
+            this.Button_Process.Enabled = false;
             this.Button_Process.Location = new System.Drawing.Point(250, 407);
             this.Button_Process.Name = "Button_Process";
             this.Button_Process.Size = new System.Drawing.Size(125, 23);
@@ -162,6 +163,7 @@ namespace VideoImageDeltaApp.Forms
             // 
             // ColumnVideo
             // 
+            this.ColumnVideo.Text = "Video";
             this.ColumnVideo.Width = 360;
             // 
             // ColumnGameProfile

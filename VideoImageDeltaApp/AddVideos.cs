@@ -31,6 +31,8 @@ using VideoImageDeltaApp.Forms;
 using VideoImageDeltaApp.Models;
 
 using Screen = VideoImageDeltaApp.Models.Screen;
+using Tesseract;
+using Tesseract.Interop;
 
 namespace VideoImageDeltaApp
 {
@@ -53,7 +55,7 @@ namespace VideoImageDeltaApp
             }
             if (DropBox_GameProfile.Items.Count > 0)
             {
-                DropBox_GameProfile.SelectedIndex = 0;
+                //DropBox_GameProfile.SelectedIndex = 0;
                 DropBox_GameProfile.Enabled = true;
             }
             else
@@ -63,7 +65,7 @@ namespace VideoImageDeltaApp
 
             if (DropBox_GameProfile.Items.Count > 0)
             {
-                DropBox_GameProfile.SelectedIndex = DropBox_GameProfile.Items.Count - 1;
+                //DropBox_GameProfile.SelectedIndex = DropBox_GameProfile.Items.Count - 1;
             }
 
         }
@@ -193,7 +195,7 @@ namespace VideoImageDeltaApp
                                 ListView_Videos.Items[i] = lv;
                             }
                         }
-                        ListBox_Feeds.SelectedIndex = ListBox_Feeds.Items.Count - 1;
+                        ListBox_Feeds.SelectedIndex = 0;
                     }
                 }
                 ofd.Dispose();
@@ -567,7 +569,9 @@ namespace VideoImageDeltaApp
             if (ListView_Videos.SelectedItems.Count == 1)
             {
                 TimeSpan timestamp = new TimeSpan(SelectedVideo.Duration.Ticks * 2L / 3L);
-                oldTimestamp = timestamp.ToString().Substring(0, 12);
+                oldTimestamp = timestamp.ToString();
+                if (oldTimestamp.Length == 8) oldTimestamp += ".0000000";
+                oldTimestamp = oldTimestamp.ToString().Substring(0, 12);
                 TextBox_Timestamp.Text = oldTimestamp;
             }
         }
@@ -623,28 +627,61 @@ namespace VideoImageDeltaApp
                     else
                         throw new Exception("Despite being selectable, the Screen does not exist.");
 
-                    using (MagickImage mi2 = new MagickImage(i3))
+                    if (CheckBox_Timer.Checked)
                     {
-                        using (MagickImage mi1 = new MagickImage(i2)) // Why you no crop?
-                        {
-                            // Make error metric selectable in the future.
-                            double delta = mi1.Compare(mi2, ErrorMetric.MeanSquared);
-                            if (delta <= 0.025) Label_Delta_Number.ForeColor = Color.Cyan;
-                            else if (delta <= 0.1) Label_Delta_Number.ForeColor = Color.Green;
-                            else if (delta <= 0.25) Label_Delta_Number.ForeColor = Color.FromArgb(255, 192, 0);
-                            else if (delta <= 0.5) Label_Delta_Number.ForeColor = Color.OrangeRed;
-                            else Label_Delta_Number.ForeColor = Color.DarkRed;
+                        var t = SelectedFeed.Geometry;
+                        Utilities.ReadImage(i, SelectedFeed.Geometry, out string str, out float confidence);
+                        str = str.Trim().Replace(" ", "");
 
-                            delta = 100 - Math.Round(delta * 100, 4);
-                            Label_Delta_Number.Text = delta.ToString().PadRight(7,'0') + "%";
-                            Label_Delta_Number.Show();
-                            if (CheckBox_Display.Checked)
+                        Label_Delta.Text = str.Trim();
+
+                        bool isValid = Regex.IsMatch(str.Trim(), @"^(?:(?:(\d?\d):)?([0-5]\d):)?([0-5]\d)(\.\d?(\d?(\d)))?$");
+                        bool iTried = Regex.IsMatch(str.Trim(), @".*[0-9].*");
+
+                        if (!isValid) confidence /= 2f;
+
+                        if (confidence >= 0.9) Label_Delta_Number.ForeColor = Color.Cyan;
+                        else if (confidence >= 0.75) Label_Delta_Number.ForeColor = Color.Green;
+                        else if (confidence >= 0.75) Label_Delta_Number.ForeColor = Color.FromArgb(255, 192, 0);
+                        else if (confidence >= 0.5) Label_Delta_Number.ForeColor = Color.OrangeRed;
+                        else Label_Delta_Number.ForeColor = Color.DarkRed;
+
+
+                        var delta = Math.Round(confidence * 100f, 4);
+                        Label_Delta_Number.Text = delta.ToString() + "%";
+                        Label_Delta_Number.Show();
+                        if (!iTried)
+                        {
+                            Label_Delta_Number.Text = "0%";
+                            Label_Delta_Number.ForeColor = Color.Black;
+                        }
+                    }
+                    else
+                    {
+                        Label_Delta.Text = "Delta Check";
+                        using (MagickImage mi2 = new MagickImage(i3))
+                        {
+                            using (MagickImage mi1 = new MagickImage(i2)) // Why you no crop?
                             {
-                                mi1.Composite(mi2, CompositeOperator.Difference);
-                                i = ((MagickImage)mi1.Clone()).ToBitmap();
+                                // Make error metric selectable in the future.
+                                double delta = mi1.Compare(mi2, ErrorMetric.PeakSignalToNoiseRatio);
+                                if (delta >= 16) Label_Delta_Number.ForeColor = Color.Cyan;
+                                else if (delta >= 8) Label_Delta_Number.ForeColor = Color.Green;
+                                else if (delta >= 4) Label_Delta_Number.ForeColor = Color.FromArgb(255, 192, 0);
+                                else if (delta >= 2) Label_Delta_Number.ForeColor = Color.OrangeRed;
+                                else Label_Delta_Number.ForeColor = Color.DarkRed;
+
+                                delta = Math.Round(delta, 4);
+                                Label_Delta_Number.Text = delta.ToString();
+                                Label_Delta_Number.Show();
+                                if (CheckBox_Display.Checked)
+                                {
+                                    mi1.Composite(mi2, CompositeOperator.Difference);
+                                    i = ((MagickImage)mi1.Clone()).ToBitmap();
+                                }
+                                mi1.Write(@"D:\debug1.bmp");
+                                mi2.Write(@"D:\debug2.bmp");
                             }
-                            mi1.Write(@"D:\debug1.bmp");
-                            mi2.Write(@"D:\debug2.bmp");
                         }
                     }
                     i2 = null;
@@ -652,6 +689,7 @@ namespace VideoImageDeltaApp
                 }
                 else
                 {
+                    Label_Delta.Text = "Delta Check";
                     Label_Delta_Number.Text = null;
                 }
                 if (!CheckBox_Display.Checked)
@@ -966,8 +1004,18 @@ namespace VideoImageDeltaApp
 
         private void CheckBox_Timer_CheckedChanged(object sender, EventArgs e)
         {
-            //CheckBox_Perfect.Enabled = !CheckBox_Timer.Checked;
-            //CheckBox_Perfect.Checked = CheckBox_Timer.Checked;
+            if (CheckBox_Timer.Checked)
+            {
+                Numeric_Game_Width.Enabled = false;
+                Numeric_Game_Height.Enabled = false;
+                Numeric_Game_Width.Value = 0L;
+                Numeric_Game_Height.Value = 0L;
+            }
+            else
+            {
+                Numeric_Game_Width.Enabled = true;
+                Numeric_Game_Height.Enabled = true;
+            }
         }
 
         /******************************************************************/
@@ -1084,8 +1132,7 @@ namespace VideoImageDeltaApp
                 }
             }
 
-            var feed = new Feed(name, useOCR, geo, gameGeo);
-            feed.GameProfile = SelectedGameProfile;
+            var feed = new Feed(name, useOCR, geo, gameGeo, SelectedGameProfile);
 
             if (String.IsNullOrWhiteSpace(name))
             {
@@ -1397,6 +1444,12 @@ namespace VideoImageDeltaApp
             else
                 Box_Preview.Show();
             TextBox_Timestamp_TextChanged(null, null);
+        }
+
+        private void Button_AutoAlign_Click(object sender, EventArgs e)
+        {
+            DialogResult dr = MessageBox.Show("Not ready yet lol",
+                "Nope", MessageBoxButtons.OK, MessageBoxIcon.None);
         }
     }
 

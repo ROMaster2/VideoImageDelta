@@ -246,7 +246,7 @@ namespace VideoImageDeltaApp
         public static Image GetThumbnail(string videoPath, System.Windows.Size size, TimeSpan timestamp)
         {
             Image i = FFCommand2(@"ffmpeg", timestamp, videoPath, size,
-                @"-y -f image2pipe -vframes 1 ""\\.\pipe\from_ffmpeg""");
+                @"-y -r 1 -f image2pipe -vframes 1 ""\\.\pipe\from_ffmpeg""");
 
             return i;
         }

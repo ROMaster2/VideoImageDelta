@@ -599,6 +599,7 @@
             this.Button_AutoAlign.TabIndex = 217;
             this.Button_AutoAlign.Text = "Auto-Align";
             this.Button_AutoAlign.UseVisualStyleBackColor = true;
+            this.Button_AutoAlign.Click += new System.EventHandler(this.Button_AutoAlign_Click);
             // 
             // Panel_Feeds
             // 
@@ -667,6 +668,7 @@
             // 
             this.DropBox_Watch_Preview.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.DropBox_Watch_Preview.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.DropBox_Watch_Preview.Enabled = false;
             this.DropBox_Watch_Preview.FormattingEnabled = true;
             this.DropBox_Watch_Preview.Location = new System.Drawing.Point(3, 145);
             this.DropBox_Watch_Preview.Name = "DropBox_Watch_Preview";
