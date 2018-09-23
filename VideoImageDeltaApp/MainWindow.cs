@@ -105,7 +105,8 @@ namespace VideoImageDeltaApp.Forms
 
         private void Button_Process_Click(object sender, EventArgs e)
         {
-            Test.Run();
+            PreProcessOptions w = new PreProcessOptions();
+            w.ShowDialog();
         }
 
         private void Update_ListView_Main()
@@ -120,7 +121,6 @@ namespace VideoImageDeltaApp.Forms
                 lv.SubItems.Add(v.GameProfile.Name);
                 ListView_Main.Items.Add(lv);
             }
-            ListView_Main.Refresh();
         }
 
     }

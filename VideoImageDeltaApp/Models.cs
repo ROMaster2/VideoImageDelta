@@ -44,10 +44,12 @@ using VideoImageDeltaApp;
 using VideoImageDeltaApp.Forms;
 using VideoImageDeltaApp.Models;
 
+using Microsoft.VisualBasic.Devices;
 using Anchor = VideoImageDeltaApp.Models.Anchor;
 
 namespace VideoImageDeltaApp.Models
 {
+
     [Flags]
     public enum Anchor
     {

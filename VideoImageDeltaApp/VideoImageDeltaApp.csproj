@@ -110,6 +110,12 @@
     <Compile Include="AddWatchers.Designer.cs">
       <DependentUpon>AddWatchers.cs</DependentUpon>
     </Compile>
+    <Compile Include="PreProcessOptions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PreProcessOptions.Designer.cs">
+      <DependentUpon>PreProcessOptions.cs</DependentUpon>
+    </Compile>
     <Compile Include="Rect.cs" />
     <Compile Include="ProcessSettings.cs">
       <SubType>Form</SubType>
@@ -137,6 +143,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PreProcessOptions.resx">
+      <DependentUpon>PreProcessOptions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProcessSettings.resx">
       <DependentUpon>ProcessSettings.cs</DependentUpon>

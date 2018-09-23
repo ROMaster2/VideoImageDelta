@@ -52,6 +52,8 @@ namespace VideoImageDeltaApp
     {
         public static void Run()
         {
+            RawFFmpeg.CheckStability(@"I:\Vids\CCNeverender\30.ts");
+
             Program.Videos[0].Feeds[0].ClearScreens();
             //Program.Videos[0].Feeds[0]._Screens.Clear();
 

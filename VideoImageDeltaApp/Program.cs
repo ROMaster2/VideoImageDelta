@@ -8,6 +8,7 @@ namespace VideoImageDeltaApp
 {
     static class Program
     {
+        public static Processor Processor = new Processor();
         public static List<Video> Videos = new List<Video>();
         public static List<GameProfile> GameProfiles = new List<GameProfile>();
         

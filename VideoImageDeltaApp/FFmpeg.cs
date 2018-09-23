@@ -157,14 +157,15 @@ namespace VideoImageDeltaApp
             }
         }
 
-        public static string FFCommand(string process, string videoPath, string parameters)
+        public static string FFCommand(string process, string videoPath, string parameters, string preparam = "")
         {
             Process pProcess = new Process();
             pProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             pProcess.StartInfo.FileName = process;
-            pProcess.StartInfo.Arguments = String.Format(@"-i ""{0}"" {1}", videoPath, parameters);
+            pProcess.StartInfo.Arguments = String.Format(@"{2} -i ""{0}"" {1}", videoPath, parameters, preparam);
             pProcess.StartInfo.UseShellExecute = false;
             pProcess.StartInfo.RedirectStandardOutput = true;
+            pProcess.StartInfo.RedirectStandardError = true;
             pProcess.Start();
 
             string strOutput = pProcess.StandardOutput.ReadToEnd();
@@ -264,27 +265,45 @@ namespace VideoImageDeltaApp
             return i;
         }
 
-        // Forcibly calculate the Framerate. Will most likely not keep but it's still here so I don't forget how it's done.
-        public static string Hmm(string videoPath)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="videoPath"></param>
+        /// <returns></returns>
+        public static void CheckStability(string videoPath)
         {
             string str = FFCommand(@"ffprobe", videoPath,
                 @"-loglevel error -skip_frame nokey -select_streams v:0 -show_entries frame=pkt_pts_time -of csv=print_section=0");
 
             List<string> list = new List<string>(str.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
             List<double> a = list.Select(double.Parse).ToList();
-            List<double> b = new List<double>();
+            List<float> b = new List<float>();
             for (int d = 1; d < a.Count; d++)
             {
-                b.Add(a[d] - a[d - 1]);
+                b.Add((float)Math.Round(a[d] - a[d - 1], 3));
             }
 
-            double min = b.Min();
-            double max = b.Max();
+            int count = b.Count();
+            float min = b.Min();
+            float max = b.Max();
+            float mode = b.GroupBy(n => n).OrderByDescending(g => g.Count()).Select(g => g.Key).FirstOrDefault();
+            int modeCount = b.Where(n => n == mode).Count();
+            double integrity = (double)modeCount / (double)count;
             double avg = b.Average();
-            double sum2 = b.Sum(d => Math.Pow(d - avg, 2));
-            double stdev = Math.Sqrt((sum2) / (b.Count() - 1));
+            double variance = b.Sum(d => Math.Pow(d - avg, 2));
+            double stdev = Math.Sqrt(variance / (b.Count() - 1));
 
-            return "";
+            List<ushort> test = new List<ushort>() { (ushort)Math.Round(a[0] * 1000d) };
+            List<byte> test2 = new List<byte>() { (byte)(((ushort)Math.Round(a[0] * 1000d)) & 0xF), (byte)(((ushort)Math.Round(a[0] * 1000d)) >> 4) };
+            for (int d = 1; d < a.Count; d++)
+            {
+                ushort n = (ushort)Math.Round((a[d] - a[d - 1]) * 1000);
+                test.Add(n);
+                test2.Add((byte)(n & 0xF));
+                test2.Add((byte)(n >> 4));
+            }
+
+            string ayy = Convert.ToBase64String(test2.ToArray());
         }
 
     }

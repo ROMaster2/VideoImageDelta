@@ -86,23 +86,57 @@ namespace VideoImageDeltaApp
             return str;
         }
 
-        public double Percentile(double[] sequence, double excelPercentile)
+        public static bool GetDiskSpace(string directory, out long totalSpace, out long freeSpace)
         {
-            Array.Sort(sequence);
-            int N = sequence.Length;
-            double n = (N - 1) * excelPercentile + 1;
-            // Another method: double n = (N + 1) * excelPercentile;
-            if (n == 1d) return sequence[0];
-            else if (n == N) return sequence[N - 1];
-            else
+            var directoryRoot = Directory.GetDirectoryRoot(directory);
+            bool isAvailable = false;
+            totalSpace = -1L;
+            freeSpace = -1L;
+            foreach (DriveInfo drive in DriveInfo.GetDrives())
             {
-                int k = (int)n;
-                double d = n - k;
-                return sequence[k - 1] + d * (sequence[k] - sequence[k - 1]);
+                if(drive.Name == directoryRoot)
+                {
+                    totalSpace = drive.TotalSize;
+
+                    if (drive.IsReady)
+                    {
+                        freeSpace = drive.AvailableFreeSpace;
+                        isAvailable = true;
+                    }
+                    break;
+                }
             }
+            return isAvailable;
         }
 
-        public double CalculateStdDev(IEnumerable<double> values)
+        /// There's no need to worry about specific CPUs.
+        /// <summary>
+        /// Set the number of CPUs the program is allowed to use.
+        /// </summary>
+        /// <param name="processorLimit"></param>
+        public static void SetCPULimit(int processorLimit)
+        {
+            if (processorLimit < 0)
+                processorLimit = Environment.ProcessorCount + processorLimit;
+
+            if (processorLimit <= 0 || processorLimit > Environment.ProcessorCount)
+                processorLimit = Environment.ProcessorCount;
+
+            processorLimit = (int)Math.Pow(processorLimit, 2);
+
+            Process.GetCurrentProcess().ProcessorAffinity = (IntPtr)processorLimit;
+        }
+
+        /// <summary>
+        /// Set the priority of the program.
+        /// </summary>
+        /// <param name="processorLimit"></param>
+        public static void SetPriority(ProcessPriorityClass priority)
+        {
+            Process.GetCurrentProcess().PriorityClass = priority;
+        }
+
+        public static double CalculateStdDev(IEnumerable<double> values)
         {
             double ret = 0;
             if (values.Count() > 0)
@@ -116,5 +150,6 @@ namespace VideoImageDeltaApp
             }
             return ret;
         }
+
     }
 }
