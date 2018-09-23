@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.button1 = new System.Windows.Forms.Button();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.Button_Start = new System.Windows.Forms.Button();
+            this.TableLayoutPanel_Core = new System.Windows.Forms.TableLayoutPanel();
+            this.TableLayoutPanel_Output = new System.Windows.Forms.TableLayoutPanel();
             this.Button_Browse_Output = new System.Windows.Forms.Button();
             this.TextBox_Output = new System.Windows.Forms.TextBox();
             this.CheckBox_Debug = new System.Windows.Forms.CheckBox();
@@ -39,83 +39,84 @@
             this.CheckBox_Stability = new System.Windows.Forms.CheckBox();
             this.CheckBox_Errors = new System.Windows.Forms.CheckBox();
             this.CheckBox_ToRam = new System.Windows.Forms.CheckBox();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.TableLayoutPanel_Cache = new System.Windows.Forms.TableLayoutPanel();
             this.Button_Browse_Cache = new System.Windows.Forms.Button();
             this.TextBox_Cache = new System.Windows.Forms.TextBox();
             this.CheckBox_AutoSave = new System.Windows.Forms.CheckBox();
             this.DropBox_Priority = new System.Windows.Forms.ComboBox();
             this.NumericUpDown_CPU_Limit = new System.Windows.Forms.NumericUpDown();
-            this.tableLayoutPanel1.SuspendLayout();
-            this.tableLayoutPanel3.SuspendLayout();
-            this.tableLayoutPanel2.SuspendLayout();
+            this.TableLayoutPanel_Core.SuspendLayout();
+            this.TableLayoutPanel_Output.SuspendLayout();
+            this.TableLayoutPanel_Cache.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_CPU_Limit)).BeginInit();
             this.SuspendLayout();
             // 
-            // button1
+            // Button_Start
             // 
-            this.button1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.button1.Location = new System.Drawing.Point(120, 319);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(80, 23);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Start";
-            this.button1.UseVisualStyleBackColor = true;
+            this.Button_Start.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.Button_Start.Location = new System.Drawing.Point(120, 319);
+            this.Button_Start.Name = "Button_Start";
+            this.Button_Start.Size = new System.Drawing.Size(80, 23);
+            this.Button_Start.TabIndex = 0;
+            this.Button_Start.Text = "Start";
+            this.Button_Start.UseVisualStyleBackColor = true;
+            this.Button_Start.Click += new System.EventHandler(this.Button_Start_Click);
             // 
-            // tableLayoutPanel1
+            // TableLayoutPanel_Core
             // 
-            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.TableLayoutPanel_Core.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel3, 0, 11);
-            this.tableLayoutPanel1.Controls.Add(this.CheckBox_Debug, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.CheckBox_Accel_Video, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.CheckBox_Accel_Image, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.CheckBox_Stability, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.CheckBox_Errors, 0, 4);
-            this.tableLayoutPanel1.Controls.Add(this.CheckBox_ToRam, 0, 5);
-            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 6);
-            this.tableLayoutPanel1.Controls.Add(this.CheckBox_AutoSave, 0, 7);
-            this.tableLayoutPanel1.Controls.Add(this.DropBox_Priority, 0, 9);
-            this.tableLayoutPanel1.Controls.Add(this.NumericUpDown_CPU_Limit, 0, 12);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 12);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 14;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(280, 301);
-            this.tableLayoutPanel1.TabIndex = 1;
+            this.TableLayoutPanel_Core.ColumnCount = 1;
+            this.TableLayoutPanel_Core.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.TableLayoutPanel_Core.Controls.Add(this.TableLayoutPanel_Output, 0, 11);
+            this.TableLayoutPanel_Core.Controls.Add(this.CheckBox_Debug, 0, 0);
+            this.TableLayoutPanel_Core.Controls.Add(this.CheckBox_Accel_Video, 0, 1);
+            this.TableLayoutPanel_Core.Controls.Add(this.CheckBox_Accel_Image, 0, 2);
+            this.TableLayoutPanel_Core.Controls.Add(this.CheckBox_Stability, 0, 3);
+            this.TableLayoutPanel_Core.Controls.Add(this.CheckBox_Errors, 0, 4);
+            this.TableLayoutPanel_Core.Controls.Add(this.CheckBox_ToRam, 0, 5);
+            this.TableLayoutPanel_Core.Controls.Add(this.TableLayoutPanel_Cache, 0, 6);
+            this.TableLayoutPanel_Core.Controls.Add(this.CheckBox_AutoSave, 0, 7);
+            this.TableLayoutPanel_Core.Controls.Add(this.DropBox_Priority, 0, 9);
+            this.TableLayoutPanel_Core.Controls.Add(this.NumericUpDown_CPU_Limit, 0, 12);
+            this.TableLayoutPanel_Core.Location = new System.Drawing.Point(12, 12);
+            this.TableLayoutPanel_Core.Name = "TableLayoutPanel_Core";
+            this.TableLayoutPanel_Core.RowCount = 14;
+            this.TableLayoutPanel_Core.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
+            this.TableLayoutPanel_Core.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
+            this.TableLayoutPanel_Core.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
+            this.TableLayoutPanel_Core.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
+            this.TableLayoutPanel_Core.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
+            this.TableLayoutPanel_Core.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
+            this.TableLayoutPanel_Core.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
+            this.TableLayoutPanel_Core.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
+            this.TableLayoutPanel_Core.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
+            this.TableLayoutPanel_Core.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
+            this.TableLayoutPanel_Core.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
+            this.TableLayoutPanel_Core.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
+            this.TableLayoutPanel_Core.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
+            this.TableLayoutPanel_Core.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.TableLayoutPanel_Core.Size = new System.Drawing.Size(280, 301);
+            this.TableLayoutPanel_Core.TabIndex = 1;
             // 
-            // tableLayoutPanel3
+            // TableLayoutPanel_Output
             // 
-            this.tableLayoutPanel3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.TableLayoutPanel_Output.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel3.ColumnCount = 2;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 75F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.Controls.Add(this.Button_Browse_Output, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.TextBox_Output, 1, 0);
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 253);
-            this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(0);
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.RowCount = 1;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(280, 23);
-            this.tableLayoutPanel3.TabIndex = 7;
+            this.TableLayoutPanel_Output.ColumnCount = 2;
+            this.TableLayoutPanel_Output.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 75F));
+            this.TableLayoutPanel_Output.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.TableLayoutPanel_Output.Controls.Add(this.Button_Browse_Output, 0, 0);
+            this.TableLayoutPanel_Output.Controls.Add(this.TextBox_Output, 1, 0);
+            this.TableLayoutPanel_Output.Location = new System.Drawing.Point(0, 253);
+            this.TableLayoutPanel_Output.Margin = new System.Windows.Forms.Padding(0);
+            this.TableLayoutPanel_Output.Name = "TableLayoutPanel_Output";
+            this.TableLayoutPanel_Output.RowCount = 1;
+            this.TableLayoutPanel_Output.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.TableLayoutPanel_Output.Size = new System.Drawing.Size(280, 23);
+            this.TableLayoutPanel_Output.TabIndex = 7;
             // 
             // Button_Browse_Output
             // 
@@ -206,23 +207,23 @@
             this.CheckBox_ToRam.Text = "Cache to RAM";
             this.CheckBox_ToRam.UseVisualStyleBackColor = true;
             // 
-            // tableLayoutPanel2
+            // TableLayoutPanel_Cache
             // 
-            this.tableLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.TableLayoutPanel_Cache.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel2.ColumnCount = 2;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 75F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Controls.Add(this.Button_Browse_Cache, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.TextBox_Cache, 1, 0);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 138);
-            this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(0);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 1;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(280, 23);
-            this.tableLayoutPanel2.TabIndex = 6;
+            this.TableLayoutPanel_Cache.ColumnCount = 2;
+            this.TableLayoutPanel_Cache.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 75F));
+            this.TableLayoutPanel_Cache.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.TableLayoutPanel_Cache.Controls.Add(this.Button_Browse_Cache, 0, 0);
+            this.TableLayoutPanel_Cache.Controls.Add(this.TextBox_Cache, 1, 0);
+            this.TableLayoutPanel_Cache.Location = new System.Drawing.Point(0, 138);
+            this.TableLayoutPanel_Cache.Margin = new System.Windows.Forms.Padding(0);
+            this.TableLayoutPanel_Cache.Name = "TableLayoutPanel_Cache";
+            this.TableLayoutPanel_Cache.RowCount = 1;
+            this.TableLayoutPanel_Cache.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.TableLayoutPanel_Cache.Size = new System.Drawing.Size(280, 23);
+            this.TableLayoutPanel_Cache.TabIndex = 6;
             // 
             // Button_Browse_Cache
             // 
@@ -297,23 +298,26 @@
             // 
             // PreProcessOptions
             // 
-            this.AcceptButton = this.button1;
+            this.AcceptButton = this.Button_Start;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(304, 354);
-            this.Controls.Add(this.tableLayoutPanel1);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.TableLayoutPanel_Core);
+            this.Controls.Add(this.Button_Start);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(320, 38);
             this.Name = "PreProcessOptions";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
             this.Text = "Pre-Process Options";
-            this.tableLayoutPanel1.ResumeLayout(false);
-            this.tableLayoutPanel1.PerformLayout();
-            this.tableLayoutPanel3.ResumeLayout(false);
-            this.tableLayoutPanel3.PerformLayout();
-            this.tableLayoutPanel2.ResumeLayout(false);
-            this.tableLayoutPanel2.PerformLayout();
+            this.TopMost = true;
+            this.TableLayoutPanel_Core.ResumeLayout(false);
+            this.TableLayoutPanel_Core.PerformLayout();
+            this.TableLayoutPanel_Output.ResumeLayout(false);
+            this.TableLayoutPanel_Output.PerformLayout();
+            this.TableLayoutPanel_Cache.ResumeLayout(false);
+            this.TableLayoutPanel_Cache.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_CPU_Limit)).EndInit();
             this.ResumeLayout(false);
 
@@ -321,20 +325,20 @@
 
         #endregion
 
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.Button Button_Start;
+        private System.Windows.Forms.TableLayoutPanel TableLayoutPanel_Core;
         private System.Windows.Forms.CheckBox CheckBox_Debug;
         private System.Windows.Forms.CheckBox CheckBox_Accel_Video;
         private System.Windows.Forms.CheckBox CheckBox_Accel_Image;
         private System.Windows.Forms.CheckBox CheckBox_Stability;
         private System.Windows.Forms.CheckBox CheckBox_Errors;
         private System.Windows.Forms.CheckBox CheckBox_ToRam;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.TableLayoutPanel TableLayoutPanel_Cache;
         private System.Windows.Forms.Button Button_Browse_Cache;
         private System.Windows.Forms.TextBox TextBox_Cache;
         private System.Windows.Forms.CheckBox CheckBox_AutoSave;
         private System.Windows.Forms.ComboBox DropBox_Priority;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.TableLayoutPanel TableLayoutPanel_Output;
         private System.Windows.Forms.Button Button_Browse_Output;
         private System.Windows.Forms.TextBox TextBox_Output;
         private System.Windows.Forms.NumericUpDown NumericUpDown_CPU_Limit;
