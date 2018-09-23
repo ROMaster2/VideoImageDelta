@@ -377,6 +377,11 @@ namespace VideoImageDeltaApp.Models
             return RawFFmpeg.GetThumbnail(FilePath, new System.Windows.Size(Geometry.Width, Geometry.Height),timestamp);
         }
 
+        public void InitProcess()
+        {
+            Feeds.ForEach(f => f.InitProcess());
+        }
+
         // Full name would be CalculateChildAdjustedGeometry, but that's a mouthful and too many characters.
         /// <summary>
         /// Cache the geometry adjustments needed to position and size images to their spot on the video.
@@ -506,31 +511,31 @@ namespace VideoImageDeltaApp.Models
             }
         }
 
-        // Would be private, but then methods like Add and Clear won't passthrough...
+        private List<Screen> ScreenClones;
         private List<string> _Screens = new List<string>();
-        public IReadOnlyList<string> ScreensRaw
+        public List<Screen> Screens
         {
             get
             {
-                return _Screens.AsReadOnly();
-            }
-        }
-        public IReadOnlyList<Screen> Screens
-        {
-            get
-            {
-                var gps = Program.GameProfiles.Where(x => x.Name == _GameProfile);
-                if (gps.Count() == 0)
-                    throw new ArgumentException("Game Profile is not set.");
+                if (ScreenClones == null)
+                {
+                    var gps = Program.GameProfiles.Where(x => x.Name == _GameProfile);
+                    if (gps.Count() == 0)
+                        throw new ArgumentException("Game Profile is not set.");
                     //return new List<Screen>().AsReadOnly();
+                    else
+                    {
+                        var ss = new List<Screen>();
+                        foreach (var s in _Screens)
+                        {
+                            ss.Add(gps.First().Screens.Where(x => x.Name == s).First());
+                        }
+                        return ss;
+                    }
+                }
                 else
                 {
-                    var ss = new List<Screen>();
-                    foreach (var s in _Screens)
-                    {
-                        ss.Add(gps.First().Screens.Where(x => x.Name == s).First());
-                    }
-                    return ss.AsReadOnly();
+                    return ScreenClones;
                 }
             }
         }
@@ -543,6 +548,11 @@ namespace VideoImageDeltaApp.Models
         public void ClearScreens()
         {
             _Screens.Clear();
+        }
+
+        public void InitProcess()
+        {
+            ScreenClones = Screens;
         }
 
         override public string ToString()

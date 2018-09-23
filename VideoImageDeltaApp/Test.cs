@@ -44,13 +44,11 @@ namespace VideoImageDeltaApp
             //Program.Videos[0].Feeds[0]._Screens.Clear();
 
             var tmp1 = Program.Videos[0].Feeds[0].Screens;
-            var tmp2 = Program.Videos[0].Feeds[0].ScreensRaw;
             var tmp3 = Program.GameProfiles[0].Screens;
 
             Program.Videos[0].Feeds[0].AddScreen(Program.GameProfiles[0].Screens[0]);
 
             var tmp4 = Program.Videos[0].Feeds[0].Screens;
-            var tmp5 = Program.Videos[0].Feeds[0].ScreensRaw;
             var tmp6 = Program.GameProfiles[0].Screens;
         }
 
