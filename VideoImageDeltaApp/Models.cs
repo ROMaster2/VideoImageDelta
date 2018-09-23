@@ -1,18 +1,4 @@
-﻿using Hudl.FFmpeg;
-using Hudl.FFmpeg.Command;
-using Hudl.FFmpeg.Metadata;
-using Hudl.FFmpeg.Metadata.Interfaces;
-using Hudl.FFmpeg.Metadata.Models;
-using Hudl.FFmpeg.Resources;
-using Hudl.FFmpeg.Resources.BaseTypes;
-using Hudl.FFmpeg.Settings;
-using Hudl.FFmpeg.Settings.BaseTypes;
-using Hudl.FFmpeg.Sugar;
-using Hudl.FFprobe;
-using Hudl.FFprobe.Command;
-using Hudl.FFprobe.Metadata;
-using Hudl.FFprobe.Metadata.Models;
-using ImageMagick;
+﻿using ImageMagick;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -300,13 +286,11 @@ namespace VideoImageDeltaApp.Models
         {
             if (File.Exists(filePath))
             {
-                try
-                {
-                    var tmp = Resource.From(filePath);
-                    tmp.LoadMetadata();
-                    var tmp2 = (VideoStream)tmp.Streams.First(x => x.ResourceIndicator == "v");
-                    return new Video(filePath, tmp2.Info.VideoMetadata);
-                }
+                //try
+                //{
+                    ffprobeType tmp = RawFFmpeg.GetRawMetadata(filePath);
+                    return new Video(filePath, tmp);
+                /*}
                 catch (InvalidOperationException e)
                 {
                     DialogResult dr = MessageBox.Show(
@@ -316,7 +300,7 @@ namespace VideoImageDeltaApp.Models
                         MessageBoxIcon.Error
                         );
                 }
-                return null;
+                return null;*/
             }
             else
             {
@@ -326,17 +310,14 @@ namespace VideoImageDeltaApp.Models
 
         }
 
-        private Video(string filePath, VideoStreamMetadata metaData)
+        private Video(string filePath, ffprobeType metaData)
         {
             FilePath = filePath;
             if (File.Exists(filePath))
             {
                 RawMetadata = metaData;
 
-                Duration = RawMetadata.Duration;
-                if (Duration == TimeSpan.Zero) Duration = RawFFmpeg.GetDuration(filePath);
-
-                Geometry = new Geometry(RawMetadata.Width, RawMetadata.Height);
+                Geometry = new Geometry(RawVideoMetadata.width, RawVideoMetadata.height);
             }
             else
             {
@@ -347,25 +328,17 @@ namespace VideoImageDeltaApp.Models
         internal Video() { }
 
         public string FilePath { get; }
-        public VideoStreamMetadata RawMetadata { get; }
-        public TimeSpan Duration { get; }
+        public ffprobeType RawMetadata { get; }
         public Geometry Geometry { get; }
         public Geometry AdjustedGeometry { get; set; }
-        public double FrameRate {
-            get
-            {
-                var rfr = RawMetadata.RFrameRate;
-                return (double)rfr.Numerator / rfr.Denominator;
-            }
-        }
 
-        public int FrameCount
-        {
-            get
-            {
-                return Convert.ToInt32(FrameRate * Duration.TotalSeconds);
-            }
-        }
+        public streamType RawVideoMetadata { get { return RawMetadata.streams.Where(x => x.codec_type == "video").First(); } }
+        public TimeSpan Duration { get { return TimeSpan.FromSeconds(
+            (double)RawVideoMetadata.duration_ts * (double)Utilities.DivideString(RawVideoMetadata.time_base)
+            ); } }
+        public double FrameRate { get { return (double)Utilities.DivideString(RawVideoMetadata.r_frame_rate); } }
+
+        public int FrameCount { get { return Convert.ToInt32(FrameRate * Duration.TotalSeconds); } }
 
         private string _GameProfile;
         public GameProfile GameProfile

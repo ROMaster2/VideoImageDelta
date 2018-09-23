@@ -1,18 +1,4 @@
-﻿using Hudl.FFmpeg;
-using Hudl.FFmpeg.Command;
-using Hudl.FFmpeg.Metadata;
-using Hudl.FFmpeg.Metadata.Interfaces;
-using Hudl.FFmpeg.Metadata.Models;
-using Hudl.FFmpeg.Resources;
-using Hudl.FFmpeg.Resources.BaseTypes;
-using Hudl.FFmpeg.Settings;
-using Hudl.FFmpeg.Settings.BaseTypes;
-using Hudl.FFmpeg.Sugar;
-using Hudl.FFprobe;
-using Hudl.FFprobe.Command;
-using Hudl.FFprobe.Metadata;
-using Hudl.FFprobe.Metadata.Models;
-using ImageMagick;
+﻿using ImageMagick;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -149,6 +135,17 @@ namespace VideoImageDeltaApp
                 ret = Math.Sqrt((sum) / (values.Count() - 1));
             }
             return ret;
+        }
+
+        public static decimal DivideString(string str)
+        {
+            var s = str.Split('/');
+            decimal i = decimal.Parse(s[0]);
+            for (var n = 1; n < s.Count(); n++)
+            {
+                i /= decimal.Parse(s[n]);
+            }
+            return i;
         }
 
     }

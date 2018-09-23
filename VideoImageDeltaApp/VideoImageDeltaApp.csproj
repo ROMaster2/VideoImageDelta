@@ -38,22 +38,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Hudl.FFmpeg, Version=6.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Hudl.FFmpeg.6.1.0\lib\net45\Hudl.FFmpeg.dll</HintPath>
-    </Reference>
-    <Reference Include="Hudl.FFmpeg.Core, Version=6.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Hudl.FFmpeg.6.1.0\lib\net45\Hudl.FFmpeg.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Hudl.FFprobe, Version=6.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Hudl.FFmpeg.6.1.0\lib\net45\Hudl.FFprobe.dll</HintPath>
-    </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Magick.NET-Q8-x64, Version=7.7.0.0, Culture=neutral, PublicKeyToken=2004825badfa91ec, processorArchitecture=AMD64">
-      <HintPath>..\packages\Magick.NET-Q8-x64.7.7.0\lib\net40\Magick.NET-Q8-x64.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Magick.NET-Q8-x64, Version=7.8.0.0, Culture=neutral, PublicKeyToken=2004825badfa91ec, processorArchitecture=AMD64">
+      <HintPath>..\packages\Magick.NET-Q8-x64.7.8.0\lib\net40\Magick.NET-Q8-x64.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -110,12 +100,20 @@
     <Compile Include="AddWatchers.Designer.cs">
       <DependentUpon>AddWatchers.cs</DependentUpon>
     </Compile>
+    <Compile Include="ffprobe.cs" />
     <Compile Include="PreProcessOptions.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="PreProcessOptions.Designer.cs">
       <DependentUpon>PreProcessOptions.cs</DependentUpon>
     </Compile>
+    <Compile Include="Processing.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Processing.Designer.cs">
+      <DependentUpon>Processing.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Processor.cs" />
     <Compile Include="Rect.cs" />
     <Compile Include="ProcessSettings.cs">
       <SubType>Form</SubType>
@@ -146,6 +144,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PreProcessOptions.resx">
       <DependentUpon>PreProcessOptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Processing.resx">
+      <DependentUpon>Processing.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProcessSettings.resx">
       <DependentUpon>ProcessSettings.cs</DependentUpon>
@@ -192,12 +193,12 @@
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\Magick.NET-Q8-x64.7.7.0\build\net40\Magick.NET-Q8-x64.targets" Condition="Exists('..\packages\Magick.NET-Q8-x64.7.7.0\build\net40\Magick.NET-Q8-x64.targets')" />
+  <Import Project="..\packages\Magick.NET-Q8-x64.7.8.0\build\net40\Magick.NET-Q8-x64.targets" Condition="Exists('..\packages\Magick.NET-Q8-x64.7.8.0\build\net40\Magick.NET-Q8-x64.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Magick.NET-Q8-x64.7.7.0\build\net40\Magick.NET-Q8-x64.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Magick.NET-Q8-x64.7.7.0\build\net40\Magick.NET-Q8-x64.targets'))" />
+    <Error Condition="!Exists('..\packages\Magick.NET-Q8-x64.7.8.0\build\net40\Magick.NET-Q8-x64.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Magick.NET-Q8-x64.7.8.0\build\net40\Magick.NET-Q8-x64.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

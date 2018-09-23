@@ -2,20 +2,6 @@
  * Very spagehtti. Will clean up later.
  */
 
-using Hudl.FFmpeg;
-using Hudl.FFmpeg.Command;
-using Hudl.FFmpeg.Metadata;
-using Hudl.FFmpeg.Metadata.Interfaces;
-using Hudl.FFmpeg.Metadata.Models;
-using Hudl.FFmpeg.Resources;
-using Hudl.FFmpeg.Resources.BaseTypes;
-using Hudl.FFmpeg.Settings;
-using Hudl.FFmpeg.Settings.BaseTypes;
-using Hudl.FFmpeg.Sugar;
-using Hudl.FFprobe;
-using Hudl.FFprobe.Command;
-using Hudl.FFprobe.Metadata;
-using Hudl.FFprobe.Metadata.Models;
 using ImageMagick;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -152,7 +138,6 @@ namespace VideoImageDeltaApp
                 }
             } else
             {
-                ResourceManagement.CommandConfiguration = CommandConfiguration.Create(Path.GetTempPath(), ffmpegPath, ffprobePath);
                 return true;
             }
         }
@@ -166,6 +151,7 @@ namespace VideoImageDeltaApp
             pProcess.StartInfo.UseShellExecute = false;
             pProcess.StartInfo.RedirectStandardOutput = true;
             pProcess.StartInfo.RedirectStandardError = true;
+            pProcess.StartInfo.CreateNoWindow = true;
             pProcess.Start();
 
             string strOutput = pProcess.StandardOutput.ReadToEnd();
@@ -304,6 +290,19 @@ namespace VideoImageDeltaApp
             }
 
             string ayy = Convert.ToBase64String(test2.ToArray());
+        }
+
+        public static ffprobeType GetRawMetadata(string video)
+        {
+            var str = FFCommand("ffprobe", video, "", "-v quiet -print_format xml -show_format -show_streams");
+            ffprobeType result = null;
+            XmlSerializer xs = new XmlSerializer(typeof(ffprobeType), new XmlRootAttribute("ffprobe"));
+            using (StringReader reader = new StringReader(str))
+            {
+                result = (ffprobeType)xs.Deserialize(reader);
+            }
+            return result;
+
         }
 
     }
