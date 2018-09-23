@@ -1343,8 +1343,10 @@ namespace VideoImageDeltaApp
                     CheckedListBox_Screens.Items.Add(s);
 
                     // Okay, the "SelectedVideo.GameProfile != null" shouldn't be necessary. There's a bug afoot.
-                    if (SelectedVideo.GameProfile != null && SelectedVideo.Feeds.Any(x => x.Screens.Any(y => y == s))) // Is this right?
-                        CheckedListBox_Screens.SetItemCheckState(CheckedListBox_Screens.Items.Count - 1, CheckState.Checked);
+                    if (SelectedVideo.GameProfile != null &&
+                        SelectedFeed != null &&
+                        SelectedFeed.Screens.Any(y => y == s)) // Is this right?
+                            CheckedListBox_Screens.SetItemCheckState(CheckedListBox_Screens.Items.Count - 1, CheckState.Checked);
 
                     DropBox_Watch_Preview.Items.Clear();
                     var dropDownWidth = 168;
