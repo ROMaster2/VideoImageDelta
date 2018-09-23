@@ -56,5 +56,13 @@ namespace VideoImageDeltaApp
 
             DropBox_Priority.SelectedIndex = 2;
         }
+
+        private void Button_Start_Click(object sender, EventArgs e)
+        {
+            Processing w = new Processing();
+            Hide();
+            w.ShowDialog();
+            Close();
+        }
     }
 }
