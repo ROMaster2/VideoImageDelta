@@ -311,7 +311,6 @@
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.Text = "Pre-Process Options";
-            this.TopMost = true;
             this.TableLayoutPanel_Core.ResumeLayout(false);
             this.TableLayoutPanel_Core.PerformLayout();
             this.TableLayoutPanel_Output.ResumeLayout(false);

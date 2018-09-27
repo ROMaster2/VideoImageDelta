@@ -11,6 +11,7 @@ namespace VideoImageDeltaApp
         public static Processor Processor = new Processor();
         public static List<Video> Videos = new List<Video>();
         public static List<GameProfile> GameProfiles = new List<GameProfile>();
+        public static MainWindow MainWindow;
         
         [STAThread]
         static void Main()
@@ -21,7 +22,8 @@ namespace VideoImageDeltaApp
             {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new MainWindow());
+                MainWindow = new MainWindow();
+                Application.Run(MainWindow);
             }
         }
     }

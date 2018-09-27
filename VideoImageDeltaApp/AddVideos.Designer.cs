@@ -880,6 +880,7 @@
             this.Controls.Add(this.Button_Import);
             this.Controls.Add(this.Button_Export);
             this.Controls.Add(this.Button_Close);
+            this.DoubleBuffered = true;
             this.MinimumSize = new System.Drawing.Size(640, 480);
             this.Name = "AddVideos";
             this.Text = "Add Videos";

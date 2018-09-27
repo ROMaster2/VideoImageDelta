@@ -114,7 +114,6 @@
       <DependentUpon>Processing.cs</DependentUpon>
     </Compile>
     <Compile Include="Processor.cs" />
-    <Compile Include="Rect.cs" />
     <Compile Include="ProcessSettings.cs">
       <SubType>Form</SubType>
     </Compile>

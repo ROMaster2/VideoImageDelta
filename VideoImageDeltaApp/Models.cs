@@ -32,6 +32,7 @@ using VideoImageDeltaApp.Models;
 
 using Microsoft.VisualBasic.Devices;
 using Anchor = VideoImageDeltaApp.Models.Anchor;
+using System.Runtime.InteropServices;
 
 namespace VideoImageDeltaApp.Models
 {
@@ -53,38 +54,14 @@ namespace VideoImageDeltaApp.Models
 
     public class Geometry
     {
-        #region Constructors
         public Geometry() { }
-        public Geometry(double widthAndHeight)
-        {
-            Width = widthAndHeight;
-            Height = widthAndHeight;
-        }
-        public Geometry(double width, double height)
-        {
-            Width = width;
-            Height = height;
-        }
-        public Geometry(double x, double y, double width, double height)
-        {
-            X = x;
-            Y = y;
-            Width = width;
-            Height = height;
-        }
-        public Geometry(double widthAndHeight, Anchor anchor)
-        {
-            Width = widthAndHeight;
-            Height = widthAndHeight;
-            Anchor = anchor;
-        }
-        public Geometry(double width, double height, Anchor anchor)
+        public Geometry(double width, double height, Anchor anchor = Anchor.Undefined)
         {
             Width = width;
             Height = height;
             Anchor = anchor;
         }
-        public Geometry(double x, double y, double width, double height, Anchor anchor)
+        public Geometry(double x, double y, double width, double height, Anchor anchor = Anchor.Undefined)
         {
             X = x;
             Y = y;
@@ -92,7 +69,6 @@ namespace VideoImageDeltaApp.Models
             Height = height;
             Anchor = anchor;
         }
-        #endregion
 
         public double X { get; set; } = 0d;
         public double Y { get; set; } = 0d;
@@ -163,94 +139,82 @@ namespace VideoImageDeltaApp.Models
 
             return new Geometry(_x, _y, Width, Height, Anchor.Undefined);
         }
+
+        // Only Northwest for now
+        public void UpdateRelativeToPoint(double x, double y)
+        {
+            X = X - x;
+            Y = Y - y;
+        }
+        public void UpdateRelativeToPoint(Geometry geo)
+        {
+            X = X - geo.X;
+            Y = Y - geo.Y;
+        }
+        public Geometry RelativeToPoint(double x, double y)
+        {
+            return new Geometry(Width, Height)
+            {
+                X = X - x,
+                Y = Y - y
+            };
+        }
+        public Geometry RelativeToPoint(Geometry geo)
+        {
+            return new Geometry(Width, Height)
+            {
+                X = X - geo.X,
+                Y = Y - geo.Y
+            };
+        }
+
+        // Can't be in the namespace, so...
+        public static Gravity AnchorToGravity(Anchor anchor)
+        {
+            switch (anchor)
+            {
+                case Anchor.TopLeft: return Gravity.Northwest;
+                case Anchor.Top: return Gravity.North;
+                case Anchor.TopRight: return Gravity.Northeast;
+                case Anchor.Left: return Gravity.West;
+                case Anchor.Center: return Gravity.Center;
+                case Anchor.Right: return Gravity.East;
+                case Anchor.BottomLeft: return Gravity.Southwest;
+                case Anchor.Bottom: return Gravity.South;
+                case Anchor.BottomRight: return Gravity.Southeast;
+                default: return Gravity.Undefined;
+            }
+        }
+
+        public static Anchor GravityToAnchor(Gravity gravity)
+        {
+            switch (gravity)
+            {
+                case Gravity.Northwest: return Anchor.TopLeft;
+                case Gravity.North: return Anchor.Top;
+                case Gravity.Northeast: return Anchor.TopRight;
+                case Gravity.West: return Anchor.Left;
+                case Gravity.Center: return Anchor.Center;
+                case Gravity.East: return Anchor.Right;
+                case Gravity.Southwest: return Anchor.BottomLeft;
+                case Gravity.South: return Anchor.Bottom;
+                case Gravity.Southeast: return Anchor.BottomRight;
+                default: return Anchor.Undefined;
+            }
+        }
+
+        public MagickGeometry ToMagick()
+        {
+            return new MagickGeometry((int)X, (int)Y, (int)Width, (int)Height);
+        }
+
+        public string ToFFmpegString()
+        {
+            return Width.ToString() + ':' + Height.ToString() + ':' + X.ToString() + ':' + Y.ToString();
+        }
+
     }
 
-    /*
-    // Pair by names for now. How can you avoid unnecessary duplication and desyncs from changes?
-    public class Pair
-    {
-        public Pair (Video video, GameProfile gameProfile, bool auto = true)
-        {
-            Video = video;
-            GameProfile = gameProfile;
-        }
-
-        private string _Video;
-        public Video Video
-        {
-            get
-            {
-                return Program.Videos.Where(x => x.FilePath == _Video).First();
-            }
-            set
-            {
-                _Video = value.FilePath;
-            }
-        }
-
-        private string _GameProfile;
-        public GameProfile GameProfile
-        {
-            get
-            {
-                var l = Program.GameProfiles.Where(x => x.Name == _GameProfile);
-                if (l.Count() == 0)
-                {
-                    return new GameProfile("Not set");
-                }
-                else
-                    return l.First();
-            }
-            set
-            {
-                if (value == null)
-                    _GameProfile = null;
-                else
-                    _GameProfile = value.Name;
-            }
-        }
-
-        public List<SubPair> SubPairs { get; set; } = new List<SubPair>();
-
-        public class SubPair
-        {
-            public SubPair(Feed feed, Screen screen)
-            {
-                Feed = feed;
-                Screen = screen;
-            }
-
-            private string _Feed;
-            public Feed Feed
-            {
-                get
-                {
-                    var v = Program.Videos.Where(x => x.FilePath == _Video).First();
-                    return v.Feeds.Where(x => x.Name == _Feed).First();
-                }
-                set
-                {
-                    _Feed = value.Name;
-                }
-            }
-
-            private string _Screen;
-            public Screen Screen
-            {
-                get
-                {
-                    var gp = Program.GameProfiles.Where(x => x.Name == _GameProfile).First();
-                    return gp.Screens.Where(x => x.Name == _Screen).First();
-                }
-                set
-                {
-                    _Screen = value.Name;
-                }
-            }
-
-        }
-    }
-    */
     public class VideoProfile
     {
         public VideoProfile(string name, Video video)
@@ -286,21 +250,8 @@ namespace VideoImageDeltaApp.Models
         {
             if (File.Exists(filePath))
             {
-                //try
-                //{
-                    ffprobeType tmp = RawFFmpeg.GetRawMetadata(filePath);
-                    return new Video(filePath, tmp);
-                /*}
-                catch (InvalidOperationException e)
-                {
-                    DialogResult dr = MessageBox.Show(
-                        "Sorry, but this file type is currently not supported.",
-                        e.ToString(),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error
-                        );
-                }
-                return null;*/
+                ffprobeType tmp = RawFFmpeg.GetRawMetadata(filePath);
+                return new Video(filePath, tmp);
             }
             else
             {
@@ -335,15 +286,18 @@ namespace VideoImageDeltaApp.Models
         public string FilePath { get; }
         public ffprobeType RawMetadata { get; }
         public Geometry Geometry { get; }
-        public Geometry AdjustedGeometry { get; set; }
+        public Geometry ThumbnailGeometry { get; set; }
 
         public streamType RawVideoMetadata { get { return RawMetadata.streams.Where(x => x.codec_type == "video").First(); } }
         public TimeSpan Duration { get; }
         public double FrameRate { get { return (double)Utilities.DivideString(RawVideoMetadata.r_frame_rate); } }
+        //public double IFrameRate { get { return (double)Utilities.DivideString(RawVideoMetadata.); } }
 
         public int FrameCount { get { return (int)(FrameRate * Duration.TotalSeconds); } }
 
+        [XmlIgnore]
         private string _GameProfile;
+        [XmlIgnore]
         public GameProfile GameProfile
         {
             get
@@ -372,14 +326,16 @@ namespace VideoImageDeltaApp.Models
         
         public Image GetThumbnail(TimeSpan timestamp)
         {
-            // Would use Hudl but figuring out the syntax is a pain. Documentation kinda sucks.
-            //return RawFFmpeg.GetThumbnail(this, timestamp);
             return RawFFmpeg.GetThumbnail(FilePath, new System.Windows.Size(Geometry.Width, Geometry.Height),timestamp);
         }
 
         public void InitProcess()
         {
             Feeds.ForEach(f => f.InitProcess());
+            CalcChildAdjGeo();
+            Feeds.ForEach(f => f.Screens.ForEach(s => s.WatchZones.ForEach(wz => wz.Watches.ForEach(w => w.Images
+                .ForEach(i => i.SetMagickImage(wz.AdjustedGeometry))
+            ))));
         }
 
         // Full name would be CalculateChildAdjustedGeometry, but that's a mouthful and too many characters.
@@ -387,8 +343,6 @@ namespace VideoImageDeltaApp.Models
         /// Cache the geometry adjustments needed to position and size images to their spot on the video.
         /// This is done so it's not crunched every single process cycle.
         /// Warning: Could break if negative offsets are used. Need to test.
-        /// WARNING: This alters the GameProfile's WatchZone's AdjGeo, which affects EVERY VIDEO using that GameProfile.
-        /// Todo: That MUST be fixed.
         /// </summary>
         public void CalcChildAdjGeo()
         {
@@ -403,15 +357,23 @@ namespace VideoImageDeltaApp.Models
                 width = Math.Max(width, f.Geometry.X + f.Geometry.Width);
                 height = Math.Max(height, f.Geometry.Y + f.Geometry.Height);
             }
+            // Line up the crop by 16px. FFmpeg goes faster that way.
+            // Disabled for now. No significant speed improvement noticed.
+            //x = Math.Floor(x / 16) * 16;
+            //y = Math.Floor(y / 16) * 16;
             width -= x;
             height -= y;
 
-            AdjustedGeometry = new Geometry(x, y, width, height, Anchor.Undefined);
+            ThumbnailGeometry = new Geometry(x, y, width, height);
 
             foreach (var f in Feeds)
             {
+                f.ThumbnailGeometry = f.Geometry.RelativeToPoint(ThumbnailGeometry);
+
                 foreach (var s in f.Screens)
                 {
+                    s.ThumbnailGeometry = f.ThumbnailGeometry;
+
                     Geometry GameGeometry = s.Geometry;
                     if (f.GameGeometry.Width > 0d && f.GameGeometry.Height > 0d) GameGeometry = f.GameGeometry;
 
@@ -442,8 +404,8 @@ namespace VideoImageDeltaApp.Models
 
                         var newGeo = new Geometry(_x, _y, _width, _height, wz.Geometry.Anchor).WithoutAnchor(GameGeometry);
 
-                        newGeo.X = newGeo.X / GameGeometry.Width * f.Geometry.Width + f.Geometry.X - this.AdjustedGeometry.X;
-                        newGeo.Y = newGeo.Y / GameGeometry.Height * f.Geometry.Height + f.Geometry.Y - this.AdjustedGeometry.Y;
+                        newGeo.X = newGeo.X / GameGeometry.Width * f.Geometry.Width + f.ThumbnailGeometry.X;
+                        newGeo.Y = newGeo.Y / GameGeometry.Height * f.Geometry.Height + f.ThumbnailGeometry.Y;
                         newGeo.Width = newGeo.Width / GameGeometry.Width * f.Geometry.Width;
                         newGeo.Height = newGeo.Height / GameGeometry.Height * f.Geometry.Height;
 
@@ -458,17 +420,22 @@ namespace VideoImageDeltaApp.Models
             return FilePath;
         }
 
+        public string ToFFmpegArguments()
+        {
+
+            return @"-i """ + FilePath + @""" -vf fps=" + FrameRate + @",crop=" + ThumbnailGeometry.ToFFmpegString();
+        }
+
     }
 
     public class Feed
     {
-        public Feed(string name, bool useOCR, Geometry geometry, Geometry gameGeometry = null, GameProfile gameProfile = null)
+        public Feed(string name, bool useOCR, Geometry geometry, Geometry gameGeometry = null)
         {
             Name = name;
             UseOCR = useOCR;
             Geometry = geometry;
             GameGeometry = gameGeometry;
-            GameProfile = gameProfile;
         }
 
         internal Feed() { }
@@ -478,6 +445,7 @@ namespace VideoImageDeltaApp.Models
         public bool UseOCR { get; set; }
         public Geometry Geometry { get; set; }
         public Geometry GameGeometry { get; set; }
+        public Geometry ThumbnailGeometry { get; set; }
 
         public string FullName
         {
@@ -491,7 +459,9 @@ namespace VideoImageDeltaApp.Models
             }
         }
 
+        [XmlIgnore]
         private string _GameProfile;
+        [XmlIgnore]
         public GameProfile GameProfile
         {
             get
@@ -511,8 +481,11 @@ namespace VideoImageDeltaApp.Models
             }
         }
 
+        [XmlIgnore]
         private List<Screen> ScreenClones;
+        [XmlIgnore]
         private List<string> _Screens = new List<string>();
+        [XmlIgnore]
         public List<Screen> Screens
         {
             get
@@ -612,6 +585,7 @@ namespace VideoImageDeltaApp.Models
         public string Name { get; set; }
         public bool UseAdvanced { get; set; }
         public Geometry Geometry { get; set; }
+        public Geometry ThumbnailGeometry { get; set; }
         public List<WatchZone> WatchZones { get; set; } = new List<WatchZone>();
 
         override public string ToString()
@@ -693,6 +667,8 @@ namespace VideoImageDeltaApp.Models
         internal WatchImage() { }
 
         public string FilePath { get; set; }
+        [XmlIgnore]
+        public MagickImage MagickImage { get; internal set; }
         private Image image;
         public Image Image
         {
@@ -732,9 +708,44 @@ namespace VideoImageDeltaApp.Models
 
         }
 
+        public void SetMagickImage(Geometry geo)
+        {
+            var i = new MagickImage((Bitmap)Image);/*
+            var geo = new MagickGeometry((int)WZgeo.X, (int)WZgeo.Y, (int)Ggeo.Width, (int)Ggeo.Height);
+            i.Extent(geo, Gravity.Northwest, MagickColor.FromRgba(0, 0, 0, 0));
+            i.RePage();
+            i.Scale((int)Fgeo.Width, (int)Fgeo.Height);
+            i.Trim();
+            MagickImage = new MagickImage(i.ToBitmap());
+            Clear();*/
+            var newGeo = new MagickGeometry((int)geo.Width, (int)geo.Height);
+            newGeo.IgnoreAspectRatio = true;
+            i.Scale(newGeo);
+            MagickImage = new MagickImage(i.ToBitmap());
+            Clear();
+        }
+
         public void Clear()
         {
             image = null;
+        }
+
+        [XmlIgnore]
+        public List<Bag> DeltaBag = new List<Bag>();
+
+        public class Bag
+        {
+            public Bag(WatchImage wi, int frameIndex, double delta)
+            {
+                WatchImage = wi;
+                FrameIndex = frameIndex;
+                Delta = delta;
+            }
+            internal Bag() { }
+
+            public WatchImage WatchImage;
+            public int FrameIndex;
+            public double Delta;
         }
 
         override public string ToString()
@@ -815,4 +826,5 @@ namespace VideoImageDeltaApp.Models
 
         }
     }
+
 }

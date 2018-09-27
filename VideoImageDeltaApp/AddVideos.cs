@@ -40,6 +40,10 @@ namespace VideoImageDeltaApp
     {
         private bool seenWarning = false;
 
+        private static Image thumb1;
+        private static Image thumb2;
+        private static Image thumb3;
+
         public AddVideos()
         {
             InitializeComponent();
@@ -87,6 +91,9 @@ namespace VideoImageDeltaApp
                 Program.Videos.Add(lv.Video);
             if (Box_Main.BackgroundImage != null)
                 Box_Main.BackgroundImage.Dispose();
+            if (thumb1 != null) thumb1.Dispose();
+            if (thumb2 != null) thumb2.Dispose();
+            if (thumb3 != null) thumb3.Dispose();
         }
 
         private void Button_Help_Click(object sender, EventArgs e)
@@ -123,7 +130,7 @@ namespace VideoImageDeltaApp
                                 vp = (VideoProfile)serializer.Deserialize(reader);
                             } catch
                             {
-                                DialogResult dr = MessageBox.Show(f + "is either not a Video profile or has been corrupted.",
+                                DialogResult dr = MessageBox.Show(f + " is either not a Video profile or has been corrupted.",
                                     "Error", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error);
                                 if (dr == DialogResult.Abort)
                                 {
@@ -195,7 +202,8 @@ namespace VideoImageDeltaApp
                                 ListView_Videos.Items[i] = lv;
                             }
                         }
-                        ListBox_Feeds.SelectedIndex = 0;
+                        if (ListBox_Feeds.Items.Count > 0)
+                            ListBox_Feeds.SelectedIndex = 0;
                     }
                 }
                 ofd.Dispose();
@@ -525,20 +533,7 @@ namespace VideoImageDeltaApp
                             y = (int)PreviewBoxGeometryAfter.Y;
                             w = (int)PreviewBoxGeometryAfter.Width;
                             h = (int)PreviewBoxGeometryAfter.Height;
-                            Gravity g = Gravity.Undefined;
-                            switch (PreviewBoxGeometryAfter.Anchor)
-                            {
-                                case Models.Anchor.TopLeft: g = Gravity.Northwest; break;
-                                case Models.Anchor.Top: g = Gravity.North; break;
-                                case Models.Anchor.TopRight: g = Gravity.Northeast; break;
-                                case Models.Anchor.Left: g = Gravity.West; break;
-                                case Models.Anchor.Center: g = Gravity.Center; break;
-                                case Models.Anchor.Right: g = Gravity.East; break;
-                                case Models.Anchor.BottomLeft: g = Gravity.Southwest; break;
-                                case Models.Anchor.Bottom: g = Gravity.South; break;
-                                case Models.Anchor.BottomRight: g = Gravity.Southeast; break;
-                                default: g = Gravity.Undefined; break;
-                            }
+                            Gravity g = Geometry.AnchorToGravity(PreviewBoxGeometryAfter.Anchor);
                             mi.Crop(new MagickGeometry(x, y, w, h), g);
                             mi.RePage();
                             return mi.ToBitmap();
@@ -586,13 +581,12 @@ namespace VideoImageDeltaApp
                     Box_Main.BackgroundImage.Dispose();
                 }
 
-                Image i = v.GetThumbnail(timestamp);
-                Bitmap i3 = (Bitmap)RescaleThumbnail((Image)i.Clone(), true);
+                thumb1 = v.GetThumbnail(timestamp);
+                thumb2 = (Bitmap)RescaleThumbnail((Image)thumb1.Clone(), true);
                 
 
-                if (DropBox_Watch_Preview.SelectedIndex > -1)
+                if (SelectedGameProfile != null && SelectedGameProfile.Screens.Count > 0 && DropBox_Watch_Preview.SelectedIndex > -1)
                 {
-                    Bitmap i2 = new Bitmap(1, 1);
                     // Using strings to store this stuff is a bad idea...
                     string[] words = DropBox_Watch_Preview.Text.Split('/');
                     if (words.Count() != 3)
@@ -612,7 +606,7 @@ namespace VideoImageDeltaApp
                                 var il = wl.First().Images.Where(z => z.FileName == words2[1]);
                                 if (il.Count() > 0)
                                 {
-                                    i2 = (Bitmap)il.First().Image;
+                                    thumb3 = (Bitmap)il.First().Image;
                                 }
                                 else
                                     throw new Exception("The Image no longer exists." +
@@ -630,12 +624,12 @@ namespace VideoImageDeltaApp
                     if (CheckBox_Timer.Checked)
                     {
                         var t = SelectedFeed.Geometry;
-                        Utilities.ReadImage(i, SelectedFeed.Geometry, out string str, out float confidence);
+                        Utilities.ReadImage(thumb1, SelectedFeed.Geometry, out string str, out float confidence);
                         str = str.Trim().Replace(" ", "");
 
                         Label_Delta.Text = str.Trim();
 
-                        bool isValid = Regex.IsMatch(str.Trim(), @"^(?:(?:(\d?\d):)?([0-5]\d):)?([0-5]\d)(\.\d?(\d?(\d)))?$");
+                        bool isValid = Regex.IsMatch(str.Trim(), @"^-?(?:(?:(\d?\d):)?([0-5]\d):)?([0-5]\d)(\.\d?(\d?(\d)))?$");
                         bool iTried = Regex.IsMatch(str.Trim(), @".*[0-9].*");
 
                         if (!isValid) confidence /= 2f;
@@ -659,9 +653,9 @@ namespace VideoImageDeltaApp
                     else
                     {
                         Label_Delta.Text = "Delta Check";
-                        using (MagickImage mi2 = new MagickImage(i3))
+                        using (MagickImage mi2 = new MagickImage((Bitmap)thumb2))
                         {
-                            using (MagickImage mi1 = new MagickImage(i2)) // Why you no crop?
+                            using (MagickImage mi1 = new MagickImage((Bitmap)thumb3)) // Why you no crop?
                             {
                                 // Make error metric selectable in the future.
                                 double delta = mi1.Compare(mi2, ErrorMetric.PeakSignalToNoiseRatio);
@@ -677,15 +671,15 @@ namespace VideoImageDeltaApp
                                 if (CheckBox_Display.Checked)
                                 {
                                     mi1.Composite(mi2, CompositeOperator.Difference);
-                                    i = ((MagickImage)mi1.Clone()).ToBitmap();
+                                    thumb1 = ((MagickImage)mi1.Clone()).ToBitmap();
                                 }
                                 mi1.Write(@"D:\debug1.bmp");
                                 mi2.Write(@"D:\debug2.bmp");
                             }
                         }
                     }
-                    i2 = null;
-                    i3 = null;
+                    thumb2 = null;
+                    thumb3 = null;
                 }
                 else
                 {
@@ -693,11 +687,11 @@ namespace VideoImageDeltaApp
                     Label_Delta_Number.Text = null;
                 }
                 if (!CheckBox_Display.Checked)
-                    i = RescaleThumbnail(i);
+                    thumb1 = RescaleThumbnail(thumb1);
 
-                if (i != null)
+                if (thumb1 != null)
                 {
-                    Box_Main.BackgroundImage = i;
+                    Box_Main.BackgroundImage = thumb1;
                     Box_Preview.BackColor = Color.FromArgb(127, 255, 0, 255);
                     Label_Failed.Hide();
                 } else
@@ -908,7 +902,7 @@ namespace VideoImageDeltaApp
                 Hide_Core();
             }
 
-            if (ListBox_Feeds.SelectedItems.Count > 0)
+            if (SelectedVideo != null && SelectedVideo.GameProfile != null && ListBox_Feeds.SelectedItems.Count > 0)
                 FillScreenBox();
             else
                 CheckedListBox_Screens.Items.Clear();
@@ -923,8 +917,8 @@ namespace VideoImageDeltaApp
             CheckBox_Timer.Checked = false;
             Numeric_X.Value = 0m;
             Numeric_Y.Value = 0m;
-            Numeric_Width.Value = 100m;
-            Numeric_Height.Value = 100m;
+            Numeric_Width.Value = 0m;
+            Numeric_Height.Value = 0m;
             Numeric_Game_Width.Value = 0m;
             Numeric_Game_Height.Value = 0m;
         }
@@ -1132,7 +1126,10 @@ namespace VideoImageDeltaApp
                 }
             }
 
-            var feed = new Feed(name, useOCR, geo, gameGeo, SelectedGameProfile);
+            var feed = new Feed(name, useOCR, geo, gameGeo)
+            {
+                GameProfile = SelectedGameProfile
+            };
 
             if (String.IsNullOrWhiteSpace(name))
             {
@@ -1165,7 +1162,7 @@ namespace VideoImageDeltaApp
         private void ListBox_Feeds_SelectedIndexChanged(object sender, EventArgs e)
         {
             Update_Inputs();
-            if (ListBox_Feeds.SelectedItems.Count > 0)
+            if (SelectedVideo != null && SelectedVideo.GameProfile != null && ListBox_Feeds.SelectedItems.Count > 0)
             {
                 FillScreenBox();
             }
@@ -1265,7 +1262,7 @@ namespace VideoImageDeltaApp
         private void DropBox_GameProfile_SelectedIndexChanged(object sender, EventArgs e)
         {
             Enable_VandG_Pair();
-            if (ListBox_Feeds.SelectedItems.Count > 0)
+            if (SelectedVideo != null && SelectedVideo.GameProfile != null && ListBox_Feeds.SelectedItems.Count > 0)
                 FillScreenBox();
             else
                 CheckedListBox_Screens.Items.Clear();

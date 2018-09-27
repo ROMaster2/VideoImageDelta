@@ -31,20 +31,21 @@ using VideoImageDeltaApp.Forms;
 using VideoImageDeltaApp.Models;
 
 using Microsoft.VisualBasic.Devices;
-using Anchor = VideoImageDeltaApp.Models.Anchor;
+using System.Reflection;
+using System.Data.OleDb;
 
 namespace VideoImageDeltaApp
 {
     public class Processor
     {
-        private const long MIN_REQUIRED_SPACE = 536870912L; // 512 Mebibytes
+        public const long MIN_REQUIRED_SPACE = 536870912L; // 512 Mebibytes
 
         public Processor() { }
 
         public bool DebuggingEnabled = false;
         public bool HardwareAccelForFFmpeg = false;
         public bool HardwareAccelForMagick = false;
-        public bool UseHDD = false;
+        public bool UseHDD = true;
         public bool AutoSave = false;
         public bool AutoSaveRawOutput = false;
         public bool RunStabilityCheck = false;
@@ -93,7 +94,7 @@ namespace VideoImageDeltaApp
             }
         }
 
-        private string _TempDirectory = Path.GetTempPath();
+        private string _TempDirectory = Path.GetTempPath() + @"\" + Application.ProductName;
         public string TempDirectory
         {
             get
@@ -103,7 +104,7 @@ namespace VideoImageDeltaApp
 
                 if (!Directory.Exists(_TempDirectory))
                 {
-                    _TempDirectory = Path.GetTempPath();
+                    _TempDirectory = Path.GetTempPath() + @"\" + Application.ProductName;
                 }
 
                 return _TempDirectory;
@@ -146,36 +147,254 @@ namespace VideoImageDeltaApp
             }
         }
 
-
-        static IEnumerable<Image> GetThumbnails(Stream stream)
+        public void Run(List<Video> videos)
         {
-            byte[] allImages;
-            using (var ms = new MemoryStream())
+            //Utilities.SetCPULimit(CPULimit);
+            //Utilities.SetPriority(Priority);
+            TempDirectory = @"E:\1";
+
+            //int cacheSize = 536870912;
+
+            // Todo: Validate the videos are processable. IsSynced isn't enough.
+            foreach (Video v in videos)
             {
-                stream.CopyTo(ms);
-                allImages = ms.ToArray();
+                v.InitProcess();
+
+                // Raw image size + bmp overhead.
+                int imageSize = (int)(v.ThumbnailGeometry.Width * v.ThumbnailGeometry.Height) * 3 + 54;
+
+                /*var pipe = new NamedPipeServerStream(
+                    "from_ffmpeg.bmp",
+                    PipeDirection.In,
+                    1,
+                    PipeTransmissionMode.Message,
+                    PipeOptions.WriteThrough,
+                    cacheSize,
+                    cacheSize);*/
+
+
+                List<double> lwz = new List<double>();
+                v.Feeds.ForEach(f => f.Screens.ForEach(s => s.WatchZones.ForEach(wz => wz.Watches.ForEach(w => lwz.Add(w.Frequency)))));
+                double rate = lwz.Max();
+                string rateStr = Math.Round(rate * 300d).ToString() + "/300";
+                //string rateStr = 30.ToString();
+
+
+                Process pProcess = new Process();
+                pProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                pProcess.StartInfo.FileName = "ffmpeg";
+                //                pProcess.StartInfo.Arguments = string.Format(@"-threads 1000 -i ""{0}"" -vf fps={1},crop={2} -q:v 0 ""{3}"" -hide_banner",
+                //                    v.FilePath, rateStr, v.ThumbnailGeometry.ToFFmpegString(), TempDirectory + @"\%08d.jpg");
+                pProcess.StartInfo.Arguments = string.Format(@"-i ""{0}"" -vf fps={1},crop={2} -q:v 5 ""{3}""",
+                    v.FilePath, rateStr, v.ThumbnailGeometry.ToFFmpegString(), TempDirectory + @"\%09d.bmp");
+                pProcess.StartInfo.UseShellExecute = false;
+                pProcess.StartInfo.RedirectStandardOutput = false;
+                pProcess.StartInfo.RedirectStandardError = false;
+                pProcess.StartInfo.CreateNoWindow = false;
+                pProcess.Start();
+
+                //pipe.WaitForConnection();
+
+                if (UseHDD)
+                {
+                    Untitled2(pProcess, v);
+                }
+                else
+                {
+                    //Untitled(pProcess, pipe, imageSize, v);
+                }
+
+                //pipe.Dispose();
+                //var a = pProcess.StandardError.ReadToEnd();
+                pProcess.WaitForExit();
+
             }
-            var bof = allImages.Take(8).ToArray(); //??
-            var prevOffset = -1;
-            foreach (var offset in GetBytePatternPositions(allImages, bof))
-            {
-                if (prevOffset > -1)
-                    yield return GetImageAt(allImages, prevOffset, offset);
-                prevOffset = offset;
-            }
-            if (prevOffset > -1)
-                yield return GetImageAt(allImages, prevOffset, allImages.Length);
+
+            var a = videos[0].Feeds[0].Screens[0].WatchZones[0].Watches[0].Images[0].DeltaBag.ToArray();
+            a.OrderBy(x => x.FrameIndex);
+            var q = 1;
+            var b = a.ToList();
+            b.OrderBy(x => x.FrameIndex);
+            q = 2;
+            var c = b.OrderBy(x => x.FrameIndex);
+            q = 3;
+            var d = b.OrderByDescending(x => x.Delta);
+            q = 4;
+
         }
 
-        static Image GetImageAt(byte[] data, int start, int end)
+        public void Untitled2(Process process, Video video)
         {
-            using (var ms = new MemoryStream(end - start))
+            List<WatchZone> lwz = new List<WatchZone>();
+            video.Feeds.ForEach(f => f.Screens.ForEach(s => s.WatchZones.ForEach(wz => lwz.Add(wz))));
+            lwz.ForEach(wz => wz.Watches.ForEach(w => w.Images.ForEach(wi => wi.DeltaBag.Clear())));
+
+            DirectoryInfo d = new DirectoryInfo(_TempDirectory);
+            FileInfo[] thumbs = d.GetFiles("*.bmp");
+
+            while (!process.HasExited || thumbs.Count() > 0)
             {
-                ms.Write(data, start, end - start);
-                return Image.FromStream(ms);
-            }
+                if (thumbs.Count() > 0)
+                {
+                    var bag = new List<WatchImage.Bag>();
+                    //Parallel.ForEach(thumbs, (file, fileState, fileIndex) =>
+                    foreach (var wz in lwz)
+                    {
+                        foreach (var w in wz.Watches)
+                        {
+                            foreach (var wi in w.Images)
+                            {
+                                foreach (var file in thumbs)
+                                {
+                                    if (file.Exists)
+                                    {
+                                        try
+                                        {
+                                            using (MagickImage fileImage = new MagickImage(file.FullName))
+                                            {
+                                                using (MagickImage deltaImage = (MagickImage)wi.MagickImage.Clone())
+                                                {
+                                                    var mg = wz.AdjustedGeometry.ToMagick();
+                                                    fileImage.Crop(mg, Gravity.Northwest);
+                                                    //fileImage.Composite(deltaImage, CompositeOperator.Difference);
+                                                    double delta = deltaImage.Compare(fileImage, ErrorMetric.PeakSignalToNoiseRatio);
+                                                    int thumbID = int.Parse(file.Name.Substring(0, 9));
+                                                    bag.Add(new WatchImage.Bag(wi, thumbID, delta));
+                                                    if (delta > 10)
+                                                    {
+                                                        file.CopyTo(@"J:\2\" + file.Name);
+                                                        fileImage.Write(@"J:\2\" + file.Name.Substring(0, 9) + "_.bmp");
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        catch (Exception e) { Debug.Write(e); }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    foreach (var f in thumbs)
+                    {
+                        f.Delete();
+                    }
+                    //});
+                    foreach (var b in bag)
+                    {
+                        var a = b.WatchImage.DeltaBag;
+                        a.Add(new WatchImage.Bag(null, b.FrameIndex, b.Delta));
+                    }
+                }
+                thumbs = d.GetFiles("*.bmp");
+                //if (!process.HasExited)
+                    //Thread.Sleep(10000 / (thumbs.Count() + 1));
+            };
         }
 
+
+
+
+
+
+
+
+
+
+
+        void Untitled(Process pProcess, NamedPipeServerStream pipe, int imageSize, Video video)
+        {
+            int scannedCount = 0;
+            List<Image> thumbs = new List<Image>();
+            while (!pProcess.HasExited || thumbs.Count() > 0)
+            {
+                //break;
+                if (thumbs.Count() > 0)
+                {
+                    for(int n = 0; n < thumbs.Count() - 1; n++)
+                    {
+                        video.Feeds[0].Screens.ForEach(s => s.WatchZones.ForEach(wz => wz.Watches.ForEach(w => w.Images.ForEach(i =>
+                        {
+                            using (MagickImage diffImage = new MagickImage((Bitmap)thumbs[n]))
+                            {
+                                if (i.MagickImage.HasAlpha)
+                                {
+                                    diffImage.Composite(i.MagickImage, CompositeOperator.CopyAlpha);
+                                }
+                                double delta = diffImage.Compare(i.MagickImage, ErrorMetric.PeakSignalToNoiseRatio);
+                                //i.AddBag(n, delta);
+                            }
+                        }
+                        ))));
+                    }
+
+
+                    /*
+                    Parallel.ForEach(thumbs, (a, state, index) =>
+                    {
+                        video.Feeds[0].Screens.ForEach(s => s.WatchZones.ForEach(wz => wz.Watches.ForEach(w => w.Images.ForEach(i =>
+                            {
+                                using (MagickImage diffImage = new MagickImage((Bitmap)a))
+                                {
+                                    if (i.MagickImage.HasAlpha)
+                                    {
+                                        diffImage.Composite(i.MagickImage, CompositeOperator.CopyAlpha);
+                                    }
+                                    double delta = diffImage.Compare(i.MagickImage, ErrorMetric.PeakSignalToNoiseRatio);
+                                    i.AddBag(index, delta);
+                                }
+                            }
+                        ))));
+                    });
+                    */
+                }
+                thumbs = GetThumbnails(pProcess, pipe, imageSize, ref scannedCount);
+            }
+
+        }
+
+        static List<Image> GetThumbnails(Process pProcess, NamedPipeServerStream stream, int imageSize, ref int scannedCountEnd)
+        {
+            int scannedCountStart = scannedCountEnd;
+            byte[] allImages = null;
+            using (var br = new BinaryReader(stream))
+            {
+                int i = br.Read();
+                Array.Resize(ref allImages, i);
+                allImages = br.ReadBytes(i);
+
+                //stream.CopyTo(sr);
+                //stream.Read(allImages, scannedCountStart, (int)stream.Position);
+                //sr.Read(allImages, scannedCountStart, (int)stream.Position);
+                // If it isn't a multiple of imageSize, we're fucked.
+                //scannedCountEnd = (int)ms.Length / imageSize;
+
+            }
+
+            var l = new List<Image>();
+            for (int i = 0; i < allImages.Count(); i += imageSize)
+            {
+                using (var ms = new MemoryStream(imageSize))
+                {
+                    var start = Math.Min(0, allImages.Count());
+                    var end = Math.Min(i + imageSize - 1, allImages.Count());
+                    ms.Write(allImages, start, end);
+                    Bitmap a = new Bitmap(1, 1);
+                    try
+                    {
+                        a = (Bitmap)Image.FromStream(ms);
+                        a.Save(@"E:\1\" + Guid.NewGuid().ToString("N"));
+                    } catch (System.ArgumentException e) {
+                        Debug.Write(e);
+                    }
+                    l.Add(a);
+                }
+            }
+            return l;
+        }
+
+
+
+        /*
         static IEnumerable<int> GetBytePatternPositions(byte[] data, byte[] pattern)
         {
             var dataLen = data.Length;
@@ -202,7 +421,7 @@ namespace VideoImageDeltaApp
                 scanData++;
             }
         }
-
+        */
     }
 
 }

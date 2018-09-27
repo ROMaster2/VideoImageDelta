@@ -42,8 +42,8 @@ namespace VideoImageDeltaApp
 
     public class RawFFmpeg
     {
-        private static string ffmpegPath;
-        private static string ffprobePath;
+        public static string ffmpegPath;
+        public static string ffprobePath;
 
         /**
          * Placing the array here stops the memory leaking. Not really a problem since only one thumbnail is shown at a time.
@@ -53,7 +53,7 @@ namespace VideoImageDeltaApp
          * The odds of this being used for anything larger is very unlikely. The better solution should fix that.
          */
         public const int MAX_IMAGE_SIZE = 6291456; // 6MiBs flat
-        private static readonly byte[] imageCache = new byte[MAX_IMAGE_SIZE];
+        //private static readonly byte[] imageCache = new byte[MAX_IMAGE_SIZE];
 
         public static bool FindFFExecutables()
         {
@@ -193,10 +193,9 @@ namespace VideoImageDeltaApp
 
         public static Image FFCommand2(string process, TimeSpan timestamp, string videoPath, System.Windows.Size size, string parameters)
         {
-            Array.Clear(imageCache, 0, MAX_IMAGE_SIZE);
-            object t = null;
+            Bitmap t = null;
             using (NamedPipeServerStream p_from_ffmpeg = new NamedPipeServerStream(
-                    "from_ffmpeg",
+                    "from_ffmpeg.bmp",
                     PipeDirection.InOut,
                     1,
                     PipeTransmissionMode.Byte,
@@ -224,12 +223,85 @@ namespace VideoImageDeltaApp
 
                     pProcess.WaitForExit();
 
-                    int imageSize = (int)(size.Width * size.Height) * 3;
-                    p_from_ffmpeg.Read(imageCache, 0, imageSize + 128); // 128 is added for bmp overhead
+                    // Raw image size + bmp overhead.
+                    int imageSize = (int)(size.Width * size.Height) * 3 + 54;
+                    byte[] imageCache = new byte[imageSize];
+
+                    p_from_ffmpeg.Read(imageCache, 0, imageSize);
 
                     try
                     {
-                        t = Image.FromStream(new MemoryStream(imageCache), true, true);
+                        using (var ms = new MemoryStream(imageCache))
+                        {
+                            t = new MagickImage((Bitmap)Image.FromStream(ms)).ToBitmap();
+                        }
+                    }
+                    catch (ArgumentException e)
+                    { // Don't stop the program because it failed to load the thumbnail. Just return blank.
+                        Debug.Write(e);
+                        t = null;
+                    }
+                }
+
+            }
+
+            return t;
+        }
+
+        public static Image GetThumbnail(string videoPath, System.Windows.Size size, TimeSpan timestamp)
+        {
+            Image i = FFCommand2(@"ffmpeg", timestamp, videoPath, size,
+                @"-y -vframes 1 ""\\.\pipe\from_ffmpeg.bmp""");
+
+            return i;
+        }
+
+        public static Image FFCommand3(Video video, TimeSpan timestamp, string videoPath, System.Windows.Size size)
+        {
+            object t = null;
+            using (NamedPipeServerStream p_from_ffmpeg = new NamedPipeServerStream(
+                    "from_ffmpeg",
+                    PipeDirection.InOut,
+                    1,
+                    PipeTransmissionMode.Byte,
+                    PipeOptions.WriteThrough,
+                    MAX_IMAGE_SIZE,
+                    MAX_IMAGE_SIZE)
+                )
+            {
+
+                string start = timestamp.ToString().Substring(0, 8);
+                string args = String.Format(@"-ss {0} -i ""{1}"" {2}", start,
+                    video.FilePath, @"-y -r 1 -f image2pipe -vframes 1 ""\\.\pipe\from_ffmpeg""");
+
+                using (Process pProcess = new Process())
+                {
+                    pProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    pProcess.StartInfo.FileName = "ffmpeg";
+                    pProcess.StartInfo.Arguments = args;
+                    pProcess.StartInfo.UseShellExecute = false;
+                    pProcess.StartInfo.RedirectStandardOutput = true;
+                    pProcess.StartInfo.RedirectStandardError = true;
+                    pProcess.StartInfo.CreateNoWindow = true;
+                    pProcess.Start();
+
+                    p_from_ffmpeg.WaitForConnection();
+
+                    pProcess.WaitForExit();
+
+
+                    // Raw image size + bmp overhead.
+                    int imageSize = (int)(size.Width * size.Height) * 3 + 54;
+                    byte[] imageCache = new byte[imageSize];
+
+                    p_from_ffmpeg.Read(imageCache, 0, imageSize);
+
+                    try
+                    {
+                        using (var ms = new MemoryStream(imageCache))
+                        {
+                            t = new MagickImage((Bitmap)Image.FromStream(ms)).ToBitmap();
+                        }
                     }
                     catch (ArgumentException e)
                     { // Don't stop the program because it failed to load the thumbnail. Just return blank.
@@ -241,14 +313,6 @@ namespace VideoImageDeltaApp
             }
 
             return (Image)t;
-        }
-
-        public static Image GetThumbnail(string videoPath, System.Windows.Size size, TimeSpan timestamp)
-        {
-            Image i = FFCommand2(@"ffmpeg", timestamp, videoPath, size,
-                @"-y -r 1 -f image2pipe -vframes 1 ""\\.\pipe\from_ffmpeg""");
-
-            return i;
         }
 
         /// <summary>
