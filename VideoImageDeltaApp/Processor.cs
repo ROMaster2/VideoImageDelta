@@ -256,7 +256,10 @@ namespace VideoImageDeltaApp
                                                 {
                                                     var mg = wz.AdjustedGeometry.ToMagick();
                                                     fileImage.Crop(mg, Gravity.Northwest);
-                                                    //fileImage.Composite(deltaImage, CompositeOperator.Difference);
+                                                    if (deltaImage.HasAlpha)
+                                                    {
+                                                        fileImage.Composite(deltaImage, CompositeOperator.CopyAlpha);
+                                                    }
                                                     double delta = deltaImage.Compare(fileImage, ErrorMetric.PeakSignalToNoiseRatio);
                                                     int thumbID = int.Parse(file.Name.Substring(0, 9));
                                                     bag.Add(new WatchImage.Bag(wi, thumbID, delta));

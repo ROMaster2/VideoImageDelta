@@ -658,6 +658,7 @@ namespace VideoImageDeltaApp
                             using (MagickImage mi1 = new MagickImage((Bitmap)thumb3)) // Why you no crop?
                             {
                                 // Make error metric selectable in the future.
+                                mi2.Composite(mi1, CompositeOperator.CopyAlpha);
                                 double delta = mi1.Compare(mi2, ErrorMetric.PeakSignalToNoiseRatio);
                                 if (delta >= 16) Label_Delta_Number.ForeColor = Color.Cyan;
                                 else if (delta >= 8) Label_Delta_Number.ForeColor = Color.Green;
