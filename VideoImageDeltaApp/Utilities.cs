@@ -156,29 +156,58 @@ namespace VideoImageDeltaApp
         {
             try
             {
-                image.Save(@"D:\debug3.bmp");
                 using (var engine = new TesseractEngine(@"./tessdata", "eng", @"./tessdata/digits"))
                 {
-                    using (var img = PixConverter.ToPix((Bitmap)image))
+                    using (var page = engine.Process((Bitmap)image, geo.ToTesseract()))
                     {
-                        using (var page = engine.Process(img, new Tesseract.Rect((int)geo.X, (int)geo.Y, (int)geo.Width, (int)geo.Height)))
-                        {
-                            text = page.GetText();
-                            confidence = page.GetMeanConfidence();
-                        }
+                        text = page.GetText().Split(new[] { '\r', '\n' }).FirstOrDefault().Trim();
+                        confidence = page.GetMeanConfidence();
                     }
                 }
             }
             catch (Exception e)
             {
-                Trace.TraceError(e.ToString());
-                Debug.WriteLine("Unexpected Error: " + e.Message);
-                Debug.WriteLine("Details: ");
                 Debug.WriteLine(e.ToString());
-                text = "";
+                text = "Error";
                 confidence = 0f;
             }
         }
+
+        public static bool ValidateTimeOCR(string text)
+        {
+            // Maybe try seeing if replacing the space(s) with : or . possibly validates things.
+            text = text.Replace(" ", "");
+            return Regex.IsMatch(text, @"^-?(?:(?:(\d?\d):)?([0-5]\d):)?([0-5]\d)(\.\d?(\d?(\d)))?$");
+        }
+
+        public static List<string> Untitled1(int a, List<List<char>> x)
+        {
+            List<string> retval = new List<string>();
+            if (a == x.Count)
+            {
+                retval.Add("_");
+                return retval;
+            }
+            foreach (char y in x.ElementAt(a))
+            {
+                foreach (string x2 in Untitled1(a + 1, x))
+                {
+                    retval.Add(y.ToString() + x2.ToString());
+                }
+
+            }
+            return retval;
+        }
+        public static string[] Untitled2(List<List<char>> myList)
+        {
+            var l = new List<string>();
+            foreach (string x in Untitled1(0, myList))
+            {
+                l.Add(x);
+            }
+            return l.ToArray();
+        }
+
 
     }
 

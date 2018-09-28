@@ -625,27 +625,35 @@ namespace VideoImageDeltaApp
                     {
                         var t = SelectedFeed.Geometry;
                         Utilities.ReadImage(thumb1, SelectedFeed.Geometry, out string str, out float confidence);
-                        str = str.Trim().Replace(" ", "");
 
-                        Label_Delta.Text = str.Trim();
+                        Label_Delta.Text = str;
 
-                        bool isValid = Regex.IsMatch(str.Trim(), @"^-?(?:(?:(\d?\d):)?([0-5]\d):)?([0-5]\d)(\.\d?(\d?(\d)))?$");
-                        bool iTried = Regex.IsMatch(str.Trim(), @".*[0-9].*");
-
-                        if (!isValid) confidence /= 2f;
-
-                        if (confidence >= 0.9) Label_Delta_Number.ForeColor = Color.Cyan;
-                        else if (confidence >= 0.75) Label_Delta_Number.ForeColor = Color.Green;
-                        else if (confidence >= 0.75) Label_Delta_Number.ForeColor = Color.FromArgb(255, 192, 0);
-                        else if (confidence >= 0.5) Label_Delta_Number.ForeColor = Color.OrangeRed;
-                        else Label_Delta_Number.ForeColor = Color.DarkRed;
-
-
-                        var delta = Math.Round(confidence * 100f, 4);
-                        Label_Delta_Number.Text = delta.ToString() + "%";
-                        Label_Delta_Number.Show();
-                        if (!iTried)
+                        // Does it at LEAST contain a number?
+                        bool iTried = Regex.IsMatch(str, @".*[0-9].*");
+                        if (iTried)
                         {
+                            // Is it a timestamp? eg 01:23:45.678
+                            // Anything longer than 100 hours won't get picked up
+                            // But there's really not many videos over that length that will use this, right?
+                            // Even if there is, just fill it out manually...
+                            // Honestly we should filter out everything that doesn't fit this pattern as well.
+                            bool isValid = Utilities.ValidateTimeOCR(str);
+
+                            if (!isValid) confidence /= 2f;
+
+                            if (confidence >= 0.9) Label_Delta_Number.ForeColor = Color.Cyan;
+                            else if (confidence >= 0.75) Label_Delta_Number.ForeColor = Color.Green;
+                            else if (confidence >= 0.75) Label_Delta_Number.ForeColor = Color.FromArgb(255, 192, 0);
+                            else if (confidence >= 0.5) Label_Delta_Number.ForeColor = Color.OrangeRed;
+                            else Label_Delta_Number.ForeColor = Color.DarkRed;
+
+
+                            var delta = Math.Round(confidence * 100f, 4);
+                            Label_Delta_Number.Text = delta.ToString() + "%";
+                            Label_Delta_Number.Show();
+                        } 
+                        else
+                        { 
                             Label_Delta_Number.Text = "0%";
                             Label_Delta_Number.ForeColor = Color.Black;
                         }
@@ -655,10 +663,13 @@ namespace VideoImageDeltaApp
                         Label_Delta.Text = "Delta Check";
                         using (MagickImage mi2 = new MagickImage((Bitmap)thumb2))
                         {
-                            using (MagickImage mi1 = new MagickImage((Bitmap)thumb3)) // Why you no crop?
+                            using (MagickImage mi1 = new MagickImage((Bitmap)thumb3))
                             {
                                 // Make error metric selectable in the future.
-                                mi2.Composite(mi1, CompositeOperator.CopyAlpha);
+                                if (mi1.HasAlpha)
+                                {
+                                    mi2.Composite(mi1, CompositeOperator.CopyAlpha);
+                                }
                                 double delta = mi1.Compare(mi2, ErrorMetric.PeakSignalToNoiseRatio);
                                 if (delta >= 16) Label_Delta_Number.ForeColor = Color.Cyan;
                                 else if (delta >= 8) Label_Delta_Number.ForeColor = Color.Green;
@@ -674,8 +685,6 @@ namespace VideoImageDeltaApp
                                     mi1.Composite(mi2, CompositeOperator.Difference);
                                     thumb1 = ((MagickImage)mi1.Clone()).ToBitmap();
                                 }
-                                mi1.Write(@"D:\debug1.bmp");
-                                mi2.Write(@"D:\debug2.bmp");
                             }
                         }
                     }

@@ -208,6 +208,11 @@ namespace VideoImageDeltaApp.Models
             return new MagickGeometry((int)X, (int)Y, (int)Width, (int)Height);
         }
 
+        public Tesseract.Rect ToTesseract()
+        {
+            return new Tesseract.Rect((int)X, (int)Y, (int)Width, (int)Height);
+        }
+
         public string ToFFmpegString()
         {
             return Width.ToString() + ':' + Height.ToString() + ':' + X.ToString() + ':' + Y.ToString();
@@ -694,18 +699,38 @@ namespace VideoImageDeltaApp.Models
         [XmlIgnore]
         public string Name { get; internal set; }
 
-        public void SetName(Screen screen, WatchZone watchZone, Watcher watcher)
-        {
-            Name = screen.Name + "/" + watchZone.Name + "/" + watcher.Name + " - " + FileName;
-        }
-
-        public void TransparencyRate()
+        // Doesn't work as well as I would like yet...
+        public double TransparencyRate()
         {
             using (MagickImage i = new MagickImage(FilePath))
             {
-                //i.Trans;
+                i.Separate(Channels.Alpha);
+                return i.ToByteArray().Cast<double>().Average();
             }
+        }
 
+        public static double TransparencyRate(Image image)
+        {
+            using (MagickImage i = new MagickImage((Bitmap)image))
+            {
+                i.Separate(Channels.Alpha);
+                return i.ToByteArray().Cast<double>().Average();
+            }
+        }
+
+        public static double TransparencyRate(MagickImage image)
+        {
+            using (MagickImage i = new MagickImage(image))
+            {
+                var a = i.Separate(Channels.Alpha);
+                var b = Array.ConvertAll(i.ToByteArray(), item => (double)item);
+                return b.Average();
+            }
+        }
+
+        public void SetName(Screen screen, WatchZone watchZone, Watcher watcher)
+        {
+            Name = screen.Name + "/" + watchZone.Name + "/" + watcher.Name + " - " + FileName;
         }
 
         public void SetMagickImage(Geometry geo)
@@ -718,8 +743,10 @@ namespace VideoImageDeltaApp.Models
             i.Trim();
             MagickImage = new MagickImage(i.ToBitmap());
             Clear();*/
-            var newGeo = new MagickGeometry((int)geo.Width, (int)geo.Height);
-            newGeo.IgnoreAspectRatio = true;
+            var newGeo = new MagickGeometry((int)geo.Width, (int)geo.Height)
+            {
+                IgnoreAspectRatio = true
+            };
             i.Scale(newGeo);
             MagickImage = new MagickImage(i.ToBitmap());
             Clear();
@@ -735,17 +762,17 @@ namespace VideoImageDeltaApp.Models
 
         public class Bag
         {
-            public Bag(WatchImage wi, int frameIndex, double delta)
+            public Bag(int frameIndex, double delta)
             {
-                WatchImage = wi;
                 FrameIndex = frameIndex;
                 Delta = delta;
             }
             internal Bag() { }
 
-            public WatchImage WatchImage;
             public int FrameIndex;
             public double Delta;
+            public string TimeStamp;
+            public float TimeStampConfidence;
         }
 
         override public string ToString()
@@ -824,6 +851,95 @@ namespace VideoImageDeltaApp.Models
 
             SubItems.Add(Video.IsSynced() ? "✔" : "");
 
+        }
+
+    }
+}
+
+namespace VideoImageDeltaApp.Models
+{
+    using Tesseract;
+
+    public static class MyExtensions
+    {
+        public static ScanResults GetResults(this Tesseract.ResultIterator iter)
+        {
+            var llsr = new List<CharResult[]>();
+            iter.Begin();
+
+
+            if (iter.TryGetBoundingBox(PageIteratorLevel.Symbol, out Rect symbolBounds))
+            {
+                var lsr = new List<CharResult>();
+                using (var choice = iter.GetChoiceIterator())
+                {
+                    do
+                    {
+                        lsr.Add(new CharResult()
+                        {
+                            Character = choice.GetText().First(),
+                            Confidence = choice.GetConfidence()
+                        });
+                    } while (choice.Next());
+                }
+                llsr.Add(lsr.ToArray());
+            }
+
+            while (!iter.IsAtFinalOf(PageIteratorLevel.TextLine, PageIteratorLevel.Symbol))
+            {
+                iter.Next(PageIteratorLevel.Symbol);
+                if (iter.TryGetBoundingBox(PageIteratorLevel.Symbol, out symbolBounds))
+                {
+                    var lsr = new List<CharResult>();
+                    using (var choice = iter.GetChoiceIterator())
+                    {
+                        do
+                        {
+                            lsr.Add(new CharResult()
+                            {
+                                Character = choice.GetText().First(),
+                                Confidence = choice.GetConfidence()
+                            });
+                        } while (choice.Next());
+                    }
+                    llsr.Add(lsr.ToArray());
+                }
+            };
+
+            return new ScanResults() { Results = llsr.ToArray() };
+        }
+
+        public class ScanResults
+        {
+            public CharResult[][] Results;
+
+            public string BestResult()
+            {
+                string str = null;
+                Results.ToList().ForEach(x => str += x.First().Character);
+                return str;
+            }
+
+            public string[] AllResults()
+            {
+                var l = new List<List<char>>();
+                for (int a = 0; a < Results.Count(); a++)
+                {
+                    var l2 = new List<char>();
+                    for (int b = 0; b < Results.ElementAt(a).Count(); b++)
+                    {
+                        l2.Add(Results.ElementAt(a).ElementAt(b).Character);
+                    }
+                    l.Add(l2);
+                }
+                return Utilities.Untitled2(l);
+            }
+
+        }
+        public class CharResult
+        {
+            public char Character;
+            public float Confidence;
         }
     }
 
