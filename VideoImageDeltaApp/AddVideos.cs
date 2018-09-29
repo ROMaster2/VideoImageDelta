@@ -1371,7 +1371,10 @@ namespace VideoImageDeltaApp
                     }
                     DropBox_Watch_Preview.DropDownWidth = dropDownWidth;
                     DropBox_Watch_Preview.Enabled = true;
-                    DropBox_Watch_Preview.SelectedIndex = 0;
+                    if (DropBox_Watch_Preview.Items.Count > 0)
+                    {
+                        DropBox_Watch_Preview.SelectedIndex = 0;
+                    }
                 }
             }
             else
