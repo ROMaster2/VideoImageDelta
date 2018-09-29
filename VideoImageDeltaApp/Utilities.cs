@@ -161,7 +161,7 @@ namespace VideoImageDeltaApp
                     using (var page = engine.Process((Bitmap)image, geo.ToTesseract()))
                     {
                         text = page.GetText().Split(new[] { '\r', '\n' }).FirstOrDefault().Trim();
-                        confidence = page.GetMeanConfidence();
+                        confidence = page.GetIterator().GetConfidence(PageIteratorLevel.TextLine);
                     }
                 }
             }
