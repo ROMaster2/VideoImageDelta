@@ -42,26 +42,78 @@ namespace VideoImageDeltaApp
             InitializeComponent();
             var p = Program.Processor;
             CheckBox_Debug.Checked = p.DebuggingEnabled;
-            CheckBox_Accel_Video.Checked = p.HardwareAccelForFFmpeg;
-            CheckBox_Accel_Image.Checked = p.HardwareAccelForMagick;
+            // Would make more sense to just store these staticly...
+            DropBox_Hardware.Items.AddRange(RawFFmpeg.GetAvailableHardwareAccelerators());
+            if (!string.IsNullOrWhiteSpace(p.UseVideoHardwareAccel))
+                DropBox_Hardware.SelectedItem = p.UseVideoHardwareAccel;
             CheckBox_Stability.Checked = p.RunStabilityCheck;
             CheckBox_Errors.Checked = p.HideErrorsUntilEnd;
             CheckBox_ToRam.Checked = !p.UseHDD;
-            TextBox_Cache.Text = p.TempDirectory.ToString();
+            TextBox_Cache.Text = p.TempDirectory;
             CheckBox_AutoSave.Checked = p.AutoSave;
             DropBox_Priority.SelectedItem = p.Priority;
-            //Numeric_Space_Limit.Value = p.SpaceLimit;
-            TextBox_Output.Text = p.OutputDirectory.ToString();
+            TextBox_Output.Text = p.OutputDirectory;
             NumericUpDown_CPU_Limit.Value = p.CPULimit;
+        }
 
-            DropBox_Priority.SelectedIndex = 2;
+        private void Update_Values()
+        {
+            var p = Program.Processor;
+
+            if (string.IsNullOrWhiteSpace((string)DropBox_Hardware.SelectedItem))
+                p.UseVideoHardwareAccel = (string)DropBox_Hardware.SelectedItem;
+            else
+                p.UseVideoHardwareAccel = null;
+
+            p.DebuggingEnabled = CheckBox_Debug.Checked;
+            p.UseVideoHardwareAccel = (string)DropBox_Hardware.SelectedItem;
+            p.RunStabilityCheck = CheckBox_Stability.Checked;
+            p.HideErrorsUntilEnd = CheckBox_Errors.Checked;
+            p.UseHDD = !CheckBox_ToRam.Checked;
+            p.TempDirectory = TextBox_Cache.Text;
+            p.AutoSave = CheckBox_AutoSave.Checked;
+            p.Priority = (ProcessPriorityClass)DropBox_Priority.SelectedItem;
+            p.OutputDirectory = TextBox_Output.Text;
+            p.CPULimit = (int)NumericUpDown_CPU_Limit.Value;
         }
 
         private void Button_Start_Click(object sender, EventArgs e)
         {
+            Update_Values();
             Processing w = new Processing();
             w.Show();
             Close();
+        }
+
+        private void Button_Browse_Cache_Click(object sender, EventArgs e)
+        {
+            using (var fbd = new FolderBrowserDialog())
+            {
+                fbd.ShowDialog();
+
+                if (Directory.Exists(fbd.SelectedPath))
+                {
+                    TextBox_Cache.Text = fbd.SelectedPath;
+                }
+            }
+        }
+
+        private void Button_Browse_Output_Click(object sender, EventArgs e)
+        {
+            using (var fbd = new FolderBrowserDialog())
+            {
+                fbd.ShowDialog();
+
+                if (Directory.Exists(fbd.SelectedPath))
+                {
+                    TextBox_Output.Text = fbd.SelectedPath;
+                }
+            }
+        }
+
+        private void PreProcessOptions_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Update_Values();
         }
     }
 }

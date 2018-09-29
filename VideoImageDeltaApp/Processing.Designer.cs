@@ -28,47 +28,51 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.components = new System.ComponentModel.Container();
+            this.ProgressBar_Total = new System.Windows.Forms.ProgressBar();
             this.Button_Next = new System.Windows.Forms.Button();
             this.Button_Cancel = new System.Windows.Forms.Button();
             this.Button_Pause = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.progressBar2 = new System.Windows.Forms.ProgressBar();
-            this.label4 = new System.Windows.Forms.Label();
-            this.progressBar3 = new System.Windows.Forms.ProgressBar();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.label13 = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
+            this.Label_Progress = new System.Windows.Forms.Label();
+            this.Label_Current = new System.Windows.Forms.Label();
+            this.TextBox_Current = new System.Windows.Forms.TextBox();
+            this.ProgressBar_Extraction = new System.Windows.Forms.ProgressBar();
+            this.Label_Extraction = new System.Windows.Forms.Label();
+            this.ProgressBar_Scanning = new System.Windows.Forms.ProgressBar();
+            this.Label_Extraction_Value = new System.Windows.Forms.Label();
+            this.Label_Scanning = new System.Windows.Forms.Label();
+            this.Label_Scanning_Value = new System.Windows.Forms.Label();
+            this.Label_Speed = new System.Windows.Forms.Label();
+            this.Label_Speed_Value = new System.Windows.Forms.Label();
+            this.Label_Elapsed = new System.Windows.Forms.Label();
+            this.Label_Remaining = new System.Windows.Forms.Label();
+            this.Label_Estimated = new System.Windows.Forms.Label();
+            this.TableLayoutPanel_Top = new System.Windows.Forms.TableLayoutPanel();
+            this.Label_Videos_Processed = new System.Windows.Forms.Label();
+            this.Label_Frames_Processed = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
-            this.label17 = new System.Windows.Forms.Label();
+            this.Label_Frames_Processed_Value = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
-            this.label20 = new System.Windows.Forms.Label();
-            this.label21 = new System.Windows.Forms.Label();
-            this.label22 = new System.Windows.Forms.Label();
-            this.label23 = new System.Windows.Forms.Label();
-            this.tableLayoutPanel1.SuspendLayout();
+            this.Label_Elapsed_Value = new System.Windows.Forms.Label();
+            this.Label_Remaining_Value = new System.Windows.Forms.Label();
+            this.Label_Estimated_Value = new System.Windows.Forms.Label();
+            this.Label_Videos_Processed_Value = new System.Windows.Forms.Label();
+            this.Watch_Ticker = new System.Windows.Forms.Timer(this.components);
+            this.FileSystemWatcher = new System.IO.FileSystemWatcher();
+            this.TableLayoutPanel_Top.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.FileSystemWatcher)).BeginInit();
             this.SuspendLayout();
             // 
-            // progressBar1
+            // ProgressBar_Total
             // 
-            this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBar1.Location = new System.Drawing.Point(12, 173);
-            this.progressBar1.Maximum = 1000;
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(472, 23);
-            this.progressBar1.TabIndex = 0;
+            this.ProgressBar_Total.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.ProgressBar_Total.Location = new System.Drawing.Point(12, 173);
+            this.ProgressBar_Total.Maximum = 1000;
+            this.ProgressBar_Total.Name = "ProgressBar_Total";
+            this.ProgressBar_Total.Size = new System.Drawing.Size(472, 23);
+            this.ProgressBar_Total.TabIndex = 0;
             // 
             // Button_Next
             // 
@@ -103,197 +107,197 @@
             this.Button_Pause.UseVisualStyleBackColor = true;
             this.Button_Pause.Click += new System.EventHandler(this.Button_Pause_Click);
             // 
-            // label1
+            // Label_Progress
             // 
-            this.label1.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 157);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(75, 13);
-            this.label1.TabIndex = 4;
-            this.label1.Text = "Total Progress";
+            this.Label_Progress.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.Label_Progress.AutoSize = true;
+            this.Label_Progress.Location = new System.Drawing.Point(12, 157);
+            this.Label_Progress.Name = "Label_Progress";
+            this.Label_Progress.Size = new System.Drawing.Size(75, 13);
+            this.Label_Progress.TabIndex = 4;
+            this.Label_Progress.Text = "Total Progress";
             // 
-            // label2
+            // Label_Current
             // 
-            this.label2.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 121);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(71, 13);
-            this.label2.TabIndex = 5;
-            this.label2.Text = "Current Video";
+            this.Label_Current.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.Label_Current.AutoSize = true;
+            this.Label_Current.Location = new System.Drawing.Point(12, 121);
+            this.Label_Current.Name = "Label_Current";
+            this.Label_Current.Size = new System.Drawing.Size(71, 13);
+            this.Label_Current.TabIndex = 5;
+            this.Label_Current.Text = "Current Video";
             // 
-            // textBox1
+            // TextBox_Current
             // 
-            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox1.Location = new System.Drawing.Point(89, 118);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(395, 20);
-            this.textBox1.TabIndex = 6;
+            this.TextBox_Current.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.TextBox_Current.Location = new System.Drawing.Point(89, 118);
+            this.TextBox_Current.Name = "TextBox_Current";
+            this.TextBox_Current.ReadOnly = true;
+            this.TextBox_Current.Size = new System.Drawing.Size(395, 20);
+            this.TextBox_Current.TabIndex = 6;
             // 
-            // progressBar2
+            // ProgressBar_Extraction
             // 
-            this.progressBar2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBar2.Location = new System.Drawing.Point(12, 219);
-            this.progressBar2.Name = "progressBar2";
-            this.progressBar2.Size = new System.Drawing.Size(472, 23);
-            this.progressBar2.TabIndex = 8;
+            this.ProgressBar_Extraction.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.ProgressBar_Extraction.Location = new System.Drawing.Point(12, 219);
+            this.ProgressBar_Extraction.Name = "ProgressBar_Extraction";
+            this.ProgressBar_Extraction.Size = new System.Drawing.Size(472, 23);
+            this.ProgressBar_Extraction.TabIndex = 8;
             // 
-            // label4
+            // Label_Extraction
             // 
-            this.label4.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 203);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(54, 13);
-            this.label4.TabIndex = 9;
-            this.label4.Text = "Extraction";
+            this.Label_Extraction.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.Label_Extraction.AutoSize = true;
+            this.Label_Extraction.Location = new System.Drawing.Point(12, 203);
+            this.Label_Extraction.Name = "Label_Extraction";
+            this.Label_Extraction.Size = new System.Drawing.Size(54, 13);
+            this.Label_Extraction.TabIndex = 9;
+            this.Label_Extraction.Text = "Extraction";
             // 
-            // progressBar3
+            // ProgressBar_Scanning
             // 
-            this.progressBar3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBar3.Location = new System.Drawing.Point(12, 265);
-            this.progressBar3.Name = "progressBar3";
-            this.progressBar3.Size = new System.Drawing.Size(472, 23);
-            this.progressBar3.TabIndex = 10;
+            this.ProgressBar_Scanning.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.ProgressBar_Scanning.Location = new System.Drawing.Point(12, 265);
+            this.ProgressBar_Scanning.Name = "ProgressBar_Scanning";
+            this.ProgressBar_Scanning.Size = new System.Drawing.Size(472, 23);
+            this.ProgressBar_Scanning.TabIndex = 10;
             // 
-            // label5
+            // Label_Extraction_Value
             // 
-            this.label5.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.label5.Location = new System.Drawing.Point(384, 200);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(100, 18);
-            this.label5.TabIndex = 11;
-            this.label5.Text = "0 / 0";
-            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.Label_Extraction_Value.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.Label_Extraction_Value.Location = new System.Drawing.Point(384, 200);
+            this.Label_Extraction_Value.Name = "Label_Extraction_Value";
+            this.Label_Extraction_Value.Size = new System.Drawing.Size(100, 18);
+            this.Label_Extraction_Value.TabIndex = 11;
+            this.Label_Extraction_Value.Text = "0 / 0";
+            this.Label_Extraction_Value.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // label6
+            // Label_Scanning
             // 
-            this.label6.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(12, 249);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(52, 13);
-            this.label6.TabIndex = 12;
-            this.label6.Text = "Scanning";
+            this.Label_Scanning.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.Label_Scanning.AutoSize = true;
+            this.Label_Scanning.Location = new System.Drawing.Point(12, 249);
+            this.Label_Scanning.Name = "Label_Scanning";
+            this.Label_Scanning.Size = new System.Drawing.Size(52, 13);
+            this.Label_Scanning.TabIndex = 12;
+            this.Label_Scanning.Text = "Scanning";
             // 
-            // label7
+            // Label_Scanning_Value
             // 
-            this.label7.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.label7.Location = new System.Drawing.Point(384, 246);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(100, 18);
-            this.label7.TabIndex = 13;
-            this.label7.Text = "0 / 0";
-            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.Label_Scanning_Value.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.Label_Scanning_Value.Location = new System.Drawing.Point(384, 246);
+            this.Label_Scanning_Value.Name = "Label_Scanning_Value";
+            this.Label_Scanning_Value.Size = new System.Drawing.Size(100, 18);
+            this.Label_Scanning_Value.TabIndex = 13;
+            this.Label_Scanning_Value.Text = "0 / 0";
+            this.Label_Scanning_Value.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // label8
+            // Label_Speed
             // 
-            this.label8.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(239, 4);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(41, 13);
-            this.label8.TabIndex = 14;
-            this.label8.Text = "Speed:";
-            this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.Label_Speed.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.Label_Speed.AutoSize = true;
+            this.Label_Speed.Location = new System.Drawing.Point(239, 4);
+            this.Label_Speed.Name = "Label_Speed";
+            this.Label_Speed.Size = new System.Drawing.Size(41, 13);
+            this.Label_Speed.TabIndex = 14;
+            this.Label_Speed.Text = "Speed:";
+            this.Label_Speed.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // label9
+            // Label_Speed_Value
             // 
-            this.label9.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(436, 4);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(33, 13);
-            this.label9.TabIndex = 15;
-            this.label9.Text = "1.00x";
-            this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.Label_Speed_Value.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.Label_Speed_Value.AutoSize = true;
+            this.Label_Speed_Value.Location = new System.Drawing.Point(436, 4);
+            this.Label_Speed_Value.Name = "Label_Speed_Value";
+            this.Label_Speed_Value.Size = new System.Drawing.Size(33, 13);
+            this.Label_Speed_Value.TabIndex = 15;
+            this.Label_Speed_Value.Text = "1.00x";
+            this.Label_Speed_Value.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // label10
+            // Label_Elapsed
             // 
-            this.label10.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(3, 4);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(74, 13);
-            this.label10.TabIndex = 16;
-            this.label10.Text = "Time Elapsed:";
+            this.Label_Elapsed.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.Label_Elapsed.AutoSize = true;
+            this.Label_Elapsed.Location = new System.Drawing.Point(3, 4);
+            this.Label_Elapsed.Name = "Label_Elapsed";
+            this.Label_Elapsed.Size = new System.Drawing.Size(74, 13);
+            this.Label_Elapsed.TabIndex = 16;
+            this.Label_Elapsed.Text = "Time Elapsed:";
             // 
-            // label11
+            // Label_Remaining
             // 
-            this.label11.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(3, 25);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(86, 13);
-            this.label11.TabIndex = 17;
-            this.label11.Text = "Time Remaining:";
+            this.Label_Remaining.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.Label_Remaining.AutoSize = true;
+            this.Label_Remaining.Location = new System.Drawing.Point(3, 25);
+            this.Label_Remaining.Name = "Label_Remaining";
+            this.Label_Remaining.Size = new System.Drawing.Size(86, 13);
+            this.Label_Remaining.TabIndex = 17;
+            this.Label_Remaining.Text = "Time Remaining:";
             // 
-            // label12
+            // Label_Estimated
             // 
-            this.label12.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(3, 46);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(82, 13);
-            this.label12.TabIndex = 18;
-            this.label12.Text = "Estimated Time:";
+            this.Label_Estimated.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.Label_Estimated.AutoSize = true;
+            this.Label_Estimated.Location = new System.Drawing.Point(3, 46);
+            this.Label_Estimated.Name = "Label_Estimated";
+            this.Label_Estimated.Size = new System.Drawing.Size(82, 13);
+            this.Label_Estimated.TabIndex = 18;
+            this.Label_Estimated.Text = "Estimated Time:";
             // 
-            // tableLayoutPanel1
+            // TableLayoutPanel_Top
             // 
-            this.tableLayoutPanel1.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.tableLayoutPanel1.ColumnCount = 4;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel1.Controls.Add(this.label10, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.label12, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.label8, 2, 0);
-            this.tableLayoutPanel1.Controls.Add(this.label11, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.label9, 3, 0);
-            this.tableLayoutPanel1.Controls.Add(this.label13, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.label14, 2, 1);
-            this.tableLayoutPanel1.Controls.Add(this.label15, 2, 2);
-            this.tableLayoutPanel1.Controls.Add(this.label16, 2, 3);
-            this.tableLayoutPanel1.Controls.Add(this.label17, 3, 1);
-            this.tableLayoutPanel1.Controls.Add(this.label18, 3, 2);
-            this.tableLayoutPanel1.Controls.Add(this.label19, 3, 3);
-            this.tableLayoutPanel1.Controls.Add(this.label20, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.label21, 1, 1);
-            this.tableLayoutPanel1.Controls.Add(this.label22, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.label23, 1, 3);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 12);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 4;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(472, 84);
-            this.tableLayoutPanel1.TabIndex = 19;
+            this.TableLayoutPanel_Top.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.TableLayoutPanel_Top.ColumnCount = 4;
+            this.TableLayoutPanel_Top.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.TableLayoutPanel_Top.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.TableLayoutPanel_Top.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.TableLayoutPanel_Top.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.TableLayoutPanel_Top.Controls.Add(this.Label_Elapsed, 0, 0);
+            this.TableLayoutPanel_Top.Controls.Add(this.Label_Estimated, 0, 2);
+            this.TableLayoutPanel_Top.Controls.Add(this.Label_Speed, 2, 0);
+            this.TableLayoutPanel_Top.Controls.Add(this.Label_Remaining, 0, 1);
+            this.TableLayoutPanel_Top.Controls.Add(this.Label_Speed_Value, 3, 0);
+            this.TableLayoutPanel_Top.Controls.Add(this.Label_Videos_Processed, 0, 3);
+            this.TableLayoutPanel_Top.Controls.Add(this.Label_Frames_Processed, 2, 1);
+            this.TableLayoutPanel_Top.Controls.Add(this.label15, 2, 2);
+            this.TableLayoutPanel_Top.Controls.Add(this.label16, 2, 3);
+            this.TableLayoutPanel_Top.Controls.Add(this.Label_Frames_Processed_Value, 3, 1);
+            this.TableLayoutPanel_Top.Controls.Add(this.label18, 3, 2);
+            this.TableLayoutPanel_Top.Controls.Add(this.label19, 3, 3);
+            this.TableLayoutPanel_Top.Controls.Add(this.Label_Elapsed_Value, 1, 0);
+            this.TableLayoutPanel_Top.Controls.Add(this.Label_Remaining_Value, 1, 1);
+            this.TableLayoutPanel_Top.Controls.Add(this.Label_Estimated_Value, 1, 2);
+            this.TableLayoutPanel_Top.Controls.Add(this.Label_Videos_Processed_Value, 1, 3);
+            this.TableLayoutPanel_Top.Location = new System.Drawing.Point(12, 12);
+            this.TableLayoutPanel_Top.Name = "TableLayoutPanel_Top";
+            this.TableLayoutPanel_Top.RowCount = 4;
+            this.TableLayoutPanel_Top.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.TableLayoutPanel_Top.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.TableLayoutPanel_Top.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.TableLayoutPanel_Top.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.TableLayoutPanel_Top.Size = new System.Drawing.Size(472, 84);
+            this.TableLayoutPanel_Top.TabIndex = 19;
             // 
-            // label13
+            // Label_Videos_Processed
             // 
-            this.label13.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(3, 67);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(95, 13);
-            this.label13.TabIndex = 19;
-            this.label13.Text = "Videos Processed:";
+            this.Label_Videos_Processed.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.Label_Videos_Processed.AutoSize = true;
+            this.Label_Videos_Processed.Location = new System.Drawing.Point(3, 67);
+            this.Label_Videos_Processed.Name = "Label_Videos_Processed";
+            this.Label_Videos_Processed.Size = new System.Drawing.Size(95, 13);
+            this.Label_Videos_Processed.TabIndex = 19;
+            this.Label_Videos_Processed.Text = "Videos Processed:";
             // 
-            // label14
+            // Label_Frames_Processed
             // 
-            this.label14.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(239, 25);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(97, 13);
-            this.label14.TabIndex = 20;
-            this.label14.Text = "Frames Processed:";
-            this.label14.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.Label_Frames_Processed.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.Label_Frames_Processed.AutoSize = true;
+            this.Label_Frames_Processed.Location = new System.Drawing.Point(239, 25);
+            this.Label_Frames_Processed.Name = "Label_Frames_Processed";
+            this.Label_Frames_Processed.Size = new System.Drawing.Size(97, 13);
+            this.Label_Frames_Processed.TabIndex = 20;
+            this.Label_Frames_Processed.Text = "Frames Processed:";
+            this.Label_Frames_Processed.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // label15
             // 
@@ -317,16 +321,16 @@
             this.label16.Text = "Unused:";
             this.label16.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // label17
+            // Label_Frames_Processed_Value
             // 
-            this.label17.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(456, 25);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(13, 13);
-            this.label17.TabIndex = 23;
-            this.label17.Text = "0";
-            this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.Label_Frames_Processed_Value.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.Label_Frames_Processed_Value.AutoSize = true;
+            this.Label_Frames_Processed_Value.Location = new System.Drawing.Point(456, 25);
+            this.Label_Frames_Processed_Value.Name = "Label_Frames_Processed_Value";
+            this.Label_Frames_Processed_Value.Size = new System.Drawing.Size(13, 13);
+            this.Label_Frames_Processed_Value.TabIndex = 23;
+            this.Label_Frames_Processed_Value.Text = "0";
+            this.Label_Frames_Processed_Value.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // label18
             // 
@@ -350,69 +354,84 @@
             this.label19.Text = "Unused";
             this.label19.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // label20
+            // Label_Elapsed_Value
             // 
-            this.label20.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(184, 4);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(49, 13);
-            this.label20.TabIndex = 26;
-            this.label20.Text = "00:00:00";
-            this.label20.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.Label_Elapsed_Value.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.Label_Elapsed_Value.AutoSize = true;
+            this.Label_Elapsed_Value.Location = new System.Drawing.Point(184, 4);
+            this.Label_Elapsed_Value.Name = "Label_Elapsed_Value";
+            this.Label_Elapsed_Value.Size = new System.Drawing.Size(49, 13);
+            this.Label_Elapsed_Value.TabIndex = 26;
+            this.Label_Elapsed_Value.Text = "00:00:00";
+            this.Label_Elapsed_Value.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // label21
+            // Label_Remaining_Value
             // 
-            this.label21.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(184, 25);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(49, 13);
-            this.label21.TabIndex = 27;
-            this.label21.Text = "00:00:00";
-            this.label21.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.Label_Remaining_Value.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.Label_Remaining_Value.AutoSize = true;
+            this.Label_Remaining_Value.Location = new System.Drawing.Point(184, 25);
+            this.Label_Remaining_Value.Name = "Label_Remaining_Value";
+            this.Label_Remaining_Value.Size = new System.Drawing.Size(49, 13);
+            this.Label_Remaining_Value.TabIndex = 27;
+            this.Label_Remaining_Value.Text = "00:00:00";
+            this.Label_Remaining_Value.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // label22
+            // Label_Estimated_Value
             // 
-            this.label22.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(184, 46);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(49, 13);
-            this.label22.TabIndex = 28;
-            this.label22.Text = "00:00:00";
-            this.label22.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.Label_Estimated_Value.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.Label_Estimated_Value.AutoSize = true;
+            this.Label_Estimated_Value.Location = new System.Drawing.Point(184, 46);
+            this.Label_Estimated_Value.Name = "Label_Estimated_Value";
+            this.Label_Estimated_Value.Size = new System.Drawing.Size(49, 13);
+            this.Label_Estimated_Value.TabIndex = 28;
+            this.Label_Estimated_Value.Text = "00:00:00";
+            this.Label_Estimated_Value.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // label23
+            // Label_Videos_Processed_Value
             // 
-            this.label23.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(203, 67);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(30, 13);
-            this.label23.TabIndex = 29;
-            this.label23.Text = "0 / 0";
-            this.label23.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.Label_Videos_Processed_Value.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.Label_Videos_Processed_Value.AutoSize = true;
+            this.Label_Videos_Processed_Value.Location = new System.Drawing.Point(203, 67);
+            this.Label_Videos_Processed_Value.Name = "Label_Videos_Processed_Value";
+            this.Label_Videos_Processed_Value.Size = new System.Drawing.Size(30, 13);
+            this.Label_Videos_Processed_Value.TabIndex = 29;
+            this.Label_Videos_Processed_Value.Text = "0 / 0";
+            this.Label_Videos_Processed_Value.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // Watch_Ticker
+            // 
+            this.Watch_Ticker.Enabled = true;
+            this.Watch_Ticker.Interval = 1000;
+            this.Watch_Ticker.Tick += new System.EventHandler(this.Timer_Tick);
+            // 
+            // FileSystemWatcher
+            // 
+            this.FileSystemWatcher.EnableRaisingEvents = true;
+            this.FileSystemWatcher.Filter = "*.bmp";
+            this.FileSystemWatcher.NotifyFilter = System.IO.NotifyFilters.FileName;
+            this.FileSystemWatcher.Path = "E:\\1";
+            this.FileSystemWatcher.SynchronizingObject = this;
+            this.FileSystemWatcher.Created += new System.IO.FileSystemEventHandler(this.FileSystemWatcher_Created);
             // 
             // Processing
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(496, 346);
-            this.Controls.Add(this.tableLayoutPanel1);
-            this.Controls.Add(this.label7);
-            this.Controls.Add(this.label6);
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.progressBar3);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.progressBar2);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.TableLayoutPanel_Top);
+            this.Controls.Add(this.Label_Scanning_Value);
+            this.Controls.Add(this.Label_Scanning);
+            this.Controls.Add(this.Label_Extraction_Value);
+            this.Controls.Add(this.ProgressBar_Scanning);
+            this.Controls.Add(this.Label_Extraction);
+            this.Controls.Add(this.ProgressBar_Extraction);
+            this.Controls.Add(this.TextBox_Current);
+            this.Controls.Add(this.Label_Current);
+            this.Controls.Add(this.Label_Progress);
             this.Controls.Add(this.Button_Pause);
             this.Controls.Add(this.Button_Cancel);
             this.Controls.Add(this.Button_Next);
-            this.Controls.Add(this.progressBar1);
+            this.Controls.Add(this.ProgressBar_Total);
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(8192, 384);
             this.MinimizeBox = false;
@@ -422,44 +441,46 @@
             this.Text = "Processing";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form_Closing);
             this.Load += new System.EventHandler(this.Form_Loaded);
-            this.tableLayoutPanel1.ResumeLayout(false);
-            this.tableLayoutPanel1.PerformLayout();
+            this.TableLayoutPanel_Top.ResumeLayout(false);
+            this.TableLayoutPanel_Top.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.FileSystemWatcher)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Button Button_Next;
         private System.Windows.Forms.Button Button_Cancel;
         private System.Windows.Forms.Button Button_Pause;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.ProgressBar progressBar2;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.ProgressBar progressBar3;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label Label_Progress;
+        private System.Windows.Forms.Label Label_Current;
+        private System.Windows.Forms.TextBox TextBox_Current;
+        private System.Windows.Forms.ProgressBar ProgressBar_Extraction;
+        private System.Windows.Forms.Label Label_Extraction;
+        private System.Windows.Forms.ProgressBar ProgressBar_Scanning;
+        private System.Windows.Forms.Label Label_Extraction_Value;
+        private System.Windows.Forms.Label Label_Scanning;
+        private System.Windows.Forms.Label Label_Scanning_Value;
+        private System.Windows.Forms.Label Label_Speed;
+        private System.Windows.Forms.Label Label_Speed_Value;
+        private System.Windows.Forms.Label Label_Elapsed;
+        private System.Windows.Forms.Label Label_Remaining;
+        private System.Windows.Forms.Label Label_Estimated;
+        private System.Windows.Forms.TableLayoutPanel TableLayoutPanel_Top;
+        private System.Windows.Forms.Label Label_Videos_Processed;
+        private System.Windows.Forms.Label Label_Frames_Processed;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label Label_Frames_Processed_Value;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.Label label20;
-        private System.Windows.Forms.Label label21;
-        private System.Windows.Forms.Label label22;
-        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.Label Label_Elapsed_Value;
+        private System.Windows.Forms.Label Label_Remaining_Value;
+        private System.Windows.Forms.Label Label_Estimated_Value;
+        private System.Windows.Forms.Label Label_Videos_Processed_Value;
+        private System.Windows.Forms.ProgressBar ProgressBar_Total;
+        private System.Windows.Forms.Timer Watch_Ticker;
+        private System.IO.FileSystemWatcher FileSystemWatcher;
     }
 }
