@@ -256,64 +256,20 @@ namespace VideoImageDeltaApp
             return i;
         }
 
-        public static Image FFCommand3(Video video, TimeSpan timestamp, string videoPath, System.Windows.Size size)
+        // Unuased I know what accelerators ffmpeg supports (specifically their command names).
+        public enum HardwareAccelerator
         {
-            object t = null;
-            using (NamedPipeServerStream p_from_ffmpeg = new NamedPipeServerStream(
-                    "from_ffmpeg",
-                    PipeDirection.InOut,
-                    1,
-                    PipeTransmissionMode.Byte,
-                    PipeOptions.WriteThrough,
-                    MAX_IMAGE_SIZE,
-                    MAX_IMAGE_SIZE)
-                )
-            {
 
-                string start = timestamp.ToString().Substring(0, 8);
-                string args = String.Format(@"-ss {0} -i ""{1}"" {2}", start,
-                    video.FilePath, @"-y -r 1 -f image2pipe -vframes 1 ""\\.\pipe\from_ffmpeg""");
-
-                using (Process pProcess = new Process())
-                {
-                    pProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                    pProcess.StartInfo.FileName = "ffmpeg";
-                    pProcess.StartInfo.Arguments = args;
-                    pProcess.StartInfo.UseShellExecute = false;
-                    pProcess.StartInfo.RedirectStandardOutput = true;
-                    pProcess.StartInfo.RedirectStandardError = true;
-                    pProcess.StartInfo.CreateNoWindow = true;
-                    pProcess.Start();
-
-                    p_from_ffmpeg.WaitForConnection();
-
-                    pProcess.WaitForExit();
-
-
-                    // Raw image size + bmp overhead.
-                    int imageSize = (int)(size.Width * size.Height) * 3 + 54;
-                    byte[] imageCache = new byte[imageSize];
-
-                    p_from_ffmpeg.Read(imageCache, 0, imageSize);
-
-                    try
-                    {
-                        using (var ms = new MemoryStream(imageCache))
-                        {
-                            t = new MagickImage((Bitmap)Image.FromStream(ms)).ToBitmap();
-                        }
-                    }
-                    catch (ArgumentException e)
-                    { // Don't stop the program because it failed to load the thumbnail. Just return blank.
-                        Debug.Write(e);
-                        t = null;
-                    }
-                }
-
-            }
-
-            return (Image)t;
         }
+
+        public static string[] GetAvailableHardwareAccelerators()
+        {
+            string str = FFCommand(@"ffmpeg", null, @"-hwaccels");
+            string[] lines = str.Split( new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries );
+            lines[0] = "";
+            return lines;
+        }
+
 
         /// <summary>
         /// 
