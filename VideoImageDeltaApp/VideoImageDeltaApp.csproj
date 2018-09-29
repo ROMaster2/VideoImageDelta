@@ -101,6 +101,12 @@
       <DependentUpon>AddWatchers.cs</DependentUpon>
     </Compile>
     <Compile Include="ffprobe.cs" />
+    <Compile Include="PostProcessing.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PostProcessing.Designer.cs">
+      <DependentUpon>PostProcessing.cs</DependentUpon>
+    </Compile>
     <Compile Include="PreProcessOptions.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -140,6 +146,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PostProcessing.resx">
+      <DependentUpon>PostProcessing.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PreProcessOptions.resx">
       <DependentUpon>PreProcessOptions.cs</DependentUpon>
@@ -184,9 +193,6 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="tessdata\eng.user-patterns">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <Content Include="x64\liblept172.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
