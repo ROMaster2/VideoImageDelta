@@ -324,6 +324,21 @@ namespace VideoImageDeltaApp.Models
 
         public List<Feed> Feeds = new List<Feed>();
 
+        [XmlIgnore]
+        public List<Screen> Screens
+        { get { var a = new List<Screen>();     a.AddRange(     Feeds.SelectMany(f  => f.Screens));     return a; } }
+        [XmlIgnore]
+        public List<WatchZone> WatchZones
+        { get { var a = new List<WatchZone>();  a.AddRange(   Screens.SelectMany(s  => s.WatchZones));  return a; } }
+        [XmlIgnore]
+        public List<Watcher> Watches
+        { get { var a = new List<Watcher>();    a.AddRange(WatchZones.SelectMany(wz => wz.Watches));    return a; } }
+        [XmlIgnore]
+        public List<WatchImage> WatchImages
+        { get { var a = new List<WatchImage>(); a.AddRange(  Watches.SelectMany(w  => w.WatchImages)); return a; } }
+
+        public double MaxScanRate { get { return Math.Round(Watches.Max(w => w.Frequency) * 300d) / 300d; } }
+
         public bool IsSynced()
         {
             return Feeds.Count > 0 && Feeds.All(x => x.GameProfile != null) && Feeds.All(x => x.Screens.Count > 0 || x.UseOCR);
@@ -338,9 +353,8 @@ namespace VideoImageDeltaApp.Models
         {
             Feeds.ForEach(f => f.InitProcess());
             CalcChildAdjGeo();
-            Feeds.ForEach(f => f.Screens.ForEach(s => s.WatchZones.ForEach(wz => wz.Watches.ForEach(w => w.Images
-                .ForEach(i => i.SetMagickImage(wz.AdjustedGeometry))
-            ))));
+            WatchZones.ForEach(wz => wz.Watches.ForEach(w => w.WatchImages
+                .ForEach(i => i.SetMagickImage(wz.AdjustedGeometry))));
         }
 
         // Full name would be CalculateChildAdjustedGeometry, but that's a mouthful and too many characters.
@@ -448,6 +462,8 @@ namespace VideoImageDeltaApp.Models
         public string Name { get; set; }
         [XmlElement("IsTimer")]
         public bool UseOCR { get; set; }
+        [XmlIgnore]
+        public List<Bag> OCRBag = new List<Bag>();
         public Geometry Geometry { get; set; }
         public Geometry GameGeometry { get; set; }
         public Geometry ThumbnailGeometry { get; set; }
@@ -649,7 +665,7 @@ namespace VideoImageDeltaApp.Models
 
         public string Name { get; set; }
         public double Frequency { get; set; } = 1d;
-        public List<WatchImage> Images { get; set; } = new List<WatchImage>(); // To expand
+        public List<WatchImage> WatchImages { get; set; } = new List<WatchImage>(); // To expand
 
         public ColorSpace ColorSpace { get; set; } = ColorSpace.RGB;
 
@@ -760,21 +776,6 @@ namespace VideoImageDeltaApp.Models
         [XmlIgnore]
         public List<Bag> DeltaBag = new List<Bag>();
 
-        public class Bag
-        {
-            public Bag(int frameIndex, double delta)
-            {
-                FrameIndex = frameIndex;
-                Delta = delta;
-            }
-            internal Bag() { }
-
-            public int FrameIndex;
-            public double Delta;
-            public string TimeStamp;
-            public float TimeStampConfidence;
-        }
-
         override public string ToString()
         {
             if (!string.IsNullOrWhiteSpace(Name))
@@ -783,6 +784,21 @@ namespace VideoImageDeltaApp.Models
                 return FileName;
         }
 
+    }
+
+    public class Bag
+    {
+        public Bag(int frameIndex, double delta, string timeStamp = null)
+        {
+            FrameIndex = frameIndex;
+            Confidence = delta;
+            TimeStamp = timeStamp;
+        }
+        internal Bag() { }
+
+        public int FrameIndex;
+        public double Confidence;
+        public string TimeStamp;
     }
 
     public enum PreviewType

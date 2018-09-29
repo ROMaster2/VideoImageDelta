@@ -1319,7 +1319,7 @@ namespace VideoImageDeltaApp.Forms
                 foreach (WatchImage i in ListBox_Watches_New_Images.Items)
                 {
                     i.Clear();
-                    w.Images.Add(i);
+                    w.WatchImages.Add(i);
                 }
                 wz.Watches.Add(w);
                 Update_Watches();
@@ -1338,7 +1338,7 @@ namespace VideoImageDeltaApp.Forms
                 var w = SelectedWatcher;
                 TextBox_Watches_Name.Text = w.Name;
                 Numeric_Watches_Frequency.Value = (decimal)w.Frequency;
-                foreach (var i in w.Images)
+                foreach (var i in w.WatchImages)
                 {
                     ListBox_Watches_Images.Items.Add(i);
                 }

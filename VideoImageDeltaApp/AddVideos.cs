@@ -603,7 +603,7 @@ namespace VideoImageDeltaApp
                             var wl = wzl.First().Watches.Where(z => z.Name == words2[0]);
                             if (wl.Count() > 0)
                             {
-                                var il = wl.First().Images.Where(z => z.FileName == words2[1]);
+                                var il = wl.First().WatchImages.Where(z => z.FileName == words2[1]);
                                 if (il.Count() > 0)
                                 {
                                     thumb3 = (Bitmap)il.First().Image;
@@ -1361,7 +1361,7 @@ namespace VideoImageDeltaApp
                     {
                         foreach (var w in wz.Watches)
                         {
-                            foreach (var wi in w.Images)
+                            foreach (var wi in w.WatchImages)
                             {
                                 wi.SetName(s, wz, w); // Help, need not-hacky method to display a better string.
                                 DropBox_Watch_Preview.Items.Add(wi);
