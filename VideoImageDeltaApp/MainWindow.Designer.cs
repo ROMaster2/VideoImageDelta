@@ -184,7 +184,7 @@ namespace VideoImageDeltaApp.Forms
             this.Controls.Add(this.Button_Quit);
             this.MinimumSize = new System.Drawing.Size(600, 200);
             this.Name = "MainWindow";
-            this.Text = "Video Image Delta";
+            this.Text = "Video Image Delta by ROMaster2";
             this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
