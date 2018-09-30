@@ -1,33 +1,12 @@
-﻿using ImageMagick;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Schema;
-using Newtonsoft.Json.Serialization;
+﻿using Ikriv.Xml;
 using System;
-using System.Collections;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Globalization;
 using System.IO;
-using System.IO.Pipes;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Timers;
-using System.Windows.Forms;
-using System.Xml;
 using System.Xml.Serialization;
-using VideoImageDeltaApp;
-using VideoImageDeltaApp.Forms;
+using System.Windows.Forms;
 using VideoImageDeltaApp.Models;
 
 namespace VideoImageDeltaApp
@@ -45,11 +24,6 @@ namespace VideoImageDeltaApp
             InitializeComponent();
             FileSystemWatcher.Path = Program.Processor.TempDirectory;
             FileSystemWatcher.Filter = Processor.FRAME_FILE_SELECTOR;
-        }
-
-        private void Run()
-        {
-            Program.Processor.Run(Program.Videos.Where(x => x.IsSynced()).ToList());
         }
 
         private void Form_Loaded(object sender, EventArgs e)
@@ -71,6 +45,11 @@ namespace VideoImageDeltaApp
             Start_Timer();
         }
 
+        private void Run()
+        {
+            Program.Processor.Run(Program.Videos.Where(x => x.IsSynced()).ToList());
+        }
+
         private void Button_Close_Click(object sender, EventArgs e)
         {
             Close();
@@ -88,9 +67,12 @@ namespace VideoImageDeltaApp
             else
             {
                 Program.Processor.Abort();
-                while (Program.Processor.Aborted)
+                if (!Program.Processor.Finished)
                 {
-                    Thread.Sleep(15);
+                    while (Program.Processor.Aborted)
+                    {
+                        Thread.Sleep(15);
+                    }
                 }
                 Program.MainWindow.Show();
             }
@@ -100,9 +82,44 @@ namespace VideoImageDeltaApp
         {
             if (Program.Processor.Finished)
             {
-                PostProcessing w = new PostProcessing();
-                w.Show();
-                Close();
+                using (SaveFileDialog sfd = new SaveFileDialog()
+                {
+                    FileName = "output",
+                    DefaultExt = "xml",
+                    Filter = "XML Files|*.xml",
+                    ValidateNames = true,
+                    Title = "Save raw output data"
+                })
+                {
+                    sfd.ShowDialog();
+
+                    if (!string.IsNullOrWhiteSpace(sfd.FileName))
+                    {
+                        var lv = Program.Videos;
+
+                        var overrides = new OverrideXml()
+                            .Override<Feed>()
+                                .Member("Screens").XmlIgnore(false);
+
+                        if (!CheckBox_Compact.Checked)
+                        {
+                            overrides
+                                .Override<Feed>()
+                                    .Member("OCRBag").XmlIgnore(false)
+                                    .Member("OCRBagCompact").XmlIgnore(true)
+                                .Override<WatchImage>()
+                                    .Member("DeltaBag").XmlIgnore(false)
+                                    .Member("DeltaBagCompact").XmlIgnore(true);
+                        }
+
+                        Type t = lv.GetType();
+                        XmlSerializer serializer = new XmlSerializer(t, overrides.Commit());
+                        using (TextWriter writer = new StreamWriter(sfd.FileName))
+                        {
+                            serializer.Serialize(writer, lv);
+                        }
+                    }
+                }
             }
             else if (Program.Processor.Paused)
             {
@@ -157,14 +174,16 @@ namespace VideoImageDeltaApp
 
         public void Update_Current_Video(string videoPath)
         {
-            TextBox_Current.BeginInvoke((MethodInvoker)delegate () {
+            TextBox_Current.BeginInvoke((MethodInvoker)delegate ()
+            {
                 TextBox_Current.Text = videoPath;
             });
         }
 
         public void Update_totalVideoFrames(int n)
         {
-            BeginInvoke((MethodInvoker)delegate () {
+            BeginInvoke((MethodInvoker)delegate ()
+            {
                 totalVideoFrames = n;
             });
             Update_ProgressBar_Extraction(0);
@@ -173,9 +192,12 @@ namespace VideoImageDeltaApp
 
         public void Finished()
         {
-            Button_Pause.BeginInvoke((MethodInvoker)delegate () {
-                Button_Pause.Text = "Continue";
+            Button_Pause.BeginInvoke((MethodInvoker)delegate ()
+            {
+                Button_Pause.Text = "Export";
                 Stop_Timer();
+                CheckBox_Compact.Show();
+                Label_Notice.Show();
             });
         }
 
@@ -218,7 +240,8 @@ namespace VideoImageDeltaApp
         {
             try
             {
-                label.BeginInvoke((MethodInvoker)delegate () {
+                label.BeginInvoke((MethodInvoker)delegate ()
+                {
                     label.Text = numerator.ToString() + " / " + denominator.ToString();
                 });
             }
@@ -235,7 +258,7 @@ namespace VideoImageDeltaApp
                 progressBar.BeginInvoke((MethodInvoker)delegate ()
                 {
                     int i = finishedFrameCount * progressBar.Maximum / totalFrameCount;
-                    progressBar.Value = i;
+                    progressBar.Value = Math.Min(progressBar.Maximum, i);
                 });
             }
             catch (System.InvalidOperationException e)

@@ -101,6 +101,7 @@
       <DependentUpon>AddWatchers.cs</DependentUpon>
     </Compile>
     <Compile Include="ffprobe.cs" />
+    <Compile Include="OverrideXml.cs" />
     <Compile Include="PostProcessing.cs">
       <SubType>Form</SubType>
     </Compile>

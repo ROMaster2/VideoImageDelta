@@ -30,7 +30,6 @@
         {
             this.components = new System.ComponentModel.Container();
             this.ProgressBar_Total = new System.Windows.Forms.ProgressBar();
-            this.Button_Next = new System.Windows.Forms.Button();
             this.Button_Cancel = new System.Windows.Forms.Button();
             this.Button_Pause = new System.Windows.Forms.Button();
             this.Label_Progress = new System.Windows.Forms.Label();
@@ -61,6 +60,8 @@
             this.Label_Videos_Processed_Value = new System.Windows.Forms.Label();
             this.Watch_Ticker = new System.Windows.Forms.Timer(this.components);
             this.FileSystemWatcher = new System.IO.FileSystemWatcher();
+            this.Label_Notice = new System.Windows.Forms.Label();
+            this.CheckBox_Compact = new System.Windows.Forms.CheckBox();
             this.TableLayoutPanel_Top.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.FileSystemWatcher)).BeginInit();
             this.SuspendLayout();
@@ -74,20 +75,10 @@
             this.ProgressBar_Total.Size = new System.Drawing.Size(472, 23);
             this.ProgressBar_Total.TabIndex = 0;
             // 
-            // Button_Next
-            // 
-            this.Button_Next.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.Button_Next.Enabled = false;
-            this.Button_Next.Location = new System.Drawing.Point(789, 311);
-            this.Button_Next.Name = "Button_Next";
-            this.Button_Next.Size = new System.Drawing.Size(75, 23);
-            this.Button_Next.TabIndex = 1;
-            this.Button_Next.Text = "Next";
-            this.Button_Next.UseVisualStyleBackColor = true;
-            // 
             // Button_Cancel
             // 
             this.Button_Cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.Button_Cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Button_Cancel.Location = new System.Drawing.Point(12, 311);
             this.Button_Cancel.Name = "Button_Cancel";
             this.Button_Cancel.Size = new System.Drawing.Size(75, 23);
@@ -309,6 +300,7 @@
             this.label15.TabIndex = 21;
             this.label15.Text = "Unused:";
             this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label15.Visible = false;
             // 
             // label16
             // 
@@ -320,6 +312,7 @@
             this.label16.TabIndex = 22;
             this.label16.Text = "Unused:";
             this.label16.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label16.Visible = false;
             // 
             // Label_Frames_Processed_Value
             // 
@@ -342,6 +335,7 @@
             this.label18.TabIndex = 24;
             this.label18.Text = "Unused";
             this.label18.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.label18.Visible = false;
             // 
             // label19
             // 
@@ -353,6 +347,7 @@
             this.label19.TabIndex = 25;
             this.label19.Text = "Unused";
             this.label19.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.label19.Visible = false;
             // 
             // Label_Elapsed_Value
             // 
@@ -409,15 +404,42 @@
             this.FileSystemWatcher.EnableRaisingEvents = true;
             this.FileSystemWatcher.Filter = "*.bmp";
             this.FileSystemWatcher.NotifyFilter = System.IO.NotifyFilters.FileName;
-            this.FileSystemWatcher.Path = "E:\\1";
+            this.FileSystemWatcher.Path = "C:\\";
             this.FileSystemWatcher.SynchronizingObject = this;
             this.FileSystemWatcher.Created += new System.IO.FileSystemEventHandler(this.FileSystemWatcher_Created);
             // 
+            // Label_Notice
+            // 
+            this.Label_Notice.AutoSize = true;
+            this.Label_Notice.Location = new System.Drawing.Point(137, 298);
+            this.Label_Notice.Name = "Label_Notice";
+            this.Label_Notice.Size = new System.Drawing.Size(161, 39);
+            this.Label_Notice.TabIndex = 20;
+            this.Label_Notice.Text = "Post-Processing features are\r\ncoming. For now, you can export\r\nthe raw output.";
+            this.Label_Notice.Visible = false;
+            // 
+            // CheckBox_Compact
+            // 
+            this.CheckBox_Compact.AutoSize = true;
+            this.CheckBox_Compact.Checked = true;
+            this.CheckBox_Compact.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.CheckBox_Compact.Location = new System.Drawing.Point(335, 307);
+            this.CheckBox_Compact.Name = "CheckBox_Compact";
+            this.CheckBox_Compact.Size = new System.Drawing.Size(68, 30);
+            this.CheckBox_Compact.TabIndex = 21;
+            this.CheckBox_Compact.Text = "Compact\r\nData";
+            this.CheckBox_Compact.UseVisualStyleBackColor = true;
+            this.CheckBox_Compact.Visible = false;
+            // 
             // Processing
             // 
+            this.AcceptButton = this.Button_Pause;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.Button_Cancel;
             this.ClientSize = new System.Drawing.Size(496, 346);
+            this.Controls.Add(this.CheckBox_Compact);
+            this.Controls.Add(this.Label_Notice);
             this.Controls.Add(this.TableLayoutPanel_Top);
             this.Controls.Add(this.Label_Scanning_Value);
             this.Controls.Add(this.Label_Scanning);
@@ -430,7 +452,6 @@
             this.Controls.Add(this.Label_Progress);
             this.Controls.Add(this.Button_Pause);
             this.Controls.Add(this.Button_Cancel);
-            this.Controls.Add(this.Button_Next);
             this.Controls.Add(this.ProgressBar_Total);
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(8192, 384);
@@ -450,7 +471,6 @@
         }
 
         #endregion
-        private System.Windows.Forms.Button Button_Next;
         private System.Windows.Forms.Button Button_Cancel;
         private System.Windows.Forms.Button Button_Pause;
         private System.Windows.Forms.Label Label_Progress;
@@ -482,5 +502,7 @@
         private System.Windows.Forms.ProgressBar ProgressBar_Total;
         private System.Windows.Forms.Timer Watch_Ticker;
         private System.IO.FileSystemWatcher FileSystemWatcher;
+        private System.Windows.Forms.CheckBox CheckBox_Compact;
+        private System.Windows.Forms.Label Label_Notice;
     }
 }

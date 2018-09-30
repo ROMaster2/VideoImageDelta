@@ -91,7 +91,7 @@ namespace VideoImageDeltaApp
 
                 if (!Directory.Exists(_TempDirectory))
                 {
-                    //_TempDirectory = Path.GetTempPath() + Application.ProductName;
+                    _TempDirectory = Path.GetTempPath() + Application.ProductName;
                     _TempDirectory = @"E:\1";
                 }
 
@@ -228,6 +228,23 @@ namespace VideoImageDeltaApp
                     Process.WaitForExit();
                     videosFinished++;
                     ProcessingWindow.Update_Video_Count(videosFinished, videos.Count());
+                    //video.Feeds.ForEach(f => f.OCRBag = f.OCRBag.OrderBy(b => b.FrameIndex ?? 0).ToList());
+                    //video.WatchImages.ForEach(wi => wi.DeltaBag = wi.DeltaBag.OrderBy(b => b.FrameIndex).ToList());
+
+                    foreach(var f in video.Feeds)
+                    {
+                        if (f.OCRBag.Count > 0)
+                        {
+                            f.OCRBag = f.OCRBag.OrderBy(b => b.FrameIndex).ToList();
+                        }
+                    }
+                    foreach (var wi in video.WatchImages)
+                    {
+                        if (wi.DeltaBag.Count > 0)
+                        {
+                            wi.DeltaBag = wi.DeltaBag.OrderBy(b => b.FrameIndex).ToList();
+                        }
+                    }
                 }
                 if (Aborted)
                 {
@@ -280,58 +297,66 @@ namespace VideoImageDeltaApp
                         int thumbID = int.Parse(file.Name.Substring(0, 8));
                         if (file.Exists && !Paused && !Aborted)
                         {
-                            using (MagickImage fileImageBase = new MagickImage(file.FullName))
+                            try
                             {
-                                if (fileImageBase.Width <= 1 && fileImageBase.Height <= 1)
-                                { // Sometimes happens. Dunno how. Probably because it's parallel.
-                                    goto Skip;
-                                }
-                                fileImageBase.RePage();
-                                Parallel.ForEach(video.Feeds, (f) =>
+                                using (MagickImage fileImageBase = new MagickImage(file.FullName))
                                 {
-                                    if (!f.UseOCR)
+                                    if (fileImageBase.Width <= 1 && fileImageBase.Height <= 1)
+                                    { // Sometimes happens. Dunno how. Probably because it's parallel.
+                                        goto Skip;
+                                    }
+                                    fileImageBase.RePage();
+                                    Parallel.ForEach(video.Feeds, (f) =>
                                     {
-                                        Parallel.ForEach(f.Screens, (s) =>
+                                        if (!f.UseOCR)
                                         {
-                                            Parallel.ForEach(s.WatchZones, (wz) =>
+                                            Parallel.ForEach(f.Screens, (s) =>
                                             {
-                                                var mg = wz.AdjustedGeometry.ToMagick();
+                                                Parallel.ForEach(s.WatchZones, (wz) =>
+                                                {
+                                                    var mg = wz.AdjustedGeometry.ToMagick();
                                                 // Doesn't crop perfectly. Investigate later.
                                                 using (var fileImageCrop = (MagickImage)fileImageBase.Clone())
-                                                {
-                                                    fileImageCrop.Crop(mg, Gravity.Northwest);
-                                                    Parallel.ForEach(wz.Watches, (w) =>
                                                     {
-                                                        Parallel.ForEach(w.WatchImages, (wi) =>
+                                                        fileImageCrop.Crop(mg, Gravity.Northwest);
+                                                        Parallel.ForEach(wz.Watches, (w) =>
                                                         {
-                                                            using (MagickImage deltaImage = (MagickImage)wi.MagickImage.Clone())
+                                                            Parallel.ForEach(w.WatchImages, (wi) =>
                                                             {
-                                                                using (var fileImageCompare = (MagickImage)fileImageCrop.Clone())
+                                                                using (MagickImage deltaImage = (MagickImage)wi.MagickImage.Clone())
                                                                 {
-                                                                    if (deltaImage.HasAlpha)
+                                                                    using (var fileImageCompare = (MagickImage)fileImageCrop.Clone())
                                                                     {
-                                                                        fileImageCompare.Composite(deltaImage, CompositeOperator.CopyAlpha);
+                                                                        if (deltaImage.HasAlpha)
+                                                                        {
+                                                                            fileImageCompare.Composite(deltaImage, CompositeOperator.CopyAlpha);
+                                                                        }
+                                                                        float delta = (float)deltaImage.Compare(fileImageCompare,
+                                                                            ErrorMetric.PeakSignalToNoiseRatio);
+                                                                        wi.DeltaBag.Add(new Bag(thumbID, delta));
                                                                     }
-                                                                    double delta = deltaImage.Compare(fileImageCompare,
-                                                                        ErrorMetric.PeakSignalToNoiseRatio);
-                                                                    wi.DeltaBag.Add(new Bag(thumbID, delta));
                                                                 }
-                                                            }
+                                                            });
                                                         });
-                                                    });
-                                                }
+                                                    }
+                                                });
                                             });
-                                        });
-                                    }
-                                    else
-                                    {
-                                        using (var b = fileImageBase.ToBitmap())
-                                        {
-                                            Utilities.ReadImage(b, f.ThumbnailGeometry, out string str, out float confidence);
-                                            f.OCRBag.Add(new Bag(thumbID, confidence, str));
                                         }
-                                    }
-                                });
+                                        else
+                                        {
+                                            using (var b = fileImageBase.ToBitmap())
+                                            {
+                                                Utilities.ReadImage(b, f.ThumbnailGeometry, out string str, out float confidence);
+                                                f.OCRBag.Add(new Bag(thumbID, confidence, str));
+                                            }
+                                        }
+                                    });
+                                }
+                            } // Sometimes Magick can't read an image correctly. No idea why.
+                            catch (MagickCorruptImageErrorException e)
+                            {
+                                Debug.Write(e);
+                                goto Skip;
                             }
                             file.Delete();
                             finishCount++;

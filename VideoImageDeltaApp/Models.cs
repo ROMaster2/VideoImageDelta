@@ -288,9 +288,9 @@ namespace VideoImageDeltaApp.Models
 
         internal Video() { }
 
-        public string FilePath { get; }
+        public string FilePath;
         public ffprobeType RawMetadata { get; }
-        public Geometry Geometry { get; }
+        public Geometry Geometry;
         public Geometry ThumbnailGeometry { get; set; }
 
         public streamType RawVideoMetadata { get { return RawMetadata.streams.Where(x => x.codec_type == "video").First(); } }
@@ -394,7 +394,10 @@ namespace VideoImageDeltaApp.Models
                     s.ThumbnailGeometry = f.ThumbnailGeometry;
 
                     Geometry GameGeometry = s.Geometry;
-                    if (f.GameGeometry.Width > 0d && f.GameGeometry.Height > 0d) GameGeometry = f.GameGeometry;
+                    if (f.GameGeometry != null && f.GameGeometry.Width > 0d && f.GameGeometry.Height > 0d)
+                    {
+                        GameGeometry = f.GameGeometry;
+                    }
 
                     double xScale = GameGeometry.Width / f.Geometry.Width;
                     double yScale = GameGeometry.Height / f.Geometry.Height;
@@ -464,6 +467,28 @@ namespace VideoImageDeltaApp.Models
         public bool UseOCR { get; set; }
         [XmlIgnore]
         public List<Bag> OCRBag = new List<Bag>();
+
+        public string OCRBagCompact
+        {
+            get {
+                string str = "";
+                foreach (var b in OCRBag)
+                {
+                    var lb = new List<byte>();
+                    lb.AddRange(BitConverter.GetBytes(b.FrameIndex));
+                    lb.AddRange(BitConverter.GetBytes(b.Confidence));
+                    // Testing for null termination
+                    lb.AddRange(Encoding.ASCII.GetBytes(b.TimeStamp ?? ""));
+                    str += Convert.ToBase64String(lb.ToArray());
+                }
+                return str;
+            }
+            set
+            {
+
+            }
+        }
+
         public Geometry Geometry { get; set; }
         public Geometry GameGeometry { get; set; }
         public Geometry ThumbnailGeometry { get; set; }
@@ -776,6 +801,24 @@ namespace VideoImageDeltaApp.Models
         [XmlIgnore]
         public List<Bag> DeltaBag = new List<Bag>();
 
+        public string DeltaBagCompact
+        {
+            get
+            {
+                var lb = new List<byte>();
+                foreach (var b in DeltaBag)
+                {
+                    lb.AddRange(BitConverter.GetBytes(b.FrameIndex));
+                    lb.AddRange(BitConverter.GetBytes(b.Confidence));
+                }
+                return Convert.ToBase64String(lb.ToArray());
+            }
+            set
+            {
+
+            }
+        }
+
         override public string ToString()
         {
             if (!string.IsNullOrWhiteSpace(Name))
@@ -788,7 +831,7 @@ namespace VideoImageDeltaApp.Models
 
     public class Bag
     {
-        public Bag(int frameIndex, double delta, string timeStamp = null)
+        public Bag(int frameIndex, float delta, string timeStamp = null)
         {
             FrameIndex = frameIndex;
             Confidence = delta;
@@ -796,8 +839,11 @@ namespace VideoImageDeltaApp.Models
         }
         internal Bag() { }
 
+        [XmlAttribute("I")]
         public int FrameIndex;
-        public double Confidence;
+        [XmlAttribute("C")]
+        public float Confidence;
+        [XmlAttribute("T")]
         public string TimeStamp;
     }
 
