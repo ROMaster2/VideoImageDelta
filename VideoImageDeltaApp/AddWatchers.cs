@@ -543,7 +543,7 @@ namespace VideoImageDeltaApp.Forms
             else
             {
                 Models.Screen item;
-                item = new Models.Screen(name, useAdvanced, new Geometry(width, height));
+                item = new Models.Screen(name, useAdvanced, new GeometryOld(width, height));
                 var gp = SelectedGameProfile;
                 gp.Screens.Add(item);
                 Update_Screens();
@@ -582,7 +582,7 @@ namespace VideoImageDeltaApp.Forms
                 var s = SelectedScreen;
                 s.Name = name;
                 s.UseAdvanced = useAdvanced;
-                s.Geometry = new Geometry(width, height);
+                s.Geometry = new GeometryOld(width, height);
                 Update_Screens();
                 ListBox_Screens.SelectedItem = s;
             }
@@ -924,8 +924,8 @@ namespace VideoImageDeltaApp.Forms
             else
             {
                 var s = SelectedScreen;
-                Geometry geo;
-                geo = new Geometry(x, y, width, height, anchor);
+                GeometryOld geo;
+                geo = new GeometryOld(x, y, width, height, anchor);
                 var wz = new WatchZone(name, scaleType, geo);
                 s.WatchZones.Add(wz);
                 Update_WatchZones();
@@ -1160,7 +1160,7 @@ namespace VideoImageDeltaApp.Forms
                 var wz = SelectedWatchZone;
                 wz.Name = name;
                 wz.ScaleType = scaleType;
-                wz.Geometry = new Geometry(x, y, width, height, anchor);
+                wz.Geometry = new GeometryOld(x, y, width, height, anchor);
                 //Update_WatchZones();
                 ListBox_WatchZones.SelectedItem = wz;
             }

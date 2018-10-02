@@ -386,9 +386,9 @@ namespace VideoImageDeltaApp
         }
 
 
-        public Geometry PreviewBoxGeometryBefore = new Geometry(640, 480);
-        public Geometry PreviewBoxGeometryRescale = new Geometry(0,0);
-        public Geometry PreviewBoxGeometryAfter = new Geometry(0, 0);
+        public GeometryOld PreviewBoxGeometryBefore = new GeometryOld(640, 480);
+        public GeometryOld PreviewBoxGeometryRescale = new GeometryOld(0,0);
+        public GeometryOld PreviewBoxGeometryAfter = new GeometryOld(0, 0);
 
         public void CalcPreviewBoxGeometry(bool force = false)
         {
@@ -404,9 +404,9 @@ namespace VideoImageDeltaApp
             // Look, I just don't know where to put these methods sometimes.
             if (force)
             {
-                PreviewBoxGeometryBefore = new Geometry(x, y, width, height);
+                PreviewBoxGeometryBefore = new GeometryOld(x, y, width, height);
                 if (gameWidth > 0 && gameHeight > 0)
-                    PreviewBoxGeometryRescale = new Geometry(gameWidth, gameHeight);
+                    PreviewBoxGeometryRescale = new GeometryOld(gameWidth, gameHeight);
                 else
                     PreviewBoxGeometryRescale = PreviewBoxGeometryBefore;
 
@@ -442,22 +442,22 @@ namespace VideoImageDeltaApp
                         PreviewBoxGeometryAfter = PreviewBoxGeometryRescale;
                         break;
                     case PreviewType.Feed:
-                        PreviewBoxGeometryBefore = new Geometry(x, y, width, height);
+                        PreviewBoxGeometryBefore = new GeometryOld(x, y, width, height);
                         PreviewBoxGeometryRescale = PreviewBoxGeometryBefore;
                         PreviewBoxGeometryAfter = PreviewBoxGeometryRescale;
                         break;
                     case PreviewType.Screen:
-                        PreviewBoxGeometryBefore = new Geometry(x, y, width, height);
+                        PreviewBoxGeometryBefore = new GeometryOld(x, y, width, height);
                         if (gameWidth > 0 && gameHeight > 0)
-                            PreviewBoxGeometryRescale = new Geometry(gameWidth, gameHeight);
+                            PreviewBoxGeometryRescale = new GeometryOld(gameWidth, gameHeight);
                         else
                             PreviewBoxGeometryRescale = PreviewBoxGeometryBefore;
                         PreviewBoxGeometryAfter = PreviewBoxGeometryRescale;
                         break;
                     case PreviewType.WatchZone:
-                        PreviewBoxGeometryBefore = new Geometry(x, y, width, height);
+                        PreviewBoxGeometryBefore = new GeometryOld(x, y, width, height);
                         if (gameWidth > 0 && gameHeight > 0)
-                            PreviewBoxGeometryRescale = new Geometry(gameWidth, gameHeight);
+                            PreviewBoxGeometryRescale = new GeometryOld(gameWidth, gameHeight);
                         else
                             PreviewBoxGeometryRescale = PreviewBoxGeometryBefore;
 
@@ -1107,12 +1107,12 @@ namespace VideoImageDeltaApp
             int y = (int)Numeric_Y.Value;
             int width = (int)Numeric_Width.Value;
             int height = (int)Numeric_Height.Value;
-            Geometry geo = new Geometry(x, y, width, height);
-            Geometry gameGeo = new Geometry(0,0);
+            GeometryOld geo = new GeometryOld(x, y, width, height);
+            GeometryOld gameGeo = new GeometryOld(0,0);
 
             if (CheckBox_Advanced.Checked && Numeric_Game_Width.Value > 0m && Numeric_Game_Height.Value > 0m)
             {
-                gameGeo = new Geometry((int)Numeric_Game_Width.Value, (int)Numeric_Game_Height.Value);
+                gameGeo = new GeometryOld((int)Numeric_Game_Width.Value, (int)Numeric_Game_Height.Value);
             }
 
             int exists = -1;

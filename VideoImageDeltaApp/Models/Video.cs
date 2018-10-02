@@ -37,7 +37,7 @@ namespace VideoImageDeltaApp.Models
             );
                 if (Duration == TimeSpan.Zero) Duration = RawFFmpeg.GetDuration(FilePath);
 
-                Geometry = new Geometry(RawVideoMetadata.width, RawVideoMetadata.height);
+                Geometry = new GeometryOld(RawVideoMetadata.width, RawVideoMetadata.height);
             }
             else
             {
@@ -49,8 +49,8 @@ namespace VideoImageDeltaApp.Models
 
         public string FilePath;
         public ffprobeType RawMetadata { get; }
-        public Geometry Geometry;
-        public Geometry ThumbnailGeometry { get; set; }
+        public GeometryOld Geometry;
+        public GeometryOld ThumbnailGeometry { get; set; }
 
         public streamType RawVideoMetadata { get { return RawMetadata.streams.Where(x => x.codec_type == "video").First(); } }
         public TimeSpan Duration { get; }
@@ -123,7 +123,7 @@ namespace VideoImageDeltaApp.Models
             width -= x;
             height -= y;
 
-            ThumbnailGeometry = new Geometry(x, y, width, height);
+            ThumbnailGeometry = new GeometryOld(x, y, width, height);
 
             foreach (var f in Feeds)
             {
@@ -133,7 +133,7 @@ namespace VideoImageDeltaApp.Models
                 {
                     s.ThumbnailGeometry = f.ThumbnailGeometry;
 
-                    Geometry GameGeometry = s.Geometry;
+                    GeometryOld GameGeometry = s.Geometry;
                     if (f.GameGeometry.Width > 0d && f.GameGeometry.Height > 0d)
                     {
                         GameGeometry = f.GameGeometry;
@@ -164,7 +164,7 @@ namespace VideoImageDeltaApp.Models
                             _height *= scale;
                         }
 
-                        var newGeo = new Geometry(_x, _y, _width, _height, wz.Geometry.Anchor).WithoutAnchor(GameGeometry);
+                        var newGeo = new GeometryOld(_x, _y, _width, _height, wz.Geometry.Anchor).WithoutAnchor(GameGeometry);
 
                         newGeo.X = newGeo.X / GameGeometry.Width * f.Geometry.Width + f.ThumbnailGeometry.X;
                         newGeo.Y = newGeo.Y / GameGeometry.Height * f.Geometry.Height + f.ThumbnailGeometry.Y;

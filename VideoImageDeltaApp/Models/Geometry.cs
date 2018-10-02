@@ -3,9 +3,9 @@ using System;
 
 namespace VideoImageDeltaApp.Models
 {
-    public struct Geometry
+    public struct GeometryOld
     {
-        public Geometry(double width, double height, Anchor anchor = Anchor.Undefined)
+        public GeometryOld(double width, double height, Anchor anchor = Anchor.Undefined)
         {
             X = 0;
             Y = 0;
@@ -13,7 +13,7 @@ namespace VideoImageDeltaApp.Models
             Height = height;
             Anchor = anchor;
         }
-        public Geometry(double x, double y, double width, double height, Anchor anchor = Anchor.Undefined)
+        public GeometryOld(double x, double y, double width, double height, Anchor anchor = Anchor.Undefined)
         {
             X = x;
             Y = y;
@@ -63,7 +63,7 @@ namespace VideoImageDeltaApp.Models
             }
         }
 
-        public Geometry WithoutAnchor(Geometry baseGeometry)
+        public GeometryOld WithoutAnchor(GeometryOld baseGeometry)
         {
             double _x;
             double _y;
@@ -96,7 +96,7 @@ namespace VideoImageDeltaApp.Models
                 _y = (baseGeometry.Height - Height) / 2d + Y;
             }
 
-            return new Geometry(_x, _y, Width, Height, Anchor.Undefined);
+            return new GeometryOld(_x, _y, Width, Height, Anchor.Undefined);
         }
 
         // Only Northwest for now
@@ -105,22 +105,22 @@ namespace VideoImageDeltaApp.Models
             X = X - x;
             Y = Y - y;
         }
-        public void UpdateRelativeToPoint(Geometry geo)
+        public void UpdateRelativeToPoint(GeometryOld geo)
         {
             X = X - geo.X;
             Y = Y - geo.Y;
         }
-        public Geometry RelativeToPoint(double x, double y)
+        public GeometryOld RelativeToPoint(double x, double y)
         {
-            return new Geometry(Width, Height)
+            return new GeometryOld(Width, Height)
             {
                 X = X - x,
                 Y = Y - y
             };
         }
-        public Geometry RelativeToPoint(Geometry geo)
+        public GeometryOld RelativeToPoint(GeometryOld geo)
         {
-            return new Geometry(Width, Height)
+            return new GeometryOld(Width, Height)
             {
                 X = X - geo.X,
                 Y = Y - geo.Y

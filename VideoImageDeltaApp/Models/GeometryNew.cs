@@ -1,5 +1,6 @@
 ﻿/**
- * Since I couldn't find anything 
+ * Since I couldn't find any shape class that included alignment/gravity/anchor logic, I
+ * implemented my own. The below is derived from System.Windows.Rect.
  */
 
 using System;
@@ -15,54 +16,36 @@ namespace VideoImageDeltaApp.Models
     /// This also implements Alignment, setting the corner or side where the location starts
     /// from.
     /// </summary>
-    public partial struct GeometryNew
+    public partial struct Geometry
     {
         #region Constructors
 
         /// <summary>
-        /// Constructor which sets the initial values to the values of the parameters
-        /// </summary>
-        public GeometryNew(Point location,
-                    Size size)
-        {
-            if (size.IsEmpty)
-            {
-                this = s_empty;
-            }
-            else
-            {
-                _x = location.X;
-                _y = location.Y;
-                _width = size.Width;
-                _height = size.Height;
-            }
-        }
-
-        /// <summary>
         /// Constructor which sets the initial values to the values of the parameters.
-        /// Width and Height must be non-negative
         /// </summary>
-        public GeometryNew(double x,
+        public Geometry(double x,
                     double y,
                     double width,
-                    double height)
+                    double height,
+                    Anchor anchor = Anchor.Undefined)
         {
-            if (width < 0 || height < 0)
-            {
-                throw new System.ArgumentException("Size_WidthAndHeightCannotBeNegative");
-            }
-
             _x = x;
             _y = y;
             _width = width;
             _height = height;
+            _anchor = anchor;
         }
+
+        /// <summary>
+        /// Constructor which sets the initial values to the values of the parameters
+        /// </summary>
+        public Geometry(Point location, Size size, Anchor anchor = Anchor.Undefined)
+            : this(location.X, location.Y, size.Width, size.Height, anchor) { }
 
         /// <summary>
         /// Constructor which sets the initial values to bound the two points provided.
         /// </summary>
-        public GeometryNew(Point point1,
-                    Point point2)
+        public Geometry(Point point1, Point point2, Anchor anchor = Anchor.Undefined)
         {
             _x = Math.Min(point1.X, point2.X);
             _y = Math.Min(point1.Y, point2.Y);
@@ -70,63 +53,61 @@ namespace VideoImageDeltaApp.Models
             //  Max with 0 to prevent double weirdness from causing us to be (-epsilon..0)
             _width = Math.Max(Math.Max(point1.X, point2.X) - _x, 0);
             _height = Math.Max(Math.Max(point1.Y, point2.Y) - _y, 0);
+
+            _anchor = anchor;
         }
 
         /// <summary>
         /// Constructor which sets the initial values to bound the point provided and the point
         /// which results from point + vector.
         /// </summary>
-        public GeometryNew(Point point,
-                    Vector vector) : this(point, point + vector)
-        {
-        }
+        public Geometry(Point point, Vector vector, Anchor anchor = Anchor.Undefined)
+            : this(point, point + vector, anchor) { }
+
+        /// <summary>
+        /// Constructor which sets the initial values to bound the (0,0) point and the point 
+        /// that results from (0,0) + Width and Height. 
+        /// </summary>
+        public Geometry( double width, double height, Anchor anchor = Anchor.Undefined)
+            : this(0, 0, width, height, anchor) { }
 
         /// <summary>
         /// Constructor which sets the initial values to bound the (0,0) point and the point 
         /// that results from (0,0) + size. 
         /// </summary>
-        public GeometryNew(Size size)
-        {
-            if (size.IsEmpty)
-            {
-                this = s_empty;
-            }
-            else
-            {
-                _x = _y = 0;
-                _width = size.Width;
-                _height = size.Height;
-            }
-        }
+        public Geometry(Size size, Anchor anchor = Anchor.Undefined)
+            : this(size.Width, size.Height, anchor) { }
 
         // Additional constructors for conversion.
 
         /// <summary>
         /// Constructor for converting Tesseract.Rect to this format.
         /// </summary>
-        public GeometryNew(Tesseract.Rect rect)
-        {
-            if (rect.Width < 0 || rect.Height < 0)
-            {
-                throw new System.ArgumentException("Size_WidthAndHeightCannotBeNegative");
-            }
+        public Geometry(Tesseract.Rect rect, Anchor anchor = Anchor.Undefined)
+             : this(rect.X1, rect.Y1, rect.Width, rect.Height, anchor) { }
 
-            _x = rect.X1;
-            _y = rect.Y1;
-            _width = rect.Width;
-            _height = rect.Height;
-        }
+        /// <summary>
+        /// Constructor for converting ImageMagick.MagickGeometry to this format.
+        /// </summary>
+        public Geometry(ImageMagick.MagickGeometry mGeo,
+                    Anchor anchor = Anchor.Undefined)
+            : this(mGeo.X, mGeo.Y, mGeo.Width, mGeo.Height, anchor) { }
+
+        /// <summary>
+        /// Constructor for converting ImageMagick.MagickGeometry and Gravity to this format.
+        /// </summary>
+        public Geometry(ImageMagick.MagickGeometry mGeo,
+                    ImageMagick.Gravity gravity = ImageMagick.Gravity.Undefined)
+            : this(mGeo.X, mGeo.Y, mGeo.Width, mGeo.Height, gravity.ToAnchor()) { }
 
         #endregion Constructors
 
         #region Statics
 
         /// <summary>
-        /// Empty - a static property which provides an Empty rectangle.  X and Y are positive-infinity
-        /// and Width and Height are negative infinity.  This is the only situation where Width or
-        /// Height can be negative.
+        /// Empty - a static property which provides an Empty rectangle.
         /// </summary>
-        public static GeometryNew Empty
+        public static Geometry Empty
         {
             get
             {
@@ -135,15 +116,6 @@ namespace VideoImageDeltaApp.Models
         }
 
         #endregion Statics
-
-        #region Private Properties
-
-        private double _x;
-        private double _y;
-        private double _width;
-        private double _height;
-
-        #endregion Private Properties
 
         #region Public Properties
 
@@ -461,7 +433,7 @@ namespace VideoImageDeltaApp.Models
         /// rectangle, inclusive of the edges.
         /// Returns false otherwise
         /// </summary>
-        public bool Contains(GeometryNew rect)
+        public bool Contains(Geometry rect)
         {
             if (IsEmpty || rect.IsEmpty)
             {
@@ -485,7 +457,7 @@ namespace VideoImageDeltaApp.Models
         /// or Height
         /// </returns>
         /// <param name="rect"> Rect </param>
-        public bool IntersectsWith(GeometryNew rect)
+        public bool IntersectsWith(Geometry rect)
         {
             if (IsEmpty || rect.IsEmpty)
             {
@@ -503,7 +475,7 @@ namespace VideoImageDeltaApp.Models
         /// If either this or rect are Empty, the result is Empty as well.
         /// </summary>
         /// <param name="rect"> The rect to intersect with this </param>
-        public void Intersect(GeometryNew rect)
+        public void Intersect(Geometry rect)
         {
             if (!this.IntersectsWith(rect))
             {
@@ -527,7 +499,7 @@ namespace VideoImageDeltaApp.Models
         /// Intersect - Return the result of the intersection of rect1 and rect2.
         /// If either this or rect are Empty, the result is Empty as well.
         /// </summary>
-        public static GeometryNew Intersect(GeometryNew rect1, GeometryNew rect2)
+        public static Geometry Intersect(Geometry rect1, Geometry rect2)
         {
             rect1.Intersect(rect2);
             return rect1;
@@ -536,7 +508,7 @@ namespace VideoImageDeltaApp.Models
         /// <summary>
         /// Union - Update this rectangle to be the union of this and rect.
         /// </summary>
-        public void Union(GeometryNew rect)
+        public void Union(Geometry rect)
         {
             if (IsEmpty)
             {
@@ -580,7 +552,7 @@ namespace VideoImageDeltaApp.Models
         /// <summary>
         /// Union - Return the result of the union of rect1 and rect2.
         /// </summary>
-        public static GeometryNew Union(GeometryNew rect1, GeometryNew rect2)
+        public static Geometry Union(Geometry rect1, Geometry rect2)
         {
             rect1.Union(rect2);
             return rect1;
@@ -591,15 +563,15 @@ namespace VideoImageDeltaApp.Models
         /// </summary>
         public void Union(Point point)
         {
-            Union(new GeometryNew(point, point));
+            Union(new Geometry(point, point));
         }
 
         /// <summary>
         /// Union - Return the result of the union of rect and point.
         /// </summary>
-        public static GeometryNew Union(GeometryNew rect, Point point)
+        public static Geometry Union(Geometry rect, Point point)
         {
-            rect.Union(new GeometryNew(point, point));
+            rect.Union(new Geometry(point, point));
             return rect;
         }
 
@@ -637,7 +609,7 @@ namespace VideoImageDeltaApp.Models
         /// Offset - return the result of offsetting rect by the offset provided
         /// If this is Empty, this method is illegal.
         /// </summary>
-        public static GeometryNew Offset(GeometryNew rect, Vector offsetVector)
+        public static Geometry Offset(Geometry rect, Vector offsetVector)
         {
             rect.Offset(offsetVector.X, offsetVector.Y);
             return rect;
@@ -647,7 +619,7 @@ namespace VideoImageDeltaApp.Models
         /// Offset - return the result of offsetting rect by the offset provided
         /// If this is Empty, this method is illegal.
         /// </summary>
-        public static GeometryNew Offset(GeometryNew rect, double offsetX, double offsetY)
+        public static Geometry Offset(Geometry rect, double offsetX, double offsetY)
         {
             rect.Offset(offsetX, offsetY);
             return rect;
@@ -700,7 +672,7 @@ namespace VideoImageDeltaApp.Models
         /// Inflate - return the result of inflating rect by the size provided, in all directions
         /// If this is Empty, this method is illegal.
         /// </summary>
-        public static GeometryNew Inflate(GeometryNew rect, Size size)
+        public static Geometry Inflate(Geometry rect, Size size)
         {
             rect.Inflate(size.Width, size.Height);
             return rect;
@@ -710,7 +682,7 @@ namespace VideoImageDeltaApp.Models
         /// Inflate - return the result of inflating rect by the size provided, in all directions
         /// If this is Empty, this method is illegal.
         /// </summary>
-        public static GeometryNew Inflate(GeometryNew rect, double width, double height)
+        public static Geometry Inflate(Geometry rect, double width, double height)
         {
             rect.Inflate(width, height);
             return rect;
@@ -778,23 +750,30 @@ namespace VideoImageDeltaApp.Models
                     (y >= _y) && (y - _height <= _y));
         }
 
-        static private GeometryNew CreateEmptyRect()
+        static private Geometry CreateEmptyRect()
         {
-            GeometryNew rect = new GeometryNew();
+            Geometry geometry = new Geometry();
             // We can't set these via the property setters because negatives widths
             // are rejected in those APIs.
-            rect._x = Double.PositiveInfinity;
-            rect._y = Double.PositiveInfinity;
-            rect._width = Double.NegativeInfinity;
-            rect._height = Double.NegativeInfinity;
-            return rect;
+            geometry._x = 0;
+            geometry._y = 0;
+            geometry._width = 0;
+            geometry._height = 0;
+            geometry._anchor = Anchor.Undefined;
+            return geometry;
         }
 
         #endregion Private Methods
 
         #region Private Fields
 
-        private readonly static GeometryNew s_empty = CreateEmptyRect();
+        private static readonly Geometry s_empty = CreateEmptyRect();
+
+        private double _x;
+        private double _y;
+        private double _width;
+        private double _height;
+        private Anchor _anchor;
 
         #endregion Private Fields
     }

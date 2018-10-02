@@ -82,7 +82,7 @@ namespace VideoImageDeltaApp.Models
             Name = screen.Name + "/" + watchZone.Name + "/" + watcher.Name + " - " + FileName;
         }
 
-        public void SetMagickImage(Geometry geo)
+        public void SetMagickImage(GeometryOld geo)
         {
             var i = new MagickImage((Bitmap)Image);/*
             var geo = new MagickGeometry((int)WZgeo.X, (int)WZgeo.Y, (int)Ggeo.Width, (int)Ggeo.Height);

@@ -5,7 +5,7 @@ namespace VideoImageDeltaApp.Models
 {
     public class WatchZone
     {
-        public WatchZone(string name, ScaleType scaleType, Geometry geometry)
+        public WatchZone(string name, ScaleType scaleType, GeometryOld geometry)
         {
             Name = name;
             ScaleType = scaleType;
@@ -16,14 +16,14 @@ namespace VideoImageDeltaApp.Models
 
         public string Name { get; set; }
         public ScaleType ScaleType { get; set; }
-        public Geometry Geometry { get; set; }
+        public GeometryOld Geometry { get; set; }
         public List<Watcher> Watches { get; set; } = new List<Watcher>();
 
-        public Geometry AdjustedGeometry { get; set; }
+        public GeometryOld AdjustedGeometry { get; set; }
 
-        public Geometry WithoutScale(Geometry screenGeo, Geometry feedGeo, Geometry gameGeo)
+        public GeometryOld WithoutScale(GeometryOld screenGeo, GeometryOld feedGeo, GeometryOld gameGeo)
         {
-            Geometry GameGeometry = screenGeo;
+            GeometryOld GameGeometry = screenGeo;
             if (gameGeo.HasSize())
             {
                 GameGeometry = gameGeo;
@@ -51,7 +51,7 @@ namespace VideoImageDeltaApp.Models
                 _height *= yScale;
             }
 
-            return new Geometry(_x, _y, _width, _height, Geometry.Anchor)/*.WithoutAnchor(GameGeometry)*/;
+            return new GeometryOld(_x, _y, _width, _height, Geometry.Anchor)/*.WithoutAnchor(GameGeometry)*/;
         }
 
         override public string ToString()

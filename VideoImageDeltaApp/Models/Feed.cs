@@ -11,7 +11,7 @@ namespace VideoImageDeltaApp.Models
 {
     public class Feed
     {
-        public Feed(string name, bool useOCR, Geometry geometry, Geometry gameGeometry)
+        public Feed(string name, bool useOCR, GeometryOld geometry, GeometryOld gameGeometry)
         {
             Name = name;
             UseOCR = useOCR;
@@ -58,9 +58,9 @@ namespace VideoImageDeltaApp.Models
             }
         }
 
-        public Geometry Geometry { get; set; }
-        public Geometry GameGeometry { get; set; }
-        public Geometry ThumbnailGeometry { get; set; }
+        public GeometryOld Geometry { get; set; }
+        public GeometryOld GameGeometry { get; set; }
+        public GeometryOld ThumbnailGeometry { get; set; }
 
         public string FullName
         {
