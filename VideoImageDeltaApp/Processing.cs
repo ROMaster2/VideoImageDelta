@@ -105,10 +105,10 @@ namespace VideoImageDeltaApp
                         {
                             overrides
                                 .Override<Feed>()
-                                    .Member("OCRBag").XmlIgnore(false)
+                                    .Member("OCRList").XmlIgnore(false)
                                     .Member("OCRBagCompact").XmlIgnore(true)
                                 .Override<WatchImage>()
-                                    .Member("DeltaBag").XmlIgnore(false)
+                                    .Member("DeltaList").XmlIgnore(false)
                                     .Member("DeltaBagCompact").XmlIgnore(true);
                         }
 

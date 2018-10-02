@@ -1,38 +1,17 @@
 ﻿using ImageMagick;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Schema;
-using Newtonsoft.Json.Serialization;
 using System;
-using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
-using System.IO.Pipes;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Timers;
 using System.Windows.Forms;
-using System.Xml;
 using System.Xml.Serialization;
-using VideoImageDeltaApp;
-using VideoImageDeltaApp.Forms;
 using VideoImageDeltaApp.Models;
 
 using Screen = VideoImageDeltaApp.Models.Screen;
-using Tesseract;
-using Tesseract.Interop;
 
 namespace VideoImageDeltaApp
 {
@@ -121,13 +100,13 @@ namespace VideoImageDeltaApp
                     foreach (var f in ofd.FileNames)
                     {
                         retry:
-                        VideoProfile vp;
+                        VideoProfile videoProfile;
                         XmlSerializer serializer = new XmlSerializer(typeof(VideoProfile));
                         using (StreamReader reader = new StreamReader(f))
                         {
                             try
                             {
-                                vp = (VideoProfile)serializer.Deserialize(reader);
+                                videoProfile = (VideoProfile)serializer.Deserialize(reader);
                             } catch
                             {
                                 DialogResult dr = MessageBox.Show(f + " is either not a Video profile or has been corrupted.",
@@ -149,10 +128,13 @@ namespace VideoImageDeltaApp
                         }
 
                         bool geoError = false;
-                        foreach (Video v in SelectedVideos)
+                        foreach (Video video in SelectedVideos)
                         {
-                            if (v.Geometry.Width != vp.Geometry.Width || v.Geometry.Height != vp.Geometry.Height)
+                            if (video.Geometry.Width != videoProfile.Geometry.Width || video.Geometry.Height != videoProfile.Geometry.Height)
+                            {
                                 geoError = true;
+                                break;
+                            }
                         }
 
                         if (geoError)
@@ -171,14 +153,18 @@ namespace VideoImageDeltaApp
                                 continue;
                             }
                         }
-                        if (abort) break;
+
+                        if (abort)
+                        {
+                            break;
+                        }
 
                         if (SelectedVideo.GameProfile != null)
                         {
-                            vp.Feeds.ForEach(x => x.GameProfile = SelectedVideo.GameProfile);
+                            videoProfile.Feeds.ForEach(x => x.GameProfile = SelectedVideo.GameProfile);
                             if (CheckBox_AutoMatch.Checked)
                             {
-                                foreach (var feed in vp.Feeds)
+                                foreach (var feed in videoProfile.Feeds)
                                 {
                                     var l = SelectedGameProfile.Screens.Where(y => y.Name == feed.Name);
                                     if (l.Count() > 0)
@@ -187,7 +173,7 @@ namespace VideoImageDeltaApp
                             }
                         }
 
-                        feeds.AddRange(vp.Feeds);
+                        feeds.AddRange(videoProfile.Feeds);
                     }
 
                     if (!abort)
@@ -231,7 +217,7 @@ namespace VideoImageDeltaApp
 
                 if (sfd.FileName != "")
                 {
-                    var vp = new VideoProfile("", SelectedVideo);
+                    var vp = new VideoProfile(SelectedVideo);
                     Type t = vp.GetType();
                     XmlSerializer serializer = new XmlSerializer(t);
                     using (TextWriter writer = new StreamWriter(sfd.FileName))
@@ -258,7 +244,7 @@ namespace VideoImageDeltaApp
             }
         }
 
-        public List<ListVideo> SelectedListVideos
+        public IReadOnlyList<ListVideo> SelectedListVideos
         {
             get
             {
@@ -267,7 +253,7 @@ namespace VideoImageDeltaApp
                 {
                     l.Add(lv);
                 }
-                return l;
+                return l.AsReadOnly();
             }
         }
 
@@ -401,8 +387,8 @@ namespace VideoImageDeltaApp
 
 
         public Geometry PreviewBoxGeometryBefore = new Geometry(640, 480);
-        public Geometry PreviewBoxGeometryRescale = null;
-        public Geometry PreviewBoxGeometryAfter = null;
+        public Geometry PreviewBoxGeometryRescale = new Geometry(0,0);
+        public Geometry PreviewBoxGeometryAfter = new Geometry(0, 0);
 
         public void CalcPreviewBoxGeometry(bool force = false)
         {
@@ -486,7 +472,10 @@ namespace VideoImageDeltaApp
                             {
                                 var wzl = sl.First().WatchZones.Where(z => z.Name == words[1]);
                                 if (wzl.Count() > 0)
-                                    PreviewBoxGeometryAfter = wzl.First().Geometry;
+                                    PreviewBoxGeometryAfter = wzl.First().WithoutScale(
+                                        SelectedFeed.Geometry,
+                                        PreviewBoxGeometryBefore,
+                                        PreviewBoxGeometryRescale);
                                 else
                                     throw new Exception("Despite being selectable, the WatchZone does not exist.");
                             }
@@ -510,7 +499,7 @@ namespace VideoImageDeltaApp
         public Image RescaleThumbnail(Image image, bool force = false)
         {
             CalcPreviewBoxGeometry(force);
-            if (force || (PreviewBoxGeometryBefore != null && PreviewBoxGeometryBefore != SelectedVideo.Geometry))
+            if (force || (!PreviewBoxGeometryBefore.IsNull() && !PreviewBoxGeometryBefore.Equals(SelectedVideo.Geometry)))
             {
                 using (var mi = new MagickImage((Bitmap)image))
                 {
@@ -521,19 +510,19 @@ namespace VideoImageDeltaApp
                     int h = (int)PreviewBoxGeometryBefore.Height;
                     mi.Crop(new MagickGeometry(x, y, w, h), Gravity.Northwest);
                     mi.RePage();
-                    if (force || (PreviewBoxGeometryRescale != null && PreviewBoxGeometryRescale != SelectedVideo.Geometry))
+                    if (force || (!PreviewBoxGeometryRescale.IsNull() && !PreviewBoxGeometryRescale.Equals(SelectedVideo.Geometry)))
                     {
                         w = (int)PreviewBoxGeometryRescale.Width;
                         h = (int)PreviewBoxGeometryRescale.Height;
                         mi.Resize(w, h);
                         mi.RePage();
-                        if (force || (PreviewBoxGeometryAfter != null && PreviewBoxGeometryAfter != PreviewBoxGeometryRescale))
+                        if (force || (!PreviewBoxGeometryAfter.IsNull() && !PreviewBoxGeometryAfter.Equals(PreviewBoxGeometryRescale)))
                         {
                             x = (int)PreviewBoxGeometryAfter.X;
                             y = (int)PreviewBoxGeometryAfter.Y;
                             w = (int)PreviewBoxGeometryAfter.Width;
                             h = (int)PreviewBoxGeometryAfter.Height;
-                            Gravity g = Geometry.AnchorToGravity(PreviewBoxGeometryAfter.Anchor);
+                            Gravity g = PreviewBoxGeometryAfter.Anchor.ToGravity();
                             mi.Crop(new MagickGeometry(x, y, w, h), g);
                             mi.RePage();
                             return mi.ToBitmap();
@@ -739,7 +728,7 @@ namespace VideoImageDeltaApp
             {
                 double screenWidth = PreviewBoxGeometryBefore.Width;
                 double screenHeight = PreviewBoxGeometryBefore.Height;
-                if (SelectedPreviewType == PreviewType.Screen && PreviewBoxGeometryRescale != null)
+                if (SelectedPreviewType == PreviewType.Screen && !PreviewBoxGeometryRescale.IsNull())
                 {
                     screenWidth = PreviewBoxGeometryRescale.Width;
                     screenHeight = PreviewBoxGeometryRescale.Height;
@@ -747,7 +736,7 @@ namespace VideoImageDeltaApp
                 }
                 else if (SelectedPreviewType == PreviewType.WatchZone &&
                     DropBox_Watch_Preview.Text != null &&
-                    PreviewBoxGeometryAfter != null)
+                    !PreviewBoxGeometryAfter.IsNull())
                 {
                     screenWidth = PreviewBoxGeometryAfter.Width;
                     screenHeight = PreviewBoxGeometryAfter.Height;
@@ -789,7 +778,7 @@ namespace VideoImageDeltaApp
                 x -= PreviewBoxGeometryBefore.X;
                 y -= PreviewBoxGeometryBefore.Y;
             }
-            else if (SelectedPreviewType == PreviewType.Screen && PreviewBoxGeometryRescale != null)
+            else if (SelectedPreviewType == PreviewType.Screen && !PreviewBoxGeometryRescale.IsNull())
             {
                 x = 0;
                 y = 0;
@@ -800,7 +789,7 @@ namespace VideoImageDeltaApp
             }
             else if (SelectedPreviewType == PreviewType.WatchZone &&
                 DropBox_Watch_Preview.Text != null &&
-                PreviewBoxGeometryAfter != null)
+                !PreviewBoxGeometryAfter.IsNull())
             {
                 // Anchors make this complicated
                 // Width and Height are good but X and Y need work.
@@ -944,7 +933,7 @@ namespace VideoImageDeltaApp
                 Numeric_Y.Value = (decimal)f.Geometry.Y;
                 Numeric_Width.Value = (decimal)f.Geometry.Width;
                 Numeric_Height.Value = (decimal)f.Geometry.Height;
-                if (f.GameGeometry != null)
+                if (!f.GameGeometry.IsNull())
                 {
                     Numeric_Game_Width.Value = (decimal)f.GameGeometry.Width;
                     Numeric_Game_Height.Value = (decimal)f.GameGeometry.Height;
@@ -1119,7 +1108,7 @@ namespace VideoImageDeltaApp
             int width = (int)Numeric_Width.Value;
             int height = (int)Numeric_Height.Value;
             Geometry geo = new Geometry(x, y, width, height);
-            Geometry gameGeo = null;
+            Geometry gameGeo = new Geometry(0,0);
 
             if (CheckBox_Advanced.Checked && Numeric_Game_Width.Value > 0m && Numeric_Game_Height.Value > 0m)
             {
@@ -1307,10 +1296,23 @@ namespace VideoImageDeltaApp
             }
             else
             {
-                var toRemove = new List<int>(); // Can't do it inline...
-                foreach (var lv in SelectedListVideos)
+                bool replace = true;
+
+                if (!SelectedVideos.Any(x => x.GameProfile != null || x.GameProfile != SelectedGameProfile))
                 {
-                    if (lv.Video.GameProfile != SelectedGameProfile) // Todo: Add something that prompts for replacing.
+                    DialogResult dr = MessageBox.Show(
+                        "Do you want to replace the currently applied GameProfile(s)?" +
+                        "\n\rThis will remove all Feed-Screen connections.",
+                        "Question",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question
+                        );
+                    replace = dr == DialogResult.Yes;
+                }
+
+                if (replace)
+                {
+                    foreach (var lv in SelectedListVideos)
                     {
                         lv.Video.GameProfile = SelectedGameProfile;
 
@@ -1321,21 +1323,12 @@ namespace VideoImageDeltaApp
                             if (CheckBox_AutoMatch.Checked)
                             {
                                 var l = SelectedGameProfile.Screens.Where(x => x.Name == f.Name);
-                                if (l.Count() > 0) 
+                                if (l.Count() > 0)
                                     f.AddScreen(l.First());
                             }
                         }
                         lv.RefreshValues();
                     }
-                    else
-                    {
-                        toRemove.Add(SelectedListVideos.IndexOf(lv));
-                    }
-                }
-                toRemove.Reverse();
-                foreach (var i in toRemove)
-                {
-                    SelectedListVideos.RemoveAt(i);
                 }
             }
         }

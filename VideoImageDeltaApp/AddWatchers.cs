@@ -957,9 +957,9 @@ namespace VideoImageDeltaApp.Forms
             }
             else if (TableLayoutPanel_WatchZones_New.Visible && TableLayoutPanel_WatchZones_New.Width > 0 && Panel_WatchZones_New.Visible == true) // Stop minimize bug
             {
-                double screenWidth = 1920d;
-                double screenHeight = 1080d;
-                if (SelectedScreen.Geometry != null)
+                double screenWidth = 640d;
+                double screenHeight = 480d;
+                if (!SelectedScreen.Geometry.HasSize())
                 {
                     screenWidth = SelectedScreen.Geometry.Width;
                     screenHeight = SelectedScreen.Geometry.Height;
@@ -1035,9 +1035,9 @@ namespace VideoImageDeltaApp.Forms
             }
             else if (TableLayoutPanel_WatchZones.Visible && TableLayoutPanel_WatchZones.Width > 0 && Panel_WatchZones.Visible == true) // Stops minimize bug
             {
-                double screenWidth = 1920d;
-                double screenHeight = 1080d;
-                if (SelectedScreen.Geometry != null)
+                double screenWidth = 640d;
+                double screenHeight = 480d;
+                if (!SelectedScreen.Geometry.HasSize())
                 {
                     screenWidth = SelectedScreen.Geometry.Width;
                     screenHeight = SelectedScreen.Geometry.Height;
@@ -1443,9 +1443,9 @@ namespace VideoImageDeltaApp.Forms
             {
                 var image = Box_WatchZones_New_Main.BackgroundImage;
 
-                double screenWidth = 1920d;
-                double screenHeight = 1080d;
-                if (SelectedScreen.Geometry != null)
+                double screenWidth = 640d;
+                double screenHeight = 480d;
+                if (!SelectedScreen.Geometry.HasSize())
                 {
                     screenWidth = SelectedScreen.Geometry.Width;
                     screenHeight = SelectedScreen.Geometry.Height;
@@ -1518,9 +1518,9 @@ namespace VideoImageDeltaApp.Forms
             {
                 var image = Box_WatchZones_Main.BackgroundImage;
 
-                double screenWidth = 1920d;
-                double screenHeight = 1080d;
-                if (SelectedScreen.Geometry != null)
+                double screenWidth = 640d;
+                double screenHeight = 480d;
+                if (!SelectedScreen.Geometry.HasSize())
                 {
                     screenWidth = SelectedScreen.Geometry.Width;
                     screenHeight = SelectedScreen.Geometry.Height;

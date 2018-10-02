@@ -1840,10 +1840,10 @@
             0,
             0});
             this.Numeric_Watches_New_Frequency.Minimum = new decimal(new int[] {
-            1,
+            2,
             0,
             0,
-            0});
+            131072});
             this.Numeric_Watches_New_Frequency.Name = "Numeric_Watches_New_Frequency";
             this.Numeric_Watches_New_Frequency.Size = new System.Drawing.Size(66, 20);
             this.Numeric_Watches_New_Frequency.TabIndex = 70;
@@ -2001,10 +2001,10 @@
             0,
             0});
             this.Numeric_Watches_Frequency.Minimum = new decimal(new int[] {
-            1,
+            2,
             0,
             0,
-            0});
+            131072});
             this.Numeric_Watches_Frequency.Name = "Numeric_Watches_Frequency";
             this.Numeric_Watches_Frequency.Size = new System.Drawing.Size(66, 20);
             this.Numeric_Watches_Frequency.TabIndex = 76;
@@ -2139,15 +2139,15 @@
             this.Controls.Add(this.Button_Import);
             this.Controls.Add(this.Button_Export);
             this.Controls.Add(this.Button_Close);
-            this.Controls.Add(this.Panel_WatchZones);
-            this.Controls.Add(this.Panel_WatchZones_New);
-            this.Controls.Add(this.Panel_Watches);
             this.Controls.Add(this.Panel_Watches_New);
             this.Controls.Add(this.Panel_Blank);
             this.Controls.Add(this.Panel_Screens);
             this.Controls.Add(this.Panel_Screens_New);
             this.Controls.Add(this.Panel_GameProfile_New);
             this.Controls.Add(this.Panel_GameProfile);
+            this.Controls.Add(this.Panel_WatchZones);
+            this.Controls.Add(this.Panel_WatchZones_New);
+            this.Controls.Add(this.Panel_Watches);
             this.MinimumSize = new System.Drawing.Size(640, 480);
             this.Name = "AddWatchers";
             this.Text = "Add Watchers";

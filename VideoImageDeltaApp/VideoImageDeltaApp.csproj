@@ -100,7 +100,20 @@
     <Compile Include="AddWatchers.Designer.cs">
       <DependentUpon>AddWatchers.cs</DependentUpon>
     </Compile>
-    <Compile Include="ffprobe.cs" />
+    <Compile Include="Models\Anchor.cs" />
+    <Compile Include="Models\Bag.cs" />
+    <Compile Include="Models\Feed.cs" />
+    <Compile Include="Models\ffprobe.cs" />
+    <Compile Include="Models\GameProfile.cs" />
+    <Compile Include="Models\Geometry.cs" />
+    <Compile Include="Models\ListVideo.cs" />
+    <Compile Include="Models\PreviewType.cs" />
+    <Compile Include="Models\Screen.cs" />
+    <Compile Include="Models\Video.cs" />
+    <Compile Include="Models\VideoProfile.cs" />
+    <Compile Include="Models\Watcher.cs" />
+    <Compile Include="Models\WatchImage.cs" />
+    <Compile Include="Models\WatchZone.cs" />
     <Compile Include="OverrideXml.cs" />
     <Compile Include="PostProcessing.cs">
       <SubType>Form</SubType>
@@ -113,6 +126,12 @@
     </Compile>
     <Compile Include="PreProcessOptions.Designer.cs">
       <DependentUpon>PreProcessOptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PreviewBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PreviewBox.Designer.cs">
+      <DependentUpon>PreviewBox.cs</DependentUpon>
     </Compile>
     <Compile Include="Processing.cs">
       <SubType>Form</SubType>
@@ -136,7 +155,7 @@
     <Compile Include="MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Models.cs" />
+    <Compile Include="Models\Extensions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="AddVideos.resx">
@@ -153,6 +172,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PreProcessOptions.resx">
       <DependentUpon>PreProcessOptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PreviewBox.resx">
+      <DependentUpon>PreviewBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Processing.resx">
       <DependentUpon>Processing.cs</DependentUpon>

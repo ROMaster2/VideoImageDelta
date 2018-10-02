@@ -1,6 +1,7 @@
 ﻿using ImageMagick;
 using Microsoft.VisualBasic.Devices;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -235,14 +236,14 @@ namespace VideoImageDeltaApp
                     {
                         if (f.OCRBag.Count > 0)
                         {
-                            f.OCRBag = f.OCRBag.OrderBy(b => b.FrameIndex).ToList();
+                            f.OCRBag = new ConcurrentBag<Bag>(f.OCRBag.OrderBy(b => b.FrameIndex));
                         }
                     }
                     foreach (var wi in video.WatchImages)
                     {
                         if (wi.DeltaBag.Count > 0)
                         {
-                            wi.DeltaBag = wi.DeltaBag.OrderBy(b => b.FrameIndex).ToList();
+                            wi.DeltaBag = new ConcurrentBag<Bag>(wi.DeltaBag.OrderBy(b => b.FrameIndex));
                         }
                     }
                 }
@@ -280,12 +281,15 @@ namespace VideoImageDeltaApp
             ProcessingWindow.Update_totalVideoFrames(scanCount);
 
             // Todo: Make method in Video for this instead.
-            List<WatchZone> lwz = new List<WatchZone>();
-            video.Feeds.ForEach(f => f.Screens.ForEach(s => s.WatchZones.ForEach(wz => lwz.Add(wz))));
-            lwz.ForEach(wz => wz.Watches.ForEach(w => w.WatchImages.ForEach(wi => wi.DeltaBag.Clear())));
+            video.Feeds.ForEach(f => f.OCRBag = new ConcurrentBag<Bag>());
+            video.WatchImages.ForEach(wi => wi.DeltaBag = new ConcurrentBag<Bag>());
 
-            DirectoryInfo directory = new DirectoryInfo(_TempDirectory);
+            DirectoryInfo directory = new DirectoryInfo(TempDirectory);
             FileInfo[] files = directory.GetFiles(FRAME_FILE_SELECTOR);
+            Parallel.ForEach(files, (file) =>
+            {
+                file.Delete();
+            });
 
             while (!Aborted && (!Process.HasExited || files.Count() > 0))
             {
