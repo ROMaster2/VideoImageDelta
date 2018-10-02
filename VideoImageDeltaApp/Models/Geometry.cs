@@ -1,149 +1,780 @@
-﻿using ImageMagick;
+﻿/**
+ * Since I couldn't find any shape class that included alignment/gravity/anchor logic, I
+ * implemented my own. The below is derived from System.Windows.Rect.
+ */
+
 using System;
+using System.Diagnostics;
+using System.Windows;
 
 namespace VideoImageDeltaApp.Models
 {
-    public struct GeometryOld
+    /// <summary>
+    /// Geometry - The primitive which represents a rectangle.  Geometry are stored as
+    /// X, Y (Location) and Width and Height (Size). Unlike System.Windows.Rect, child Geometry
+    /// can have negative Width and Height to be relational to its parent's Width and Height.
+    /// This also implements Alignment, setting the corner or side where the location starts
+    /// from.
+    /// </summary>
+    public partial struct Geometry
     {
-        public GeometryOld(double width, double height, Anchor anchor = Anchor.Undefined)
-        {
-            X = 0;
-            Y = 0;
-            Width = width;
-            Height = height;
-            Anchor = anchor;
-        }
-        public GeometryOld(double x, double y, double width, double height, Anchor anchor = Anchor.Undefined)
-        {
-            X = x;
-            Y = y;
-            Width = width;
-            Height = height;
-            Anchor = anchor;
-        }
+        #region Constructors
 
-        public double X;
-        public double Y;
-        public double Width;
-        public double Height;
-        public Anchor Anchor;
-
-        public bool HasPoint()
+        /// <summary>
+        /// Constructor which sets the initial values to the values of the parameters.
+        /// </summary>
+        public Geometry(double x,
+                    double y,
+                    double width,
+                    double height,
+                    Anchor anchor = Anchor.Undefined)
         {
-            return (X != 0) || (Y != 0);
+            _x = x;
+            _y = y;
+            _width = width;
+            _height = height;
+            _anchor = anchor;
         }
 
-        public bool HasSize()
+        /// <summary>
+        /// Constructor which sets the initial values to the values of the parameters
+        /// </summary>
+        public Geometry(Point location, Size size, Anchor anchor = Anchor.Undefined)
+            : this(location.X, location.Y, size.Width, size.Height, anchor) { }
+
+        /// <summary>
+        /// Constructor which sets the initial values to bound the two points provided.
+        /// </summary>
+        public Geometry(Point point1, Point point2, Anchor anchor = Anchor.Undefined)
         {
-            return (Width != 0) && (Height != 0);
+            _x = Math.Min(point1.X, point2.X);
+            _y = Math.Min(point1.Y, point2.Y);
+
+            //  Max with 0 to prevent double weirdness from causing us to be (-epsilon..0)
+            _width = Math.Max(Math.Max(point1.X, point2.X) - _x, 0);
+            _height = Math.Max(Math.Max(point1.Y, point2.Y) - _y, 0);
+
+            _anchor = anchor;
         }
 
-        public bool HasAnchor()
-        {
-            return Anchor != Anchor.Undefined;
-        }
+        /// <summary>
+        /// Constructor which sets the initial values to bound the point provided and the point
+        /// which results from point + vector.
+        /// </summary>
+        public Geometry(Point point, Vector vector, Anchor anchor = Anchor.Undefined)
+            : this(point, point + vector, anchor) { }
 
-        public bool IsNull()
-        {
-            return !HasPoint() && !HasSize() && !HasAnchor();
-        }
+        /// <summary>
+        /// Constructor which sets the initial values to bound the (0,0) point and the point 
+        /// that results from (0,0) + Width and Height. 
+        /// </summary>
+        public Geometry( double width, double height, Anchor anchor = Anchor.Undefined)
+            : this(0, 0, width, height, anchor) { }
 
-        public double Ratio
+        /// <summary>
+        /// Constructor which sets the initial values to bound the (0,0) point and the point 
+        /// that results from (0,0) + size. 
+        /// </summary>
+        public Geometry(Size size, Anchor anchor = Anchor.Undefined)
+            : this(size.Width, size.Height, anchor) { }
+
+        // Additional constructors for conversion.
+
+        /// <summary>
+        /// Constructor for converting Tesseract.Rect to this format.
+        /// </summary>
+        public Geometry(Tesseract.Rect rect, Anchor anchor = Anchor.Undefined)
+             : this(rect.X1, rect.Y1, rect.Width, rect.Height, anchor) { }
+
+        /// <summary>
+        /// Constructor for converting ImageMagick.MagickGeometry to this format.
+        /// </summary>
+        public Geometry(ImageMagick.MagickGeometry mGeo,
+                    Anchor anchor = Anchor.Undefined)
+            : this(mGeo.X, mGeo.Y, mGeo.Width, mGeo.Height, anchor) { }
+
+        /// <summary>
+        /// Constructor for converting ImageMagick.MagickGeometry and Gravity to this format.
+        /// </summary>
+        public Geometry(ImageMagick.MagickGeometry mGeo,
+                    ImageMagick.Gravity gravity = ImageMagick.Gravity.Undefined)
+            : this(mGeo.X, mGeo.Y, mGeo.Width, mGeo.Height, gravity.ToAnchor()) { }
+
+        #endregion Constructors
+
+        #region Statics
+
+        /// <summary>
+        /// Empty - a static property which provides an Empty rectangle.
+        /// </summary>
+        public static Geometry Empty
         {
             get
             {
-                if (HasSize())
+                return s_empty;
+            }
+        }
+
+        #endregion Statics
+
+        #region Public Properties
+
+        /// <summary>
+        /// IsEmpty - this returns true if this rect is the Empty rectangle.
+        /// Note: If width or height are 0 this Rectangle still contains a 0 or 1 dimensional set
+        /// of points, so this method should not be used to check for 0 area.
+        /// </summary>
+        public bool IsEmpty
+        {
+            get
+            {
+                // The funny width and height tests are to handle NaNs
+                Debug.Assert((!(_width < 0) && !(_height < 0)) || (this.Equals(Empty)));
+
+                return _width < 0;
+            }
+        }
+
+        /// <summary>
+        /// Location - The Point representing the origin of the Rectangle
+        /// </summary>
+        public Point Location
+        {
+            get
+            {
+                return new Point(_x, _y);
+            }
+            set
+            {
+                if (IsEmpty)
                 {
-                    return Math.Abs(Width / Height);
+                    throw new System.InvalidOperationException("Rect_CannotModifyEmptyRect");
+                }
+
+                _x = value.X;
+                _y = value.Y;
+            }
+        }
+
+        /// <summary>
+        /// Size - The Size representing the area of the Rectangle
+        /// </summary>
+        public Size Size
+        {
+            get
+            {
+                if (IsEmpty)
+                    return Size.Empty;
+                return new Size(_width, _height);
+            }
+            set
+            {
+                if (value.IsEmpty)
+                {
+                    this = s_empty;
                 }
                 else
                 {
-                    throw new ArgumentException("Width and Height must have a value to get the ratio.");
+                    if (IsEmpty)
+                    {
+                        throw new System.InvalidOperationException("Rect_CannotModifyEmptyRect");
+                    }
+
+                    _width = value.Width;
+                    _height = value.Height;
                 }
             }
         }
 
-        public GeometryOld WithoutAnchor(GeometryOld baseGeometry)
+        /// <summary>
+        /// X - The X coordinate of the Location.
+        /// If this is the empty rectangle, the value will be positive infinity.
+        /// If this rect is Empty, setting this property is illegal.
+        /// </summary>
+        public double X
         {
-            double _x;
-            double _y;
-
-            if (Anchor == Anchor.Undefined ||
-                Anchor.HasFlag(Anchor.Left))
+            get
             {
-                _x = X;
+                return _x;
             }
-            else if (Anchor.HasFlag(Anchor.Right))
+            set
             {
-                _x = baseGeometry.Width - Width + X;
+                if (IsEmpty)
+                {
+                    throw new System.InvalidOperationException("Rect_CannotModifyEmptyRect");
+                }
+
+                _x = value;
+            }
+
+        }
+
+        /// <summary>
+        /// Y - The Y coordinate of the Location
+        /// If this is the empty rectangle, the value will be positive infinity.
+        /// If this rect is Empty, setting this property is illegal.
+        /// </summary>
+        public double Y
+        {
+            get
+            {
+                return _y;
+            }
+            set
+            {
+                if (IsEmpty)
+                {
+                    throw new System.InvalidOperationException("Rect_CannotModifyEmptyRect");
+                }
+
+                _y = value;
+            }
+        }
+
+        /// <summary>
+        /// Width - The Width component of the Size.  This cannot be set to negative, and will only
+        /// be negative if this is the empty rectangle, in which case it will be negative infinity.
+        /// If this rect is Empty, setting this property is illegal.
+        /// </summary>
+        public double Width
+        {
+            get
+            {
+                return _width;
+            }
+            set
+            {
+                if (IsEmpty)
+                {
+                    throw new System.InvalidOperationException("Rect_CannotModifyEmptyRect");
+                }
+
+                if (value < 0)
+                {
+                    throw new System.ArgumentException("Size_WidthCannotBeNegative");
+                }
+
+                _width = value;
+            }
+        }
+
+        /// <summary>
+        /// Height - The Height component of the Size.  This cannot be set to negative, and will only
+        /// be negative if this is the empty rectangle, in which case it will be negative infinity.
+        /// If this rect is Empty, setting this property is illegal.
+        /// </summary>
+        public double Height
+        {
+            get
+            {
+                return _height;
+            }
+            set
+            {
+                if (IsEmpty)
+                {
+                    throw new System.InvalidOperationException("Rect_CannotModifyEmptyRect");
+                }
+
+                if (value < 0)
+                {
+                    throw new System.ArgumentException("Size_HeightCannotBeNegative");
+                }
+
+                _height = value;
+            }
+        }
+
+        /// <summary>
+        /// Left Property - This is a read-only alias for X
+        /// If this is the empty rectangle, the value will be positive infinity.
+        /// </summary>
+        public double Left
+        {
+            get
+            {
+                return _x;
+            }
+        }
+
+        /// <summary>
+        /// Top Property - This is a read-only alias for Y
+        /// If this is the empty rectangle, the value will be positive infinity.
+        /// </summary>
+        public double Top
+        {
+            get
+            {
+                return _y;
+            }
+        }
+
+        /// <summary>
+        /// Right Property - This is a read-only alias for X + Width
+        /// If this is the empty rectangle, the value will be negative infinity.
+        /// </summary>
+        public double Right
+        {
+            get
+            {
+                if (IsEmpty)
+                {
+                    return Double.NegativeInfinity;
+                }
+
+                return _x + _width;
+            }
+        }
+
+        /// <summary>
+        /// Bottom Property - This is a read-only alias for Y + Height
+        /// If this is the empty rectangle, the value will be negative infinity.
+        /// </summary>
+        public double Bottom
+        {
+            get
+            {
+                if (IsEmpty)
+                {
+                    return Double.NegativeInfinity;
+                }
+
+                return _y + _height;
+            }
+        }
+
+        /// <summary>
+        /// TopLeft Property - This is a read-only alias for the Point which is at X, Y
+        /// If this is the empty rectangle, the value will be positive infinity, positive infinity.
+        /// </summary>
+        public Point TopLeft
+        {
+            get
+            {
+                return new Point(Left, Top);
+            }
+        }
+
+        /// <summary>
+        /// TopRight Property - This is a read-only alias for the Point which is at X + Width, Y
+        /// If this is the empty rectangle, the value will be negative infinity, positive infinity.
+        /// </summary>
+        public Point TopRight
+        {
+            get
+            {
+                return new Point(Right, Top);
+            }
+        }
+
+        /// <summary>
+        /// BottomLeft Property - This is a read-only alias for the Point which is at X, Y + Height
+        /// If this is the empty rectangle, the value will be positive infinity, negative infinity.
+        /// </summary>
+        public Point BottomLeft
+        {
+            get
+            {
+                return new Point(Left, Bottom);
+            }
+        }
+
+        /// <summary>
+        /// BottomRight Property - This is a read-only alias for the Point which is at X + Width, Y + Height
+        /// If this is the empty rectangle, the value will be negative infinity, negative infinity.
+        /// </summary>
+        public Point BottomRight
+        {
+            get
+            {
+                return new Point(Right, Bottom);
+            }
+        }
+        #endregion Public Properties
+
+        #region Public Methods
+
+        /// <summary>
+        /// Contains - Returns true if the Point is within the rectangle, inclusive of the edges.
+        /// Returns false otherwise.
+        /// </summary>
+        /// <param name="point"> The point which is being tested </param>
+        /// <returns>
+        /// Returns true if the Point is within the rectangle.
+        /// Returns false otherwise
+        /// </returns>
+        public bool Contains(Point point)
+        {
+            return Contains(point.X, point.Y);
+        }
+
+        /// <summary>
+        /// Contains - Returns true if the Point represented by x,y is within the rectangle inclusive of the edges.
+        /// Returns false otherwise.
+        /// </summary>
+        /// <param name="x"> X coordinate of the point which is being tested </param>
+        /// <param name="y"> Y coordinate of the point which is being tested </param>
+        /// <returns>
+        /// Returns true if the Point represented by x,y is within the rectangle.
+        /// Returns false otherwise.
+        /// </returns>
+        public bool Contains(double x, double y)
+        {
+            if (IsEmpty)
+            {
+                return false;
+            }
+
+            return ContainsInternal(x, y);
+        }
+
+        /// <summary>
+        /// Contains - Returns true if the Rect non-Empty and is entirely contained within the
+        /// rectangle, inclusive of the edges.
+        /// Returns false otherwise
+        /// </summary>
+        public bool Contains(Geometry rect)
+        {
+            if (IsEmpty || rect.IsEmpty)
+            {
+                return false;
+            }
+
+            return (_x <= rect._x &&
+                    _y <= rect._y &&
+                    _x + _width >= rect._x + rect._width &&
+                    _y + _height >= rect._y + rect._height);
+        }
+
+        /// <summary>
+        /// IntersectsWith - Returns true if the Rect intersects with this rectangle
+        /// Returns false otherwise.
+        /// Note that if one edge is coincident, this is considered an intersection.
+        /// </summary>
+        /// <returns>
+        /// Returns true if the Rect intersects with this rectangle
+        /// Returns false otherwise.
+        /// or Height
+        /// </returns>
+        /// <param name="rect"> Rect </param>
+        public bool IntersectsWith(Geometry rect)
+        {
+            if (IsEmpty || rect.IsEmpty)
+            {
+                return false;
+            }
+
+            return (rect.Left <= Right) &&
+                   (rect.Right >= Left) &&
+                   (rect.Top <= Bottom) &&
+                   (rect.Bottom >= Top);
+        }
+
+        /// <summary>
+        /// Intersect - Update this rectangle to be the intersection of this and rect
+        /// If either this or rect are Empty, the result is Empty as well.
+        /// </summary>
+        /// <param name="rect"> The rect to intersect with this </param>
+        public void Intersect(Geometry rect)
+        {
+            if (!this.IntersectsWith(rect))
+            {
+                this = Empty;
             }
             else
             {
-                _x = (baseGeometry.Width - Width) / 2d + X;
+                double left = Math.Max(Left, rect.Left);
+                double top = Math.Max(Top, rect.Top);
+
+                //  Max with 0 to prevent double weirdness from causing us to be (-epsilon..0)
+                _width = Math.Max(Math.Min(Right, rect.Right) - left, 0);
+                _height = Math.Max(Math.Min(Bottom, rect.Bottom) - top, 0);
+
+                _x = left;
+                _y = top;
+            }
+        }
+
+        /// <summary>
+        /// Intersect - Return the result of the intersection of rect1 and rect2.
+        /// If either this or rect are Empty, the result is Empty as well.
+        /// </summary>
+        public static Geometry Intersect(Geometry rect1, Geometry rect2)
+        {
+            rect1.Intersect(rect2);
+            return rect1;
+        }
+
+        /// <summary>
+        /// Union - Update this rectangle to be the union of this and rect.
+        /// </summary>
+        public void Union(Geometry rect)
+        {
+            if (IsEmpty)
+            {
+                this = rect;
+            }
+            else if (!rect.IsEmpty)
+            {
+                double left = Math.Min(Left, rect.Left);
+                double top = Math.Min(Top, rect.Top);
+
+
+                // We need this check so that the math does not result in NaN
+                if ((rect.Width == Double.PositiveInfinity) || (Width == Double.PositiveInfinity))
+                {
+                    _width = Double.PositiveInfinity;
+                }
+                else
+                {
+                    //  Max with 0 to prevent double weirdness from causing us to be (-epsilon..0)                    
+                    double maxRight = Math.Max(Right, rect.Right);
+                    _width = Math.Max(maxRight - left, 0);
+                }
+
+                // We need this check so that the math does not result in NaN
+                if ((rect.Height == Double.PositiveInfinity) || (Height == Double.PositiveInfinity))
+                {
+                    _height = Double.PositiveInfinity;
+                }
+                else
+                {
+                    //  Max with 0 to prevent double weirdness from causing us to be (-epsilon..0)
+                    double maxBottom = Math.Max(Bottom, rect.Bottom);
+                    _height = Math.Max(maxBottom - top, 0);
+                }
+
+                _x = left;
+                _y = top;
+            }
+        }
+
+        /// <summary>
+        /// Union - Return the result of the union of rect1 and rect2.
+        /// </summary>
+        public static Geometry Union(Geometry rect1, Geometry rect2)
+        {
+            rect1.Union(rect2);
+            return rect1;
+        }
+
+        /// <summary>
+        /// Union - Update this rectangle to be the union of this and point.
+        /// </summary>
+        public void Union(Point point)
+        {
+            Union(new Geometry(point, point));
+        }
+
+        /// <summary>
+        /// Union - Return the result of the union of rect and point.
+        /// </summary>
+        public static Geometry Union(Geometry rect, Point point)
+        {
+            rect.Union(new Geometry(point, point));
+            return rect;
+        }
+
+        /// <summary>
+        /// Offset - translate the Location by the offset provided.
+        /// If this is Empty, this method is illegal.
+        /// </summary>
+        public void Offset(Vector offsetVector)
+        {
+            if (IsEmpty)
+            {
+                throw new System.InvalidOperationException("Rect_CannotCallMethod");
             }
 
-            if (Anchor == Anchor.Undefined ||
-                Anchor.HasFlag(Anchor.Top))
+            _x += offsetVector.X;
+            _y += offsetVector.Y;
+        }
+
+        /// <summary>
+        /// Offset - translate the Location by the offset provided
+        /// If this is Empty, this method is illegal.
+        /// </summary>
+        public void Offset(double offsetX, double offsetY)
+        {
+            if (IsEmpty)
             {
-                _y = Y;
+                throw new System.InvalidOperationException("Rect_CannotCallMethod");
             }
-            else if (Anchor.HasFlag(Anchor.Bottom))
+
+            _x += offsetX;
+            _y += offsetY;
+        }
+
+        /// <summary>
+        /// Offset - return the result of offsetting rect by the offset provided
+        /// If this is Empty, this method is illegal.
+        /// </summary>
+        public static Geometry Offset(Geometry rect, Vector offsetVector)
+        {
+            rect.Offset(offsetVector.X, offsetVector.Y);
+            return rect;
+        }
+
+        /// <summary>
+        /// Offset - return the result of offsetting rect by the offset provided
+        /// If this is Empty, this method is illegal.
+        /// </summary>
+        public static Geometry Offset(Geometry rect, double offsetX, double offsetY)
+        {
+            rect.Offset(offsetX, offsetY);
+            return rect;
+        }
+
+        /// <summary>
+        /// Inflate - inflate the bounds by the size provided, in all directions
+        /// If this is Empty, this method is illegal.
+        /// </summary>
+        public void Inflate(Size size)
+        {
+            Inflate(size.Width, size.Height);
+        }
+
+        /// <summary>
+        /// Inflate - inflate the bounds by the size provided, in all directions.
+        /// If -width is > Width / 2 or -height is > Height / 2, this Rect becomes Empty
+        /// If this is Empty, this method is illegal.
+        /// </summary>
+        public void Inflate(double width, double height)
+        {
+            if (IsEmpty)
             {
-                _y = baseGeometry.Height - Height + Y;
+                throw new System.InvalidOperationException("Rect_CannotCallMethod");
             }
-            else
+
+            _x -= width;
+            _y -= height;
+
+            // Do two additions rather than multiplication by 2 to avoid spurious overflow
+            // That is: (A + 2 * B) != ((A + B) + B) if 2*B overflows.
+            // Note that multiplication by 2 might work in this case because A should start
+            // positive & be "clamped" to positive after, but consider A = Inf & B = -MAX.
+            _width += width;
+            _width += width;
+            _height += height;
+            _height += height;
+
+            // We catch the case of inflation by less than -width/2 or -height/2 here.  This also
+            // maintains the invariant that either the Rect is Empty or _width and _height are
+            // non-negative, even if the user parameters were NaN, though this isn't strictly maintained
+            // by other methods.
+            if (!(_width >= 0 && _height >= 0))
             {
-                _y = (baseGeometry.Height - Height) / 2d + Y;
+                this = s_empty;
+            }
+        }
+
+        /// <summary>
+        /// Inflate - return the result of inflating rect by the size provided, in all directions
+        /// If this is Empty, this method is illegal.
+        /// </summary>
+        public static Geometry Inflate(Geometry rect, Size size)
+        {
+            rect.Inflate(size.Width, size.Height);
+            return rect;
+        }
+
+        /// <summary>
+        /// Inflate - return the result of inflating rect by the size provided, in all directions
+        /// If this is Empty, this method is illegal.
+        /// </summary>
+        public static Geometry Inflate(Geometry rect, double width, double height)
+        {
+            rect.Inflate(width, height);
+            return rect;
+        }
+
+        // The Transform methods were removed since we'll have no use for Matrices.
+
+        /// <summary>
+        /// Scale the rectangle in the X and Y directions
+        /// </summary>
+        /// <param name="scaleX"> The scale in X </param>
+        /// <param name="scaleY"> The scale in Y </param>
+        public void Scale(double scaleX, double scaleY)
+        {
+            if (IsEmpty)
+            {
+                return;
             }
 
-            return new GeometryOld(_x, _y, Width, Height, Anchor.Undefined);
-        }
+            _x *= scaleX;
+            _y *= scaleY;
+            _width *= scaleX;
+            _height *= scaleY;
 
-        // Only Northwest for now
-        public void UpdateRelativeToPoint(double x, double y)
-        {
-            X = X - x;
-            Y = Y - y;
-        }
-        public void UpdateRelativeToPoint(GeometryOld geo)
-        {
-            X = X - geo.X;
-            Y = Y - geo.Y;
-        }
-        public GeometryOld RelativeToPoint(double x, double y)
-        {
-            return new GeometryOld(Width, Height)
+            // If the scale in the X dimension is negative, we need to normalize X and Width
+            if (scaleX < 0)
             {
-                X = X - x,
-                Y = Y - y
-            };
-        }
-        public GeometryOld RelativeToPoint(GeometryOld geo)
-        {
-            return new GeometryOld(Width, Height)
+                // Make X the left-most edge again
+                _x += _width;
+
+                // and make Width positive
+                _width *= -1;
+            }
+
+            // Do the same for the Y dimension
+            if (scaleY < 0)
             {
-                X = X - geo.X,
-                Y = Y - geo.Y
-            };
+                // Make Y the top-most edge again
+                _y += _height;
+
+                // and make Height positive
+                _height *= -1;
+            }
         }
 
-        // Todo: Handle fractional pixels.
+        #endregion Public Methods
 
-        public MagickGeometry ToMagick()
+        #region Private Methods
+
+        /// <summary>
+        /// ContainsInternal - Performs just the "point inside" logic
+        /// </summary>
+        /// <returns>
+        /// bool - true if the point is inside the rect
+        /// </returns>
+        /// <param name="x"> The x-coord of the point to test </param>
+        /// <param name="y"> The y-coord of the point to test </param>
+        private bool ContainsInternal(double x, double y)
         {
-            return new MagickGeometry((int)X, (int)Y, (int)Width, (int)Height);
+            // We include points on the edge as "contained".
+            // We do "x - _width <= _x" instead of "x <= _x + _width"
+            // so that this check works when _width is PositiveInfinity
+            // and _x is NegativeInfinity.
+            return ((x >= _x) && (x - _width <= _x) &&
+                    (y >= _y) && (y - _height <= _y));
         }
 
-        public Tesseract.Rect ToTesseract()
+        static private Geometry CreateEmptyRect()
         {
-            return new Tesseract.Rect((int)X, (int)Y, (int)Width, (int)Height);
+            Geometry geometry = new Geometry();
+            // We can't set these via the property setters because negatives widths
+            // are rejected in those APIs.
+            geometry._x = 0;
+            geometry._y = 0;
+            geometry._width = 0;
+            geometry._height = 0;
+            geometry._anchor = Anchor.Undefined;
+            return geometry;
         }
 
-        public string ToFFmpegString()
-        {
-            return Width.ToString() + ':' + Height.ToString() + ':' + X.ToString() + ':' + Y.ToString();
-        }
+        #endregion Private Methods
 
+        #region Private Fields
+
+        private static readonly Geometry s_empty = CreateEmptyRect();
+
+        private double _x;
+        private double _y;
+        private double _width;
+        private double _height;
+        private Anchor _anchor;
+
+        #endregion Private Fields
     }
-
 }
