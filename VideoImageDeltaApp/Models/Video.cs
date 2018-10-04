@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 
 namespace VideoImageDeltaApp.Models
 {
-    public class Video
+    public class Video : IGeometry
     {
         public static Video Create(string filePath)
         {
@@ -37,7 +37,7 @@ namespace VideoImageDeltaApp.Models
             );
                 if (Duration == TimeSpan.Zero) Duration = RawFFmpeg.GetDuration(FilePath);
 
-                Geometry = new GeometryOld(RawVideoMetadata.width, RawVideoMetadata.height);
+                Geometry = new Geometry(RawVideoMetadata.width, RawVideoMetadata.height);
             }
             else
             {
@@ -49,13 +49,13 @@ namespace VideoImageDeltaApp.Models
 
         public string FilePath;
         public ffprobeType RawMetadata { get; }
-        public GeometryOld Geometry;
-        public GeometryOld ThumbnailGeometry { get; set; }
+        public Geometry Geometry { get; set; }
+        public Geometry ThumbnailGeometry { get; set; }
 
-        public streamType RawVideoMetadata { get { return RawMetadata.streams.Where(x => x.codec_type == "video").First(); } }
+        private streamType RawVideoMetadata { get { return RawMetadata.streams.Where(x => x.codec_type == "video").First(); } }
+
         public TimeSpan Duration { get; }
         public double FrameRate { get { return (double)Utilities.DivideString(RawVideoMetadata.r_frame_rate); } }
-        //public double IFrameRate { get { return (double)Utilities.DivideString(RawVideoMetadata.); } }
 
         public int FrameCount { get { return (int)(FrameRate * Duration.TotalSeconds); } }
 
@@ -66,16 +66,16 @@ namespace VideoImageDeltaApp.Models
 
         [XmlIgnore]
         public List<Screen> Screens
-        { get { var a = new List<Screen>(); a.AddRange(Feeds.SelectMany(f => f.Screens)); return a; } }
+        { get { var a = new List<Screen>();     a.AddRange(Feeds.SelectMany(f =>        f.Screens)); return a; } }
         [XmlIgnore]
         public List<WatchZone> WatchZones
-        { get { var a = new List<WatchZone>(); a.AddRange(Screens.SelectMany(s => s.WatchZones)); return a; } }
+        { get { var a = new List<WatchZone>();  a.AddRange(Screens.SelectMany(s =>   s.WatchZones)); return a; } }
         [XmlIgnore]
         public List<Watcher> Watches
-        { get { var a = new List<Watcher>(); a.AddRange(WatchZones.SelectMany(wz => wz.Watches)); return a; } }
+        { get { var a = new List<Watcher>();    a.AddRange(WatchZones.SelectMany(wz => wz.Watches)); return a; } }
         [XmlIgnore]
         public List<WatchImage> WatchImages
-        { get { var a = new List<WatchImage>(); a.AddRange(Watches.SelectMany(w => w.WatchImages)); return a; } }
+        { get { var a = new List<WatchImage>(); a.AddRange(Watches.SelectMany(w =>  w.WatchImages)); return a; } }
 
         public double MaxScanRate { get { return Math.Round(Watches.Max(w => w.Frequency) * 300d) / 300d; } }
 
@@ -123,18 +123,21 @@ namespace VideoImageDeltaApp.Models
             width -= x;
             height -= y;
 
-            ThumbnailGeometry = new GeometryOld(x, y, width, height);
+            ThumbnailGeometry = new Geometry(x, y, width, height);
 
             foreach (var f in Feeds)
             {
-                f.ThumbnailGeometry = f.Geometry.RelativeToPoint(ThumbnailGeometry);
+                var fthumb = f.ThumbnailGeometry;
+                fthumb = f.Geometry.Clone();
+                fthumb.X -= x;
+                fthumb.Y -= y;
 
                 foreach (var s in f.Screens)
                 {
                     s.ThumbnailGeometry = f.ThumbnailGeometry;
 
-                    GeometryOld GameGeometry = s.Geometry;
-                    if (f.GameGeometry.Width > 0d && f.GameGeometry.Height > 0d)
+                    Geometry GameGeometry = s.Geometry;
+                    if (f.GameGeometry.HasSize)
                     {
                         GameGeometry = f.GameGeometry;
                     }
@@ -164,10 +167,11 @@ namespace VideoImageDeltaApp.Models
                             _height *= scale;
                         }
 
-                        var newGeo = new GeometryOld(_x, _y, _width, _height, wz.Geometry.Anchor).WithoutAnchor(GameGeometry);
+                        var newGeo = new Geometry(_x, _y, _width, _height, wz.Geometry.Anchor);
+                        newGeo.RemoveAnchor(GameGeometry);
 
-                        newGeo.X = newGeo.X / GameGeometry.Width * f.Geometry.Width + f.ThumbnailGeometry.X;
-                        newGeo.Y = newGeo.Y / GameGeometry.Height * f.Geometry.Height + f.ThumbnailGeometry.Y;
+                        newGeo.X = newGeo.X / GameGeometry.Width * f.Geometry.Width + f.ThumbnailGeometry.X - ThumbnailGeometry.X;
+                        newGeo.Y = newGeo.Y / GameGeometry.Height * f.Geometry.Height + f.ThumbnailGeometry.Y - ThumbnailGeometry.Y;
                         newGeo.Width = newGeo.Width / GameGeometry.Width * f.Geometry.Width;
                         newGeo.Height = newGeo.Height / GameGeometry.Height * f.Geometry.Height;
 

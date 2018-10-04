@@ -88,16 +88,16 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AddVideos.cs">
+    <Compile Include="Forms\AddVideos.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AddVideos.Designer.cs">
+    <Compile Include="Forms\AddVideos.Designer.cs">
       <DependentUpon>AddVideos.cs</DependentUpon>
     </Compile>
-    <Compile Include="AddWatchers.cs">
+    <Compile Include="Forms\AddWatchers.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AddWatchers.Designer.cs">
+    <Compile Include="Forms\AddWatchers.Designer.cs">
       <DependentUpon>AddWatchers.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\Anchor.cs" />
@@ -105,7 +105,10 @@
     <Compile Include="Models\Feed.cs" />
     <Compile Include="Models\ffprobe.cs" />
     <Compile Include="Models\GameProfile.cs" />
+    <Compile Include="Models\GeometryExtensions.cs" />
+    <Compile Include="Models\GeometryOld.cs" />
     <Compile Include="Models\Geometry.cs" />
+    <Compile Include="Models\IGeometry.cs" />
     <Compile Include="Models\ListVideo.cs" />
     <Compile Include="Models\PreviewType.cs" />
     <Compile Include="Models\Screen.cs" />
@@ -115,71 +118,71 @@
     <Compile Include="Models\WatchImage.cs" />
     <Compile Include="Models\WatchZone.cs" />
     <Compile Include="OverrideXml.cs" />
-    <Compile Include="PostProcessing.cs">
+    <Compile Include="Forms\PostProcessing.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PostProcessing.Designer.cs">
+    <Compile Include="Forms\PostProcessing.Designer.cs">
       <DependentUpon>PostProcessing.cs</DependentUpon>
     </Compile>
-    <Compile Include="PreProcessOptions.cs">
+    <Compile Include="Forms\PreProcessOptions.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PreProcessOptions.Designer.cs">
+    <Compile Include="Forms\PreProcessOptions.Designer.cs">
       <DependentUpon>PreProcessOptions.cs</DependentUpon>
     </Compile>
-    <Compile Include="PreviewBox.cs">
+    <Compile Include="Forms\PreviewBox.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PreviewBox.Designer.cs">
+    <Compile Include="Forms\PreviewBox.Designer.cs">
       <DependentUpon>PreviewBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="Processing.cs">
+    <Compile Include="Forms\Processing.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Processing.Designer.cs">
+    <Compile Include="Forms\Processing.Designer.cs">
       <DependentUpon>Processing.cs</DependentUpon>
     </Compile>
     <Compile Include="Processor.cs" />
-    <Compile Include="ProcessSettings.cs">
+    <Compile Include="Forms\ProcessSettings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ProcessSettings.Designer.cs">
+    <Compile Include="Forms\ProcessSettings.Designer.cs">
       <DependentUpon>ProcessSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="Test.cs" />
     <Compile Include="FFmpeg.cs" />
     <Compile Include="Utilities.cs" />
-    <Compile Include="MainWindow.cs">
+    <Compile Include="Forms\MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainWindow.Designer.cs">
+    <Compile Include="Forms\MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\Extensions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="AddVideos.resx">
+    <EmbeddedResource Include="Forms\AddVideos.resx">
       <DependentUpon>AddVideos.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="AddWatchers.resx">
+    <EmbeddedResource Include="Forms\AddWatchers.resx">
       <DependentUpon>AddWatchers.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MainWindow.resx">
+    <EmbeddedResource Include="Forms\MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PostProcessing.resx">
+    <EmbeddedResource Include="Forms\PostProcessing.resx">
       <DependentUpon>PostProcessing.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PreProcessOptions.resx">
+    <EmbeddedResource Include="Forms\PreProcessOptions.resx">
       <DependentUpon>PreProcessOptions.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PreviewBox.resx">
+    <EmbeddedResource Include="Forms\PreviewBox.resx">
       <DependentUpon>PreviewBox.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Processing.resx">
+    <EmbeddedResource Include="Forms\Processing.resx">
       <DependentUpon>Processing.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ProcessSettings.resx">
+    <EmbeddedResource Include="Forms\ProcessSettings.resx">
       <DependentUpon>ProcessSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

@@ -289,7 +289,7 @@ namespace VideoImageDeltaApp.Forms
                 {
                     ListBox_Watches.Items.Add(w);
                 }
-                var ratio = wz.Geometry.Ratio;
+                var ratio = wz.Geometry.Width / wz.Geometry.Height;
                 ratio = ratio / (200d / 120d);
                 if (ratio > 1d)
                 {
@@ -543,7 +543,7 @@ namespace VideoImageDeltaApp.Forms
             else
             {
                 Models.Screen item;
-                item = new Models.Screen(name, useAdvanced, new GeometryOld(width, height));
+                item = new Models.Screen(name, useAdvanced, new Geometry(width, height));
                 var gp = SelectedGameProfile;
                 gp.Screens.Add(item);
                 Update_Screens();
@@ -582,7 +582,7 @@ namespace VideoImageDeltaApp.Forms
                 var s = SelectedScreen;
                 s.Name = name;
                 s.UseAdvanced = useAdvanced;
-                s.Geometry = new GeometryOld(width, height);
+                s.Geometry = new Geometry(width, height);
                 Update_Screens();
                 ListBox_Screens.SelectedItem = s;
             }
@@ -857,7 +857,7 @@ namespace VideoImageDeltaApp.Forms
             ListBox_Watches_New_Images.Items.Clear();
 
             var wz = SelectedWatchZone;
-            var ratio = wz.Geometry.Ratio;
+            var ratio = wz.Geometry.Width / wz.Geometry.Height;
             ratio = ratio / (200d / 120d);
             if (ratio > 1d)
             {
@@ -924,8 +924,8 @@ namespace VideoImageDeltaApp.Forms
             else
             {
                 var s = SelectedScreen;
-                GeometryOld geo;
-                geo = new GeometryOld(x, y, width, height, anchor);
+                Geometry geo;
+                geo = new Geometry(x, y, width, height, anchor);
                 var wz = new WatchZone(name, scaleType, geo);
                 s.WatchZones.Add(wz);
                 Update_WatchZones();
@@ -959,7 +959,7 @@ namespace VideoImageDeltaApp.Forms
             {
                 double screenWidth = 640d;
                 double screenHeight = 480d;
-                if (!SelectedScreen.Geometry.HasSize())
+                if (!SelectedScreen.Geometry.HasSize)
                 {
                     screenWidth = SelectedScreen.Geometry.Width;
                     screenHeight = SelectedScreen.Geometry.Height;
@@ -1037,7 +1037,7 @@ namespace VideoImageDeltaApp.Forms
             {
                 double screenWidth = 640d;
                 double screenHeight = 480d;
-                if (!SelectedScreen.Geometry.HasSize())
+                if (!SelectedScreen.Geometry.HasSize)
                 {
                     screenWidth = SelectedScreen.Geometry.Width;
                     screenHeight = SelectedScreen.Geometry.Height;
@@ -1160,7 +1160,7 @@ namespace VideoImageDeltaApp.Forms
                 var wz = SelectedWatchZone;
                 wz.Name = name;
                 wz.ScaleType = scaleType;
-                wz.Geometry = new GeometryOld(x, y, width, height, anchor);
+                wz.Geometry = new Geometry(x, y, width, height, anchor);
                 //Update_WatchZones();
                 ListBox_WatchZones.SelectedItem = wz;
             }
@@ -1346,7 +1346,7 @@ namespace VideoImageDeltaApp.Forms
 
 
                 var wz = SelectedWatchZone;
-                var ratio = wz.Geometry.Ratio;
+                var ratio = wz.Geometry.Width / wz.Geometry.Height;
                 ratio = ratio / (200d / 120d);
                 if (ratio > 1d)
                 {
@@ -1445,7 +1445,7 @@ namespace VideoImageDeltaApp.Forms
 
                 double screenWidth = 640d;
                 double screenHeight = 480d;
-                if (!SelectedScreen.Geometry.HasSize())
+                if (!SelectedScreen.Geometry.HasSize)
                 {
                     screenWidth = SelectedScreen.Geometry.Width;
                     screenHeight = SelectedScreen.Geometry.Height;
@@ -1520,7 +1520,7 @@ namespace VideoImageDeltaApp.Forms
 
                 double screenWidth = 640d;
                 double screenHeight = 480d;
-                if (!SelectedScreen.Geometry.HasSize())
+                if (!SelectedScreen.Geometry.HasSize)
                 {
                     screenWidth = SelectedScreen.Geometry.Width;
                     screenHeight = SelectedScreen.Geometry.Height;

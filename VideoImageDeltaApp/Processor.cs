@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using VideoImageDeltaApp.Models;
+using VideoImageDeltaApp.Forms;
 
 namespace VideoImageDeltaApp
 {
@@ -381,131 +382,5 @@ namespace VideoImageDeltaApp
                 }
             };
         }
-        /*
-        void Untitled(Process pProcess, NamedPipeServerStream pipe, int imageSize, Video video)
-        {
-            int scannedCount = 0;
-            List<Image> thumbs = new List<Image>();
-            while (!pProcess.HasExited || thumbs.Count() > 0)
-            {
-                //break;
-                if (thumbs.Count() > 0)
-                {
-                    for (int n = 0; n < thumbs.Count() - 1; n++)
-                    {
-                        video.Feeds[0].Screens.ForEach(s => s.WatchZones.ForEach(wz => wz.Watches.ForEach(w => w.Images.ForEach(i =>
-                        {
-                            using (MagickImage diffImage = new MagickImage((Bitmap)thumbs[n]))
-                            {
-                                if (i.MagickImage.HasAlpha)
-                                {
-                                    diffImage.Composite(i.MagickImage, CompositeOperator.CopyAlpha);
-                                }
-                                double delta = diffImage.Compare(i.MagickImage, ErrorMetric.PeakSignalToNoiseRatio);
-                                //i.AddBag(n, delta);
-                            }
-                        }
-                        ))));
-                    }
-
-
-                    /*
-                    Parallel.ForEach(thumbs, (a, state, index) =>
-                    {
-                        video.Feeds[0].Screens.ForEach(s => s.WatchZones.ForEach(wz => wz.Watches.ForEach(w => w.Images.ForEach(i =>
-                            {
-                                using (MagickImage diffImage = new MagickImage((Bitmap)a))
-                                {
-                                    if (i.MagickImage.HasAlpha)
-                                    {
-                                        diffImage.Composite(i.MagickImage, CompositeOperator.CopyAlpha);
-                                    }
-                                    double delta = diffImage.Compare(i.MagickImage, ErrorMetric.PeakSignalToNoiseRatio);
-                                    i.AddBag(index, delta);
-                                }
-                            }
-                        ))));
-                    });
-                    */
-        /*
     }
-    thumbs = GetThumbnails(pProcess, pipe, imageSize, ref scannedCount);
-}
-
-}
-
-static List<Image> GetThumbnails(Process pProcess, NamedPipeServerStream stream, int imageSize, ref int scannedCountEnd)
-{
-int scannedCountStart = scannedCountEnd;
-byte[] allImages = null;
-using (var br = new BinaryReader(stream))
-{
-    int i = br.Read();
-    Array.Resize(ref allImages, i);
-    allImages = br.ReadBytes(i);
-
-    //stream.CopyTo(sr);
-    //stream.Read(allImages, scannedCountStart, (int)stream.Position);
-    //sr.Read(allImages, scannedCountStart, (int)stream.Position);
-    // If it isn't a multiple of imageSize, we're fucked.
-    //scannedCountEnd = (int)ms.Length / imageSize;
-
-}
-
-var l = new List<Image>();
-for (int i = 0; i < allImages.Count(); i += imageSize)
-{
-    using (var ms = new MemoryStream(imageSize))
-    {
-        var start = Math.Min(0, allImages.Count());
-        var end = Math.Min(i + imageSize - 1, allImages.Count());
-        ms.Write(allImages, start, end);
-        Bitmap a = new Bitmap(1, 1);
-        try
-        {
-            a = (Bitmap)Image.FromStream(ms);
-            a.Save(@"E:\1\" + Guid.NewGuid().ToString("N"));
-        }
-        catch (System.ArgumentException e)
-        {
-            Debug.Write(e);
-        }
-        l.Add(a);
-    }
-}
-return l;
-}
-
-
-
-/*
-static IEnumerable<int> GetBytePatternPositions(byte[] data, byte[] pattern)
-{
-var dataLen = data.Length;
-var patternLen = pattern.Length - 1;
-int scanData = 0;
-int scanPattern = 0;
-while (scanData < dataLen)
-{
-    if (pattern[0] == data[scanData])
-    {
-        scanPattern = 1;
-        scanData++;
-        while (pattern[scanPattern] == data[scanData])
-        {
-            if (scanPattern == patternLen)
-            {
-                yield return scanData - patternLen;
-                break;
-            }
-            scanPattern++;
-            scanData++;
-        }
-    }
-    scanData++;
-}
-}
-*/
-    }
-
 }

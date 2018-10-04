@@ -4,8 +4,8 @@
  */
 
 using System;
-using System.Diagnostics;
 using System.Windows;
+using System.Xml.Serialization;
 
 namespace VideoImageDeltaApp.Models
 {
@@ -34,6 +34,7 @@ namespace VideoImageDeltaApp.Models
             _width = width;
             _height = height;
             _anchor = anchor;
+            ValidateAll();
         }
 
         /// <summary>
@@ -55,6 +56,7 @@ namespace VideoImageDeltaApp.Models
             _height = Math.Max(Math.Max(point1.Y, point2.Y) - _y, 0);
 
             _anchor = anchor;
+            ValidateAll();
         }
 
         /// <summary>
@@ -68,7 +70,7 @@ namespace VideoImageDeltaApp.Models
         /// Constructor which sets the initial values to bound the (0,0) point and the point 
         /// that results from (0,0) + Width and Height. 
         /// </summary>
-        public Geometry( double width, double height, Anchor anchor = Anchor.Undefined)
+        public Geometry(double width, double height, Anchor anchor = Anchor.Undefined)
             : this(0, 0, width, height, anchor) { }
 
         /// <summary>
@@ -78,118 +80,68 @@ namespace VideoImageDeltaApp.Models
         public Geometry(Size size, Anchor anchor = Anchor.Undefined)
             : this(size.Width, size.Height, anchor) { }
 
-        // Additional constructors for conversion.
-
-        /// <summary>
-        /// Constructor for converting Tesseract.Rect to this format.
-        /// </summary>
-        public Geometry(Tesseract.Rect rect, Anchor anchor = Anchor.Undefined)
-             : this(rect.X1, rect.Y1, rect.Width, rect.Height, anchor) { }
-
-        /// <summary>
-        /// Constructor for converting ImageMagick.MagickGeometry to this format.
-        /// </summary>
-        public Geometry(ImageMagick.MagickGeometry mGeo,
-                    Anchor anchor = Anchor.Undefined)
-            : this(mGeo.X, mGeo.Y, mGeo.Width, mGeo.Height, anchor) { }
-
-        /// <summary>
-        /// Constructor for converting ImageMagick.MagickGeometry and Gravity to this format.
-        /// </summary>
-        public Geometry(ImageMagick.MagickGeometry mGeo,
-                    ImageMagick.Gravity gravity = ImageMagick.Gravity.Undefined)
-            : this(mGeo.X, mGeo.Y, mGeo.Width, mGeo.Height, gravity.ToAnchor()) { }
-
         #endregion Constructors
 
         #region Statics
 
         /// <summary>
-        /// Empty - a static property which provides an Empty rectangle.
+        /// Blank - a static property which provides an Blank geometry. True blanks aren't used
+        /// to avoid headaches.
         /// </summary>
-        public static Geometry Empty
-        {
-            get
-            {
-                return s_empty;
-            }
-        }
+        public static readonly Geometry Blank = new Geometry(0, 0, Anchor.Undefined);
 
         #endregion Statics
 
         #region Public Properties
 
         /// <summary>
-        /// IsEmpty - this returns true if this rect is the Empty rectangle.
-        /// Note: If width or height are 0 this Rectangle still contains a 0 or 1 dimensional set
-        /// of points, so this method should not be used to check for 0 area.
+        /// HasPoint - this returns true if this geometry has set coordinates.
         /// </summary>
-        public bool IsEmpty
+        public bool HasPoint
         {
             get
             {
-                // The funny width and height tests are to handle NaNs
-                Debug.Assert((!(_width < 0) && !(_height < 0)) || (this.Equals(Empty)));
-
-                return _width < 0;
+                return (X != 0) || (Y != 0);
             }
         }
 
         /// <summary>
-        /// Location - The Point representing the origin of the Rectangle
+        /// HasSize - this returns true if this geometry has dimensions.
+        /// Note: This will still return false if either Width or Height equals 0 and the other
+        /// does not.
         /// </summary>
-        public Point Location
+        public bool HasSize
         {
             get
             {
-                return new Point(_x, _y);
-            }
-            set
-            {
-                if (IsEmpty)
-                {
-                    throw new System.InvalidOperationException("Rect_CannotModifyEmptyRect");
-                }
-
-                _x = value.X;
-                _y = value.Y;
+                return Width != 0 || Height != 0;
             }
         }
 
         /// <summary>
-        /// Size - The Size representing the area of the Rectangle
+        /// HasAnchor - this returns true if the anchor is set.
         /// </summary>
-        public Size Size
+        public bool HasAnchor
         {
             get
             {
-                if (IsEmpty)
-                    return Size.Empty;
-                return new Size(_width, _height);
+                return Anchor != Anchor.Undefined;
             }
-            set
-            {
-                if (value.IsEmpty)
-                {
-                    this = s_empty;
-                }
-                else
-                {
-                    if (IsEmpty)
-                    {
-                        throw new System.InvalidOperationException("Rect_CannotModifyEmptyRect");
-                    }
+        }
 
-                    _width = value.Width;
-                    _height = value.Height;
-                }
+        /// <summary>
+        /// IsBlank - this returns true all variables are unset.
+        /// </summary>
+        public bool IsBlank
+        {
+            get
+            {
+                return !(HasPoint || HasSize);
             }
         }
 
         /// <summary>
         /// X - The X coordinate of the Location.
-        /// If this is the empty rectangle, the value will be positive infinity.
-        /// If this rect is Empty, setting this property is illegal.
         /// </summary>
         public double X
         {
@@ -199,20 +151,14 @@ namespace VideoImageDeltaApp.Models
             }
             set
             {
-                if (IsEmpty)
-                {
-                    throw new System.InvalidOperationException("Rect_CannotModifyEmptyRect");
-                }
-
+                Validate(value);
                 _x = value;
             }
 
         }
 
         /// <summary>
-        /// Y - The Y coordinate of the Location
-        /// If this is the empty rectangle, the value will be positive infinity.
-        /// If this rect is Empty, setting this property is illegal.
+        /// Y - The Y coordinate of the Location.
         /// </summary>
         public double Y
         {
@@ -222,19 +168,13 @@ namespace VideoImageDeltaApp.Models
             }
             set
             {
-                if (IsEmpty)
-                {
-                    throw new System.InvalidOperationException("Rect_CannotModifyEmptyRect");
-                }
-
+                Validate(value);
                 _y = value;
             }
         }
 
         /// <summary>
-        /// Width - The Width component of the Size.  This cannot be set to negative, and will only
-        /// be negative if this is the empty rectangle, in which case it will be negative infinity.
-        /// If this rect is Empty, setting this property is illegal.
+        /// Width - The Width component of the Size.
         /// </summary>
         public double Width
         {
@@ -244,24 +184,13 @@ namespace VideoImageDeltaApp.Models
             }
             set
             {
-                if (IsEmpty)
-                {
-                    throw new System.InvalidOperationException("Rect_CannotModifyEmptyRect");
-                }
-
-                if (value < 0)
-                {
-                    throw new System.ArgumentException("Size_WidthCannotBeNegative");
-                }
-
+                Validate(value);
                 _width = value;
             }
         }
 
         /// <summary>
-        /// Height - The Height component of the Size.  This cannot be set to negative, and will only
-        /// be negative if this is the empty rectangle, in which case it will be negative infinity.
-        /// If this rect is Empty, setting this property is illegal.
+        /// Height - The Height component of the Size.
         /// </summary>
         public double Height
         {
@@ -271,81 +200,202 @@ namespace VideoImageDeltaApp.Models
             }
             set
             {
-                if (IsEmpty)
-                {
-                    throw new System.InvalidOperationException("Rect_CannotModifyEmptyRect");
-                }
-
-                if (value < 0)
-                {
-                    throw new System.ArgumentException("Size_HeightCannotBeNegative");
-                }
-
+                Validate(value);
                 _height = value;
             }
         }
 
         /// <summary>
-        /// Left Property - This is a read-only alias for X
-        /// If this is the empty rectangle, the value will be positive infinity.
+        /// Anchor - The side or corner the coordiates are relative to.
+        /// </summary>
+        public Anchor Anchor
+        {
+            get
+            {
+                return _anchor;
+            }
+            set
+            {
+                _anchor = value;
+            }
+        }
+
+        /// <summary>
+        /// Location - The Point representing the origin of the Geometry.
+        /// Note: This does not tell you what anchor it's relative to.
+        /// </summary>
+        [XmlIgnore]
+        public Point Location
+        {
+            get
+            {
+                return new Point(X, Y);
+            }
+            set
+            {
+                X = value.X;
+                Y = value.Y;
+            }
+        }
+
+        /// <summary>
+        /// Size - The Size representing the area of the Geometry
+        /// </summary>
+        [XmlIgnore]
+        public Size Size
+        {
+            get
+            {
+                if (!HasSize)
+                {
+                    return Size.Empty;
+                }
+                else
+                {
+                    return new Size(Width, Height);
+                }
+            }
+            set
+            {
+                if (value.IsEmpty)
+                {
+                    Width = 0;
+                    Height = 0;
+                }
+                else
+                {
+                    Width = value.Width;
+                    Height = value.Height;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Left Property - Distance the left edge is from its anchor.
         /// </summary>
         public double Left
         {
             get
             {
-                return _x;
+                if (Anchor == Anchor.Undefined || Anchor.HasFlag(Anchor.Left))
+                {
+                    return X;
+                }
+                else if (Anchor.HasFlag(Anchor.Right))
+                {
+                    return Width + X;
+                }
+                else
+                {
+                    return Width / 2 + X;
+                }
             }
         }
 
         /// <summary>
-        /// Top Property - This is a read-only alias for Y
-        /// If this is the empty rectangle, the value will be positive infinity.
+        /// Top Property - Distance the top edge is from its anchor.
         /// </summary>
         public double Top
         {
             get
             {
-                return _y;
+                if (Anchor == Anchor.Undefined || Anchor.HasFlag(Anchor.Top))
+                {
+                    return Y;
+                }
+                else if (Anchor.HasFlag(Anchor.Bottom))
+                {
+                    return Height + Y;
+                }
+                else
+                {
+                    return Height / 2 + Y;
+                }
             }
         }
 
         /// <summary>
-        /// Right Property - This is a read-only alias for X + Width
-        /// If this is the empty rectangle, the value will be negative infinity.
+        /// Right Property - Distance the right edge is from its anchor.
         /// </summary>
         public double Right
         {
             get
             {
-                if (IsEmpty)
+                if (Anchor == Anchor.Undefined || Anchor.HasFlag(Anchor.Left))
                 {
-                    return Double.NegativeInfinity;
+                    return Width + X;
                 }
-
-                return _x + _width;
+                else if (Anchor.HasFlag(Anchor.Right))
+                {
+                    return X;
+                }
+                else
+                {
+                    return Width / 2 + X;
+                }
             }
         }
 
         /// <summary>
-        /// Bottom Property - This is a read-only alias for Y + Height
-        /// If this is the empty rectangle, the value will be negative infinity.
+        /// Bottom Property - Distance the bottom edge is from its anchor.
         /// </summary>
         public double Bottom
         {
             get
             {
-                if (IsEmpty)
+                if (Anchor == Anchor.Undefined || Anchor.HasFlag(Anchor.Top))
                 {
-                    return Double.NegativeInfinity;
+                    return Height + Y;
                 }
-
-                return _y + _height;
+                else if (Anchor.HasFlag(Anchor.Bottom))
+                {
+                    return Y;
+                }
+                else
+                {
+                    return Height / 2 + Y;
+                }
             }
         }
 
         /// <summary>
-        /// TopLeft Property - This is a read-only alias for the Point which is at X, Y
-        /// If this is the empty rectangle, the value will be positive infinity, positive infinity.
+        /// CenterX Property - Distance the horizontal center is from its anchor.
+        /// </summary>
+        public double CenterX
+        {
+            get
+            {
+                if (Anchor.HasFlag(Anchor.Left) || Anchor.HasFlag(Anchor.Right))
+                {
+                    return X + Width / 2;
+                }
+                else
+                {
+                    return X;
+                }
+            }
+        }
+
+        /// <summary>
+        /// CenterY Property - Distance the vertical center is from its anchor.
+        /// </summary>
+        public double CenterY
+        {
+            get
+            {
+                if (Anchor.HasFlag(Anchor.Top) || Anchor.HasFlag(Anchor.Bottom))
+                {
+                    return Y + Height / 2;
+                }
+                else
+                {
+                    return Y;
+                }
+            }
+        }
+
+        /// <summary>
+        /// TopLeft Property - Location of the Top Left point relative to its anchor.
         /// </summary>
         public Point TopLeft
         {
@@ -356,8 +406,7 @@ namespace VideoImageDeltaApp.Models
         }
 
         /// <summary>
-        /// TopRight Property - This is a read-only alias for the Point which is at X + Width, Y
-        /// If this is the empty rectangle, the value will be negative infinity, positive infinity.
+        /// TopRight Property - Location of the Top Right point relative to its anchor.
         /// </summary>
         public Point TopRight
         {
@@ -368,8 +417,7 @@ namespace VideoImageDeltaApp.Models
         }
 
         /// <summary>
-        /// BottomLeft Property - This is a read-only alias for the Point which is at X, Y + Height
-        /// If this is the empty rectangle, the value will be positive infinity, negative infinity.
+        /// BottomLeft Property - Location of the Bottom Left point relative to its anchor.
         /// </summary>
         public Point BottomLeft
         {
@@ -380,8 +428,7 @@ namespace VideoImageDeltaApp.Models
         }
 
         /// <summary>
-        /// BottomRight Property - This is a read-only alias for the Point which is at X + Width, Y + Height
-        /// If this is the empty rectangle, the value will be negative infinity, negative infinity.
+        /// BottomRight Property - Location of the Bottom Right point relative to its anchor.
         /// </summary>
         public Point BottomRight
         {
@@ -390,9 +437,149 @@ namespace VideoImageDeltaApp.Models
                 return new Point(Right, Bottom);
             }
         }
+
+        /// <summary>
+        /// Center Property - Location of the Center point relative to its anchor.
+        /// </summary>
+        public Point Center
+        {
+            get
+            {
+                return new Point(CenterX, CenterY);
+            }
+        }
         #endregion Public Properties
 
         #region Public Methods
+
+        /// <summary>
+        /// LocationWithoutAnchor - The Top Left Point relative to the Top Left of the base geometry.
+        /// </summary>
+        /// <param name="width"> The width of the base geometry. </param>
+        /// <param name="height"> The height of the base geometry. </param>
+        /// <returns>
+        /// Returns the Top Left Point relative to the Top Left of the base geometry.
+        /// </returns>
+        public Point LocationWithoutAnchor(double width, double height)
+        {
+            double x;
+            double y;
+
+            if (Anchor == Anchor.Undefined || Anchor.HasFlag(Anchor.Left))
+            {
+                x = X;
+            }
+            else if (Anchor.HasFlag(Anchor.Right))
+            {
+                x = width - Width + X;
+            }
+            else
+            {
+                x = (width - Width) / 2 + X;
+            }
+
+            if (Anchor == Anchor.Undefined || Anchor.HasFlag(Anchor.Top))
+            {
+                y = Y;
+            }
+            else if (Anchor.HasFlag(Anchor.Bottom))
+            {
+                y = height - Height + Y;
+            }
+            else
+            {
+                y = (height - Height) / 2 + Y;
+            }
+
+            return new Point(x, y);
+        }
+
+        public Point LocationWithoutAnchor(Size baseSize)
+        {
+            return LocationWithoutAnchor(baseSize.Width, baseSize.Height);
+        }
+
+        public Point LocationWithoutAnchor(Geometry baseGeometry)
+        {
+            return LocationWithoutAnchor(baseGeometry.Width, baseGeometry.Height);
+        }
+
+        public void RemoveAnchor(double width, double height)
+        {
+            Location = LocationWithoutAnchor(width, height);
+            Anchor = Anchor.Undefined;
+        }
+
+        public void RemoveAnchor(Size baseSize)
+        {
+            RemoveAnchor(baseSize.Width, baseSize.Height);
+        }
+
+        public void RemoveAnchor(Geometry baseGeometry)
+        {
+            RemoveAnchor(baseGeometry.Width, baseGeometry.Height);
+        }
+
+        // Todo: test
+        public void ChangeAnchor(double width, double height, Anchor anchor)
+        {
+            RemoveAnchor(width, height);
+
+            switch(anchor)
+            {
+                case Anchor.Undefined:
+                    break;
+                case Anchor.TopLeft:
+                    break;
+                case Anchor.Top:
+                    Location = new Point(CenterX, Top); break;
+                case Anchor.TopRight:
+                    Location = TopRight; break;
+                case Anchor.Left:
+                    Location = new Point(Left, CenterY); break;
+                case Anchor.Center:
+                    Location = Center; break;
+                case Anchor.Right:
+                    Location = new Point(Right, CenterY); break;
+                case Anchor.BottomLeft:
+                    Location = BottomLeft; break;
+                case Anchor.Bottom:
+                    Location = new Point(Bottom, CenterY); break;
+                case Anchor.BottomRight:
+                    Location = BottomRight; break;
+                default:
+                    break;
+            }
+
+            Anchor = anchor;
+        }
+
+        public void ChangeAnchor(Size baseSize, Anchor anchor)
+        {
+            ChangeAnchor(baseSize.Width, baseSize.Height, anchor);
+        }
+
+        public void ChangeAnchor(Geometry baseGeometry, Anchor anchor)
+        {
+            ChangeAnchor(baseGeometry.Width, baseGeometry.Height, anchor);
+        }
+
+        // I do not trust these contains and related. They need testing.
+
+        /// <summary>
+        /// Contains - Returns true if the Point represented by x,y is within the rectangle inclusive of the edges.
+        /// Returns false otherwise.
+        /// </summary>
+        /// <param name="x"> X coordinate of the point which is being tested </param>
+        /// <param name="y"> Y coordinate of the point which is being tested </param>
+        /// <returns>
+        /// Returns true if the Point represented by x,y is within the rectangle.
+        /// Returns false otherwise.
+        /// </returns>
+        public bool Contains(double x, double y)
+        {
+            return ContainsInternal(x, y);
+        }
 
         /// <summary>
         /// Contains - Returns true if the Point is within the rectangle, inclusive of the edges.
@@ -409,41 +596,28 @@ namespace VideoImageDeltaApp.Models
         }
 
         /// <summary>
-        /// Contains - Returns true if the Point represented by x,y is within the rectangle inclusive of the edges.
-        /// Returns false otherwise.
-        /// </summary>
-        /// <param name="x"> X coordinate of the point which is being tested </param>
-        /// <param name="y"> Y coordinate of the point which is being tested </param>
-        /// <returns>
-        /// Returns true if the Point represented by x,y is within the rectangle.
-        /// Returns false otherwise.
-        /// </returns>
-        public bool Contains(double x, double y)
-        {
-            if (IsEmpty)
-            {
-                return false;
-            }
-
-            return ContainsInternal(x, y);
-        }
-
-        /// <summary>
         /// Contains - Returns true if the Rect non-Empty and is entirely contained within the
         /// rectangle, inclusive of the edges.
         /// Returns false otherwise
         /// </summary>
-        public bool Contains(Geometry rect)
+        public bool Contains(Geometry childGeometry)
         {
-            if (IsEmpty || rect.IsEmpty)
+            if (!HasSize && !childGeometry.HasSize)
             {
                 return false;
             }
 
-            return (_x <= rect._x &&
-                    _y <= rect._y &&
-                    _x + _width >= rect._x + rect._width &&
-                    _y + _height >= rect._y + rect._height);
+            return (_x <= childGeometry._x &&
+                    _y <= childGeometry._y &&
+                    _x + _width >= childGeometry._x + childGeometry._width &&
+                    _y + _height >= childGeometry._y + childGeometry._height);
+            /*
+            return (childGeometry.X >= 0 &&
+                    childGeometry.Y >= 0 &&
+                    childGeometry.X + childGeometry.Width <= Width &&
+                    childGeometry.Y + childGeometry.Height <= Height);
+            */
+
         }
 
         /// <summary>
@@ -459,7 +633,7 @@ namespace VideoImageDeltaApp.Models
         /// <param name="rect"> Rect </param>
         public bool IntersectsWith(Geometry rect)
         {
-            if (IsEmpty || rect.IsEmpty)
+            if (!HasSize && !rect.HasSize)
             {
                 return false;
             }
@@ -479,7 +653,7 @@ namespace VideoImageDeltaApp.Models
         {
             if (!this.IntersectsWith(rect))
             {
-                this = Empty;
+                this = Blank;
             }
             else
             {
@@ -510,39 +684,19 @@ namespace VideoImageDeltaApp.Models
         /// </summary>
         public void Union(Geometry rect)
         {
-            if (IsEmpty)
+            if (!HasSize)
             {
                 this = rect;
             }
-            else if (!rect.IsEmpty)
+            else if (!rect.HasSize)
             {
                 double left = Math.Min(Left, rect.Left);
                 double top = Math.Min(Top, rect.Top);
 
-
-                // We need this check so that the math does not result in NaN
-                if ((rect.Width == Double.PositiveInfinity) || (Width == Double.PositiveInfinity))
-                {
-                    _width = Double.PositiveInfinity;
-                }
-                else
-                {
-                    //  Max with 0 to prevent double weirdness from causing us to be (-epsilon..0)                    
-                    double maxRight = Math.Max(Right, rect.Right);
-                    _width = Math.Max(maxRight - left, 0);
-                }
-
-                // We need this check so that the math does not result in NaN
-                if ((rect.Height == Double.PositiveInfinity) || (Height == Double.PositiveInfinity))
-                {
-                    _height = Double.PositiveInfinity;
-                }
-                else
-                {
-                    //  Max with 0 to prevent double weirdness from causing us to be (-epsilon..0)
-                    double maxBottom = Math.Max(Bottom, rect.Bottom);
-                    _height = Math.Max(maxBottom - top, 0);
-                }
+                double maxRight = Math.Max(Right, rect.Right);
+                double maxBottom = Math.Max(Bottom, rect.Bottom);
+                _width = Math.Max(maxRight - left, 0);
+                _height = Math.Max(maxBottom - top, 0);
 
                 _x = left;
                 _y = top;
@@ -581,11 +735,6 @@ namespace VideoImageDeltaApp.Models
         /// </summary>
         public void Offset(Vector offsetVector)
         {
-            if (IsEmpty)
-            {
-                throw new System.InvalidOperationException("Rect_CannotCallMethod");
-            }
-
             _x += offsetVector.X;
             _y += offsetVector.Y;
         }
@@ -596,11 +745,6 @@ namespace VideoImageDeltaApp.Models
         /// </summary>
         public void Offset(double offsetX, double offsetY)
         {
-            if (IsEmpty)
-            {
-                throw new System.InvalidOperationException("Rect_CannotCallMethod");
-            }
-
             _x += offsetX;
             _y += offsetY;
         }
@@ -641,7 +785,7 @@ namespace VideoImageDeltaApp.Models
         /// </summary>
         public void Inflate(double width, double height)
         {
-            if (IsEmpty)
+            if (!HasSize)
             {
                 throw new System.InvalidOperationException("Rect_CannotCallMethod");
             }
@@ -664,7 +808,7 @@ namespace VideoImageDeltaApp.Models
             // by other methods.
             if (!(_width >= 0 && _height >= 0))
             {
-                this = s_empty;
+                this = Blank;
             }
         }
 
@@ -697,7 +841,7 @@ namespace VideoImageDeltaApp.Models
         /// <param name="scaleY"> The scale in Y </param>
         public void Scale(double scaleX, double scaleY)
         {
-            if (IsEmpty)
+            if (!HasSize)
             {
                 return;
             }
@@ -728,9 +872,41 @@ namespace VideoImageDeltaApp.Models
             }
         }
 
+        public Geometry Clone()
+        {
+            return new Geometry(X, Y, Width, Height, Anchor);
+        }
+
         #endregion Public Methods
 
         #region Private Methods
+
+        /// <summary>
+        /// Validate - Check if the numbers are within the Pixel limit. Throw exception if any are not.
+        /// </summary>
+        /// <param name="num"> The number(s) to validate </param>
+        public void Validate(params double[] nums)
+        {
+            foreach (double num in nums)
+            {
+                if (num > PIXEL_LIMIT || num < -PIXEL_LIMIT)
+                {
+                    throw new System.InvalidOperationException(
+                        "Dimensions and Coordinates cannot be greater than " + PIXEL_LIMIT.ToString() +
+                        "or less than -" + PIXEL_LIMIT.ToString() + "."
+                        );
+                }
+            }
+        }
+
+        /// <summary>
+        /// ValidateAll - Check if the numeric variables are within the Pixel limit. Throw exception if any are not.
+        /// </summary>
+        private void ValidateAll()
+        {
+            var variables = new double[] { X, Y, Width, Height };
+            Validate(variables);
+        }
 
         /// <summary>
         /// ContainsInternal - Performs just the "point inside" logic
@@ -750,7 +926,7 @@ namespace VideoImageDeltaApp.Models
                     (y >= _y) && (y - _height <= _y));
         }
 
-        static private Geometry CreateEmptyRect()
+        static private Geometry CreateEmptyGeometry()
         {
             Geometry geometry = new Geometry();
             // We can't set these via the property setters because negatives widths
@@ -767,8 +943,6 @@ namespace VideoImageDeltaApp.Models
 
         #region Private Fields
 
-        private static readonly Geometry s_empty = CreateEmptyRect();
-
         private double _x;
         private double _y;
         private double _width;
@@ -776,5 +950,11 @@ namespace VideoImageDeltaApp.Models
         private Anchor _anchor;
 
         #endregion Private Fields
+
+        #region Constants
+
+        private const double PIXEL_LIMIT = 8192;
+
+        #endregion Constants
     }
 }

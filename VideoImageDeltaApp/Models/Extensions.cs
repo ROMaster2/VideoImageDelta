@@ -12,7 +12,7 @@ namespace VideoImageDeltaApp.Models
             iter.Begin();
 
 
-            if (iter.TryGetBoundingBox(PageIteratorLevel.Symbol, out Geometry symbolBounds))
+            if (iter.TryGetBoundingBox(PageIteratorLevel.Symbol, out Rect symbolBounds))
             {
                 var lsr = new List<CharResult>();
                 using (var choice = iter.GetChoiceIterator())
@@ -80,6 +80,7 @@ namespace VideoImageDeltaApp.Models
             }
 
         }
+
         public struct CharResult
         {
             public char Character;

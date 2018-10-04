@@ -152,7 +152,7 @@ namespace VideoImageDeltaApp
             return i;
         }
 
-        public static void ReadImage(Image image, GeometryOld geo, out string text, out float confidence)
+        public static void ReadImage(Image image, Geometry geo, out string text, out float confidence)
         {
             try
             {

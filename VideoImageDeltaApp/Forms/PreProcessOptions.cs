@@ -33,7 +33,7 @@ using VideoImageDeltaApp.Models;
 using Microsoft.VisualBasic.Devices;
 using Anchor = VideoImageDeltaApp.Models.Anchor;
 
-namespace VideoImageDeltaApp
+namespace VideoImageDeltaApp.Forms
 {
     public partial class PreProcessOptions : Form
     {

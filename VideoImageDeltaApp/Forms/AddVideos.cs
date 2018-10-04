@@ -13,7 +13,7 @@ using VideoImageDeltaApp.Models;
 
 using Screen = VideoImageDeltaApp.Models.Screen;
 
-namespace VideoImageDeltaApp
+namespace VideoImageDeltaApp.Forms
 {
     public partial class AddVideos : Form
     {
@@ -386,9 +386,9 @@ namespace VideoImageDeltaApp
         }
 
 
-        public GeometryOld PreviewBoxGeometryBefore = new GeometryOld(640, 480);
-        public GeometryOld PreviewBoxGeometryRescale = new GeometryOld(0,0);
-        public GeometryOld PreviewBoxGeometryAfter = new GeometryOld(0, 0);
+        public Geometry PreviewBoxGeometryBefore = new Geometry(640, 480);
+        public Geometry PreviewBoxGeometryRescale = new Geometry(0,0);
+        public Geometry PreviewBoxGeometryAfter = new Geometry(0, 0);
 
         public void CalcPreviewBoxGeometry(bool force = false)
         {
@@ -404,9 +404,9 @@ namespace VideoImageDeltaApp
             // Look, I just don't know where to put these methods sometimes.
             if (force)
             {
-                PreviewBoxGeometryBefore = new GeometryOld(x, y, width, height);
+                PreviewBoxGeometryBefore = new Geometry(x, y, width, height);
                 if (gameWidth > 0 && gameHeight > 0)
-                    PreviewBoxGeometryRescale = new GeometryOld(gameWidth, gameHeight);
+                    PreviewBoxGeometryRescale = new Geometry(gameWidth, gameHeight);
                 else
                     PreviewBoxGeometryRescale = PreviewBoxGeometryBefore;
 
@@ -442,22 +442,22 @@ namespace VideoImageDeltaApp
                         PreviewBoxGeometryAfter = PreviewBoxGeometryRescale;
                         break;
                     case PreviewType.Feed:
-                        PreviewBoxGeometryBefore = new GeometryOld(x, y, width, height);
+                        PreviewBoxGeometryBefore = new Geometry(x, y, width, height);
                         PreviewBoxGeometryRescale = PreviewBoxGeometryBefore;
                         PreviewBoxGeometryAfter = PreviewBoxGeometryRescale;
                         break;
                     case PreviewType.Screen:
-                        PreviewBoxGeometryBefore = new GeometryOld(x, y, width, height);
+                        PreviewBoxGeometryBefore = new Geometry(x, y, width, height);
                         if (gameWidth > 0 && gameHeight > 0)
-                            PreviewBoxGeometryRescale = new GeometryOld(gameWidth, gameHeight);
+                            PreviewBoxGeometryRescale = new Geometry(gameWidth, gameHeight);
                         else
                             PreviewBoxGeometryRescale = PreviewBoxGeometryBefore;
                         PreviewBoxGeometryAfter = PreviewBoxGeometryRescale;
                         break;
                     case PreviewType.WatchZone:
-                        PreviewBoxGeometryBefore = new GeometryOld(x, y, width, height);
+                        PreviewBoxGeometryBefore = new Geometry(x, y, width, height);
                         if (gameWidth > 0 && gameHeight > 0)
-                            PreviewBoxGeometryRescale = new GeometryOld(gameWidth, gameHeight);
+                            PreviewBoxGeometryRescale = new Geometry(gameWidth, gameHeight);
                         else
                             PreviewBoxGeometryRescale = PreviewBoxGeometryBefore;
 
@@ -499,7 +499,7 @@ namespace VideoImageDeltaApp
         public Image RescaleThumbnail(Image image, bool force = false)
         {
             CalcPreviewBoxGeometry(force);
-            if (force || (!PreviewBoxGeometryBefore.IsNull() && !PreviewBoxGeometryBefore.Equals(SelectedVideo.Geometry)))
+            if (force || (!PreviewBoxGeometryBefore.IsBlank && !PreviewBoxGeometryBefore.Equals(SelectedVideo.Geometry)))
             {
                 using (var mi = new MagickImage((Bitmap)image))
                 {
@@ -510,13 +510,13 @@ namespace VideoImageDeltaApp
                     int h = (int)PreviewBoxGeometryBefore.Height;
                     mi.Crop(new MagickGeometry(x, y, w, h), Gravity.Northwest);
                     mi.RePage();
-                    if (force || (!PreviewBoxGeometryRescale.IsNull() && !PreviewBoxGeometryRescale.Equals(SelectedVideo.Geometry)))
+                    if (force || (!PreviewBoxGeometryRescale.IsBlank && !PreviewBoxGeometryRescale.Equals(SelectedVideo.Geometry)))
                     {
                         w = (int)PreviewBoxGeometryRescale.Width;
                         h = (int)PreviewBoxGeometryRescale.Height;
                         mi.Resize(w, h);
                         mi.RePage();
-                        if (force || (!PreviewBoxGeometryAfter.IsNull() && !PreviewBoxGeometryAfter.Equals(PreviewBoxGeometryRescale)))
+                        if (force || (!PreviewBoxGeometryAfter.IsBlank && !PreviewBoxGeometryAfter.Equals(PreviewBoxGeometryRescale)))
                         {
                             x = (int)PreviewBoxGeometryAfter.X;
                             y = (int)PreviewBoxGeometryAfter.Y;
@@ -728,7 +728,7 @@ namespace VideoImageDeltaApp
             {
                 double screenWidth = PreviewBoxGeometryBefore.Width;
                 double screenHeight = PreviewBoxGeometryBefore.Height;
-                if (SelectedPreviewType == PreviewType.Screen && !PreviewBoxGeometryRescale.IsNull())
+                if (SelectedPreviewType == PreviewType.Screen && !PreviewBoxGeometryRescale.IsBlank)
                 {
                     screenWidth = PreviewBoxGeometryRescale.Width;
                     screenHeight = PreviewBoxGeometryRescale.Height;
@@ -736,7 +736,7 @@ namespace VideoImageDeltaApp
                 }
                 else if (SelectedPreviewType == PreviewType.WatchZone &&
                     DropBox_Watch_Preview.Text != null &&
-                    !PreviewBoxGeometryAfter.IsNull())
+                    !PreviewBoxGeometryAfter.IsBlank)
                 {
                     screenWidth = PreviewBoxGeometryAfter.Width;
                     screenHeight = PreviewBoxGeometryAfter.Height;
@@ -778,7 +778,7 @@ namespace VideoImageDeltaApp
                 x -= PreviewBoxGeometryBefore.X;
                 y -= PreviewBoxGeometryBefore.Y;
             }
-            else if (SelectedPreviewType == PreviewType.Screen && !PreviewBoxGeometryRescale.IsNull())
+            else if (SelectedPreviewType == PreviewType.Screen && !PreviewBoxGeometryRescale.IsBlank)
             {
                 x = 0;
                 y = 0;
@@ -789,7 +789,7 @@ namespace VideoImageDeltaApp
             }
             else if (SelectedPreviewType == PreviewType.WatchZone &&
                 DropBox_Watch_Preview.Text != null &&
-                !PreviewBoxGeometryAfter.IsNull())
+                !PreviewBoxGeometryAfter.IsBlank)
             {
                 // Anchors make this complicated
                 // Width and Height are good but X and Y need work.
@@ -933,7 +933,7 @@ namespace VideoImageDeltaApp
                 Numeric_Y.Value = (decimal)f.Geometry.Y;
                 Numeric_Width.Value = (decimal)f.Geometry.Width;
                 Numeric_Height.Value = (decimal)f.Geometry.Height;
-                if (!f.GameGeometry.IsNull())
+                if (!f.GameGeometry.IsBlank)
                 {
                     Numeric_Game_Width.Value = (decimal)f.GameGeometry.Width;
                     Numeric_Game_Height.Value = (decimal)f.GameGeometry.Height;
@@ -1107,12 +1107,12 @@ namespace VideoImageDeltaApp
             int y = (int)Numeric_Y.Value;
             int width = (int)Numeric_Width.Value;
             int height = (int)Numeric_Height.Value;
-            GeometryOld geo = new GeometryOld(x, y, width, height);
-            GeometryOld gameGeo = new GeometryOld(0,0);
+            Geometry geo = new Geometry(x, y, width, height);
+            Geometry gameGeo = new Geometry(0,0);
 
             if (CheckBox_Advanced.Checked && Numeric_Game_Width.Value > 0m && Numeric_Game_Height.Value > 0m)
             {
-                gameGeo = new GeometryOld((int)Numeric_Game_Width.Value, (int)Numeric_Game_Height.Value);
+                gameGeo = new Geometry((int)Numeric_Game_Width.Value, (int)Numeric_Game_Height.Value);
             }
 
             int exists = -1;

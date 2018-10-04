@@ -1,20 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace VideoImageDeltaApp
+namespace VideoImageDeltaApp.Forms
 {
-    public partial class ProcessSettings : Form
+    public partial class PreviewBox : UserControl
     {
-        public ProcessSettings()
+        public PreviewBox()
         {
             InitializeComponent();
+        }
+
+        private void PreviewBox_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

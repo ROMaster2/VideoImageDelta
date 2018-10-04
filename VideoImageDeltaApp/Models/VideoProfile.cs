@@ -10,13 +10,13 @@ namespace VideoImageDeltaApp.Models
             Feeds = video.Feeds;
         }
 
-        public VideoProfile(GeometryOld geometry, List<Feed> feeds)
+        public VideoProfile(Geometry geometry, List<Feed> feeds)
         {
             Geometry = geometry;
             Feeds = feeds;
         }
 
-        public GeometryOld Geometry;
+        public Geometry Geometry;
         public List<Feed> Feeds;
     }
 }

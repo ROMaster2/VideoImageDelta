@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 using System.Windows.Forms;
 using VideoImageDeltaApp.Models;
 
-namespace VideoImageDeltaApp
+namespace VideoImageDeltaApp.Forms
 {
     public partial class Processing : Form
     {
