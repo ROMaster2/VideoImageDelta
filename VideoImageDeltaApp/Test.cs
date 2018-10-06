@@ -40,13 +40,13 @@ namespace VideoImageDeltaApp
         {
             RawFFmpeg.CheckStability(@"I:\Vids\CCNeverender\30.ts");
 
-            Program.Videos[0].Feeds[0].ClearScreens();
+            Program.Videos[0].Feeds[0].Screens.Clear();
             //Program.Videos[0].Feeds[0]._Screens.Clear();
 
             var tmp1 = Program.Videos[0].Feeds[0].Screens;
             var tmp3 = Program.GameProfiles[0].Screens;
 
-            Program.Videos[0].Feeds[0].AddScreen(Program.GameProfiles[0].Screens[0]);
+            Program.Videos[0].Feeds[0].Screens.Add(Program.GameProfiles[0].Screens[0]);
 
             var tmp4 = Program.Videos[0].Feeds[0].Screens;
             var tmp6 = Program.GameProfiles[0].Screens;

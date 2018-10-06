@@ -130,7 +130,8 @@ namespace VideoImageDeltaApp.Forms
                         bool geoError = false;
                         foreach (Video video in SelectedVideos)
                         {
-                            if (video.Geometry.Width != videoProfile.Geometry.Width || video.Geometry.Height != videoProfile.Geometry.Height)
+                            if (video.Geometry.Width != videoProfile.Geometry.Width ||
+                                video.Geometry.Height != videoProfile.Geometry.Height)
                             {
                                 geoError = true;
                                 break;
@@ -168,7 +169,7 @@ namespace VideoImageDeltaApp.Forms
                                 {
                                     var l = SelectedGameProfile.Screens.Where(y => y.Name == feed.Name);
                                     if (l.Count() > 0)
-                                        feed.AddScreen(l.First());
+                                        feed.Screens.Add(l.First());
                                 }
                             }
                         }
@@ -514,7 +515,8 @@ namespace VideoImageDeltaApp.Forms
                     {
                         w = (int)PreviewBoxGeometryRescale.Width;
                         h = (int)PreviewBoxGeometryRescale.Height;
-                        mi.Resize(w, h);
+                        var size = new MagickGeometry(w, h) { IgnoreAspectRatio = true };
+                        mi.Resize(size);
                         mi.RePage();
                         if (force || (!PreviewBoxGeometryAfter.IsBlank && !PreviewBoxGeometryAfter.Equals(PreviewBoxGeometryRescale)))
                         {
@@ -612,7 +614,6 @@ namespace VideoImageDeltaApp.Forms
 
                     if (CheckBox_Timer.Checked)
                     {
-                        var t = SelectedFeed.Geometry;
                         Utilities.ReadImage(thumb1, SelectedFeed.Geometry, out string str, out float confidence);
 
                         Label_Delta.Text = str;
@@ -829,7 +830,7 @@ namespace VideoImageDeltaApp.Forms
             OpenFileDialog ofd = new OpenFileDialog()
             {
                 Title = "Add one or more video...",
-                Filter = "Video files|*.mp4;*.mkv;*.avi;*.ts;*.wmv",
+                Filter = "Video files|*.mp4;*.mkv;*.avi;*.ts;*.flv;*.webm;*.wmv",
                 Multiselect = true
             };
             ofd.ShowDialog();
@@ -1103,10 +1104,10 @@ namespace VideoImageDeltaApp.Forms
             name = name.Trim();
             bool useOCR = CheckBox_Timer.Checked;
 
-            int x = (int)Numeric_X.Value;
-            int y = (int)Numeric_Y.Value;
-            int width = (int)Numeric_Width.Value;
-            int height = (int)Numeric_Height.Value;
+            double x = (double)Numeric_X.Value;
+            double y = (double)Numeric_Y.Value;
+            double width = (double)Numeric_Width.Value;
+            double height = (double)Numeric_Height.Value;
             Geometry geo = new Geometry(x, y, width, height);
             Geometry gameGeo = new Geometry(0,0);
 
@@ -1125,10 +1126,7 @@ namespace VideoImageDeltaApp.Forms
                 }
             }
 
-            var feed = new Feed(name, useOCR, geo, gameGeo)
-            {
-                GameProfile = SelectedGameProfile
-            };
+            var feed = SelectedVideo.AddFeed(name, useOCR, geo, gameGeo);
 
             if (String.IsNullOrWhiteSpace(name))
             {
@@ -1287,7 +1285,7 @@ namespace VideoImageDeltaApp.Forms
                         foreach (var f in lv.Video.Feeds)
                         {
                             f.GameProfile = null;
-                            f.ClearScreens();
+                            f.Screens.Clear();
                         }
 
                         lv.RefreshValues();
@@ -1324,7 +1322,7 @@ namespace VideoImageDeltaApp.Forms
                             {
                                 var l = SelectedGameProfile.Screens.Where(x => x.Name == f.Name);
                                 if (l.Count() > 0)
-                                    f.AddScreen(l.First());
+                                    f.Screens.Add(l.First());
                             }
                         }
                         lv.RefreshValues();
@@ -1382,10 +1380,10 @@ namespace VideoImageDeltaApp.Forms
         {
             if (SelectedFeed != null && CheckedListBox_Screens.Items.Count > 0)
             {
-                SelectedFeed.ClearScreens();
+                SelectedFeed.Screens.Clear();
                 var l = SelectedVideo.Feeds.Where(x => x.Name == SelectedFeed.Name).First();
                 var i = SelectedVideo.Feeds.IndexOf(l);
-                SelectedVideo.Feeds[i].ClearScreens();
+                SelectedVideo.Feeds[i].Screens.Clear();
                 foreach (Screen s in CheckedListBox_Screens.CheckedItems)
                 {
                     //SelectedFeed._Screens.Add(s.Name);
@@ -1394,7 +1392,7 @@ namespace VideoImageDeltaApp.Forms
                     {
                         if (n == i)
                         {
-                            SelectedVideo.Feeds[n].AddScreen(s);
+                            SelectedVideo.Feeds[n].Screens.Add(s);
                         }
                     }
                     //SelectedVideo.Feeds[i]._Screens.Add(s.Name);

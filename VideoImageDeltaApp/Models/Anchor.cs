@@ -6,8 +6,7 @@ namespace VideoImageDeltaApp.Models
     [Flags]
     public enum Anchor
     {
-        Undefined = -1,
-        Center = 0,
+        Undefined = 0,
         Top = 1,
         Bottom = 2,
         Left = 4,
@@ -15,7 +14,8 @@ namespace VideoImageDeltaApp.Models
         TopLeft = Top | Left,
         TopRight = Top | Right,
         BottomLeft = Bottom | Left,
-        BottomRight = Bottom | Right
+        BottomRight = Bottom | Right,
+        Center = 16
     }
 
     public static partial class Extensions

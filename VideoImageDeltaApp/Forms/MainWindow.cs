@@ -42,6 +42,9 @@ namespace VideoImageDeltaApp.Forms
         private void Button_Help_Click(object sender, EventArgs e)
         {
             // Todo
+            var a = Program.GameProfiles;
+            var b = Program.Videos;
+            var c = Program.Processor;
         }
 
         private void Button_Quit_Click(object sender, EventArgs e)

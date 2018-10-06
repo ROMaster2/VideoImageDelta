@@ -157,9 +157,9 @@ namespace VideoImageDeltaApp
 
         public void Run(IEnumerable<Video> videos)
         {
+            Aborted = false;
             Finished = false;
             Paused = false;
-
 
             //Utilities.SetCPULimit(CPULimit);
             Utilities.SetPriority(Priority);
@@ -184,24 +184,11 @@ namespace VideoImageDeltaApp
                     ProcessingWindow.Update_Current_Video(video.FilePath);
                     video.InitProcess();
 
-                    //int imageSize = (int)(v.ThumbnailGeometry.Width * v.ThumbnailGeometry.Height) * 3 + BMP_OVERHEAD;
-
-                    /*var pipe = new NamedPipeServerStream(
-                        "from_ffmpeg.bmp",
-                        PipeDirection.In,
-                        1,
-                        PipeTransmissionMode.Message,
-                        PipeOptions.WriteThrough,
-                        cacheSize,
-                        cacheSize);*/
-
-
                     string rateStr = Math.Round(video.MaxScanRate * 300d).ToString() + "/300";
 
                     string hwAccel = null;
                     if (!string.IsNullOrWhiteSpace(UseVideoHardwareAccel))
                         hwAccel = "-hwaccel " + UseVideoHardwareAccel;
-
 
                     Process = new Process();
                     Process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
@@ -214,63 +201,41 @@ namespace VideoImageDeltaApp
                     Process.StartInfo.CreateNoWindow = false;
                     Process.Start();
 
-                    //pipe.WaitForConnection();
-
                     if (UseHDD)
                     {
                         ScanVideo(video);
                     }
-                    else
-                    {
-                        //Untitled(pProcess, pipe, imageSize, v);
-                    }
-
-                    //pipe.Dispose();
-                    //var a = pProcess.StandardError.ReadToEnd();
                     Process.WaitForExit();
                     videosFinished++;
                     ProcessingWindow.Update_Video_Count(videosFinished, videos.Count());
-                    //video.Feeds.ForEach(f => f.OCRBag = f.OCRBag.OrderBy(b => b.FrameIndex ?? 0).ToList());
-                    //video.WatchImages.ForEach(wi => wi.DeltaBag = wi.DeltaBag.OrderBy(b => b.FrameIndex).ToList());
 
-                    foreach(var f in video.Feeds)
+                    foreach (var f in video.Feeds)
                     {
                         if (f.OCRBag.Count > 0)
                         {
-                            f.OCRBag = new ConcurrentBag<Bag>(f.OCRBag.OrderBy(b => b.FrameIndex));
+                            f.OCRBag = new ConcurrentBag<Bag>(f.OCRBag.OrderBy(b => -b.FrameIndex));
                         }
                     }
                     foreach (var wi in video.WatchImages)
                     {
                         if (wi.DeltaBag.Count > 0)
                         {
-                            wi.DeltaBag = new ConcurrentBag<Bag>(wi.DeltaBag.OrderBy(b => b.FrameIndex));
+                            wi.DeltaBag = new ConcurrentBag<Bag>(wi.DeltaBag.OrderBy(b => -b.FrameIndex));
                         }
                     }
                 }
-                if (Aborted)
-                {
-                    DirectoryInfo directory = new DirectoryInfo(TempDirectory);
-                    FileInfo[] files = directory.GetFiles(FRAME_FILE_SELECTOR);
-                    Parallel.ForEach(files, (file) =>
-                    {
-                        file.Delete();
-                    });
-                }
             }
-            /*
-            var d = 0;
-            var a1 = videos[0].Feeds.Where(f => f.UseOCR).First().OCRBag;
-            var b1 = videos[0].Feeds[0].Screens[0].WatchZones[0].Watches[0].Images[0].DeltaBag;
-            var b2 = e.OrderBy(f => f.Confidence);
-            var b3 = e.OrderBy(f => f.FrameIndex);
-            var c1 = videos[0].Feeds[0].Screens[0].WatchZones[1].Watches[0].Images[0].DeltaBag;
-            var c2 = u.OrderBy(o => o.FrameIndex);
-            d += 1;
-            */
+
+            DirectoryInfo directory = new DirectoryInfo(TempDirectory);
+            FileInfo[] files = directory.GetFiles(FRAME_FILE_SELECTOR);
+            Parallel.ForEach(files, (file) =>
+            {
+                file.Delete();
+            });
 
             Aborted = false;
             Finished = true;
+            Paused = false;
             ProcessingWindow.Finished();
         }
 
@@ -319,7 +284,7 @@ namespace VideoImageDeltaApp
                                             {
                                                 Parallel.ForEach(s.WatchZones, (wz) =>
                                                 {
-                                                    var mg = wz.AdjustedGeometry.ToMagick();
+                                                    var mg = wz.ThumbnailGeometry.ToMagick();
                                                 // Doesn't crop perfectly. Investigate later.
                                                 using (var fileImageCrop = (MagickImage)fileImageBase.Clone())
                                                     {

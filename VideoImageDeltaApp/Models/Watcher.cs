@@ -3,25 +3,39 @@ using System.Collections.Generic;
 
 namespace VideoImageDeltaApp.Models
 {
-    public class Watcher
+    public class Watcher : IGeometry
     {
-        public Watcher(string name, double frequency)
+        internal Watcher(WatchZone watchZone, string name, double frequency = 1d, ColorSpace colorSpace = ColorSpace.RGB)
         {
+            Parent = watchZone;
             Name = name;
+            ColorSpace = colorSpace;
             Frequency = frequency;
-        }
-        public Watcher(string name)
-        {
-            Name = name;
         }
 
         internal Watcher() { }
 
-        public string Name { get; set; }
-        public double Frequency { get; set; } = 1d;
-        public List<WatchImage> WatchImages { get; set; } = new List<WatchImage>(); // To expand
+        public double Frequency { get; set; }
+        public ColorSpace ColorSpace { get; set; } // To expand
+        public List<WatchImage> WatchImages { get; set; } = new List<WatchImage>();
 
-        public ColorSpace ColorSpace { get; set; } = ColorSpace.RGB;
+        public WatchImage AddWatchImage(string filePath)
+        {
+            var watchImage = new WatchImage(this, filePath);
+            WatchImages.Add(watchImage);
+            return watchImage;
+        }
+
+        public void ReSyncRelationships()
+        {
+            if (WatchImages.Count > 0)
+            {
+                foreach (var wi in WatchImages)
+                {
+                    wi.Parent = this;
+                }
+            }
+        }
 
         override public string ToString()
         {

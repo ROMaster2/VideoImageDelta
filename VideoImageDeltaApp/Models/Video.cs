@@ -49,15 +49,12 @@ namespace VideoImageDeltaApp.Models
 
         public string FilePath;
         public ffprobeType RawMetadata { get; }
-        public Geometry Geometry { get; set; }
-        public Geometry ThumbnailGeometry { get; set; }
-
-        private streamType RawVideoMetadata { get { return RawMetadata.streams.Where(x => x.codec_type == "video").First(); } }
-
         public TimeSpan Duration { get; }
+        private streamType RawVideoMetadata { get { return RawMetadata.streams.Where(x => x.codec_type == "video").First(); } }
         public double FrameRate { get { return (double)Utilities.DivideString(RawVideoMetadata.r_frame_rate); } }
-
         public int FrameCount { get { return (int)(FrameRate * Duration.TotalSeconds); } }
+
+        public double MaxScanRate { get { return Math.Round(Watches.Max(w => w.Frequency) * 300d) / 300d; } }
 
         [XmlIgnore]
         public GameProfile GameProfile;
@@ -77,8 +74,6 @@ namespace VideoImageDeltaApp.Models
         public List<WatchImage> WatchImages
         { get { var a = new List<WatchImage>(); a.AddRange(Watches.SelectMany(w =>  w.WatchImages)); return a; } }
 
-        public double MaxScanRate { get { return Math.Round(Watches.Max(w => w.Frequency) * 300d) / 300d; } }
-
         public bool IsSynced()
         {
             return Feeds.Count > 0 && Feeds.All(x => x.GameProfile != null) && Feeds.All(x => x.Screens.Count > 0 || x.UseOCR);
@@ -91,10 +86,27 @@ namespace VideoImageDeltaApp.Models
 
         public void InitProcess()
         {
-            Feeds.ForEach(f => f.InitProcess());
             CalcChildAdjGeo();
             WatchZones.ForEach(wz => wz.Watches.ForEach(w => w.WatchImages
-                .ForEach(i => i.SetMagickImage(wz.AdjustedGeometry))));
+                .ForEach(i => i.SetMagickImage(wz.ThumbnailGeometry))));
+        }
+
+        public Feed AddFeed(string name, bool useOCR, Geometry geometry, Geometry gameGeometry)
+        {
+            var feed = new Feed(this, name, useOCR, geometry, gameGeometry);
+            Feeds.Add(feed);
+            return feed;
+        }
+
+        public void ReSyncRelationships()
+        {
+            if (Feeds.Count > 0)
+            {
+                foreach (var f in Feeds)
+                {
+                    f.Parent = this;
+                }
+            }
         }
 
         // Full name would be CalculateChildAdjustedGeometry, but that's a mouthful and too many characters.
@@ -127,10 +139,9 @@ namespace VideoImageDeltaApp.Models
 
             foreach (var f in Feeds)
             {
-                var fthumb = f.ThumbnailGeometry;
-                fthumb = f.Geometry.Clone();
-                fthumb.X -= x;
-                fthumb.Y -= y;
+                f.ThumbnailGeometry = f.Geometry.Clone();
+                f.ThumbnailGeometry.X -= x;
+                f.ThumbnailGeometry.Y -= y;
 
                 foreach (var s in f.Screens)
                 {
@@ -170,12 +181,12 @@ namespace VideoImageDeltaApp.Models
                         var newGeo = new Geometry(_x, _y, _width, _height, wz.Geometry.Anchor);
                         newGeo.RemoveAnchor(GameGeometry);
 
-                        newGeo.X = newGeo.X / GameGeometry.Width * f.Geometry.Width + f.ThumbnailGeometry.X - ThumbnailGeometry.X;
-                        newGeo.Y = newGeo.Y / GameGeometry.Height * f.Geometry.Height + f.ThumbnailGeometry.Y - ThumbnailGeometry.Y;
+                        newGeo.X = newGeo.X / GameGeometry.Width * f.Geometry.Width + f.ThumbnailGeometry.X;
+                        newGeo.Y = newGeo.Y / GameGeometry.Height * f.Geometry.Height + f.ThumbnailGeometry.Y;
                         newGeo.Width = newGeo.Width / GameGeometry.Width * f.Geometry.Width;
                         newGeo.Height = newGeo.Height / GameGeometry.Height * f.Geometry.Height;
 
-                        wz.AdjustedGeometry = newGeo;
+                        wz.ThumbnailGeometry = newGeo;
                     }
                 }
             }

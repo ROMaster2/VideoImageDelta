@@ -453,12 +453,12 @@ namespace VideoImageDeltaApp.Models
         #region Public Methods
 
         /// <summary>
-        /// LocationWithoutAnchor - The Top Left Point relative to the Top Left of the base geometry.
+        /// LocationWithoutAnchor - The Top Left Point relative to the Top Left of the parent geometry.
         /// </summary>
-        /// <param name="width"> The width of the base geometry. </param>
-        /// <param name="height"> The height of the base geometry. </param>
+        /// <param name="width"> The width of the parent geometry. </param>
+        /// <param name="height"> The height of the parent geometry. </param>
         /// <returns>
-        /// Returns the Top Left Point relative to the Top Left of the base geometry.
+        /// Returns the Top Left Point relative to the Top Left of the parent geometry.
         /// </returns>
         public Point LocationWithoutAnchor(double width, double height)
         {
@@ -494,14 +494,14 @@ namespace VideoImageDeltaApp.Models
             return new Point(x, y);
         }
 
-        public Point LocationWithoutAnchor(Size baseSize)
+        public Point LocationWithoutAnchor(Size parentSize)
         {
-            return LocationWithoutAnchor(baseSize.Width, baseSize.Height);
+            return LocationWithoutAnchor(parentSize.Width, parentSize.Height);
         }
 
-        public Point LocationWithoutAnchor(Geometry baseGeometry)
+        public Point LocationWithoutAnchor(Geometry parentGeometry)
         {
-            return LocationWithoutAnchor(baseGeometry.Width, baseGeometry.Height);
+            return LocationWithoutAnchor(parentGeometry.Width, parentGeometry.Height);
         }
 
         public void RemoveAnchor(double width, double height)
@@ -510,14 +510,14 @@ namespace VideoImageDeltaApp.Models
             Anchor = Anchor.Undefined;
         }
 
-        public void RemoveAnchor(Size baseSize)
+        public void RemoveAnchor(Size parentSize)
         {
-            RemoveAnchor(baseSize.Width, baseSize.Height);
+            RemoveAnchor(parentSize.Width, parentSize.Height);
         }
 
-        public void RemoveAnchor(Geometry baseGeometry)
+        public void RemoveAnchor(Geometry parentGeometry)
         {
-            RemoveAnchor(baseGeometry.Width, baseGeometry.Height);
+            RemoveAnchor(parentGeometry.Width, parentGeometry.Height);
         }
 
         // Todo: test
@@ -554,14 +554,14 @@ namespace VideoImageDeltaApp.Models
             Anchor = anchor;
         }
 
-        public void ChangeAnchor(Size baseSize, Anchor anchor)
+        public void ChangeAnchor(Size parentSize, Anchor anchor)
         {
-            ChangeAnchor(baseSize.Width, baseSize.Height, anchor);
+            ChangeAnchor(parentSize.Width, parentSize.Height, anchor);
         }
 
-        public void ChangeAnchor(Geometry baseGeometry, Anchor anchor)
+        public void ChangeAnchor(Geometry parentGeometry, Anchor anchor)
         {
-            ChangeAnchor(baseGeometry.Width, baseGeometry.Height, anchor);
+            ChangeAnchor(parentGeometry.Width, parentGeometry.Height, anchor);
         }
 
         // I do not trust these contains and related. They need testing.
@@ -816,10 +816,10 @@ namespace VideoImageDeltaApp.Models
         /// Inflate - return the result of inflating rect by the size provided, in all directions
         /// If this is Empty, this method is illegal.
         /// </summary>
-        public static Geometry Inflate(Geometry rect, Size size)
+        public static Geometry Inflate(Geometry geometry, Size size)
         {
-            rect.Inflate(size.Width, size.Height);
-            return rect;
+            geometry.Inflate(size.Width, size.Height);
+            return geometry;
         }
 
         /// <summary>
@@ -874,7 +874,7 @@ namespace VideoImageDeltaApp.Models
 
         public Geometry Clone()
         {
-            return new Geometry(X, Y, Width, Height, Anchor);
+            return (Geometry)MemberwiseClone();
         }
 
         #endregion Public Methods

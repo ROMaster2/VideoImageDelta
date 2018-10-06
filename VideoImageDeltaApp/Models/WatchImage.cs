@@ -9,10 +9,11 @@ using System.Xml.Serialization;
 
 namespace VideoImageDeltaApp.Models
 {
-    public class WatchImage // Just to give it a name in the boxes...mostly
+    public class WatchImage : IGeometry
     {
-        public WatchImage(string filePath)
+        internal WatchImage(Watcher watcher, string filePath)
         {
+            Parent = watcher;
             FilePath = filePath;
         }
 
@@ -45,8 +46,7 @@ namespace VideoImageDeltaApp.Models
             }
         }
 
-        [XmlIgnore]
-        public string Name { get; internal set; }
+
 
         // Doesn't work as well as I would like yet...
         public double TransparencyRate()

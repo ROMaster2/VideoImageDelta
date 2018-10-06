@@ -1,12 +1,14 @@
-﻿using System;
+﻿using ImageMagick;
+using System;
 using System.Collections.Generic;
 
 namespace VideoImageDeltaApp.Models
 {
-    public class WatchZone
+    public class WatchZone : IGeometry
     {
-        public WatchZone(string name, ScaleType scaleType, Geometry geometry)
+        internal WatchZone(Screen screen, string name, ScaleType scaleType, Geometry geometry)
         {
+            Parent = screen;
             Name = name;
             ScaleType = scaleType;
             Geometry = geometry;
@@ -14,12 +16,27 @@ namespace VideoImageDeltaApp.Models
 
         internal WatchZone() { }
 
-        public string Name { get; set; }
         public ScaleType ScaleType { get; set; }
-        public Geometry Geometry { get; set; }
         public List<Watcher> Watches { get; set; } = new List<Watcher>();
 
-        public Geometry AdjustedGeometry { get; set; }
+        public Watcher AddWatcher(string name, double frequency = 1d, ColorSpace colorSpace = ColorSpace.RGB)
+        {
+            var watcher = new Watcher(this, name, frequency, colorSpace);
+            Watches.Add(watcher);
+            return watcher;
+        }
+
+        public void ReSyncRelationships()
+        {
+            if (Watches.Count > 0)
+            {
+                foreach (var w in Watches)
+                {
+                    w.Parent = this;
+                    w.ReSyncRelationships();
+                }
+            }
+        }
 
         public Geometry WithoutScale(Geometry screenGeo, Geometry feedGeo, Geometry gameGeo)
         {
@@ -63,10 +80,10 @@ namespace VideoImageDeltaApp.Models
 
     public enum ScaleType
     {
-        Undefined = -1,
-        NoScale = 0,
-        KeepRatio = 1,
-        Scale = 2,
+        Undefined = 0,
+        NoScale = 1,
+        KeepRatio = 2,
+        Scale = 3,
     }
 
 }

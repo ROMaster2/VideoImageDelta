@@ -9,10 +9,11 @@ using System.Xml.Serialization;
 
 namespace VideoImageDeltaApp.Models
 {
-    public class Feed
+    public class Feed : IGeometry
     {
-        public Feed(string name, bool useOCR, Geometry geometry, Geometry gameGeometry)
+        public Feed(Video video, string name, bool useOCR, Geometry geometry, Geometry gameGeometry)
         {
+            Parent = video;
             Name = name;
             UseOCR = useOCR;
             Geometry = geometry;
@@ -21,9 +22,12 @@ namespace VideoImageDeltaApp.Models
 
         internal Feed() { }
 
-        public string Name { get; set; }
+        [XmlIgnore]
+        public new Video Parent;
+
         [XmlElement("IsTimer")]
         public bool UseOCR { get; set; }
+
         [XmlIgnore]
         public ConcurrentBag<Bag> OCRBag = new ConcurrentBag<Bag>();
 
@@ -58,9 +62,7 @@ namespace VideoImageDeltaApp.Models
             }
         }
 
-        public Geometry Geometry { get; set; }
         public Geometry GameGeometry { get; set; }
-        public Geometry ThumbnailGeometry { get; set; }
 
         public string FullName
         {
@@ -75,73 +77,10 @@ namespace VideoImageDeltaApp.Models
         }
 
         [XmlIgnore]
-        private string _GameProfile;
-        [XmlIgnore]
-        public GameProfile GameProfile
-        {
-            get
-            {
-                var l = Program.GameProfiles.Where(x => x.Name == _GameProfile);
-                if (l.Count() == 0)
-                    return null;
-                else
-                    return l.First();
-            }
-            set
-            {
-                if (value == null)
-                    _GameProfile = null;
-                else
-                    _GameProfile = value.Name;
-            }
-        }
+        public GameProfile GameProfile;
 
         [XmlIgnore]
-        private List<Screen> ScreenClones;
-        [XmlIgnore]
-        private List<string> _Screens = new List<string>();
-        [XmlIgnore]
-        public List<Screen> Screens
-        {
-            get
-            {
-                if (ScreenClones == null)
-                {
-                    var gps = Program.GameProfiles.Where(x => x.Name == _GameProfile);
-                    if (gps.Count() == 0)
-                        throw new ArgumentException("Game Profile is not set.");
-                    //return new List<Screen>().AsReadOnly();
-                    else
-                    {
-                        var ss = new List<Screen>();
-                        foreach (var s in _Screens)
-                        {
-                            ss.Add(gps.First().Screens.Where(x => x.Name == s).First());
-                        }
-                        return ss;
-                    }
-                }
-                else
-                {
-                    return ScreenClones;
-                }
-            }
-        }
-
-        public void AddScreen(Screen screen)
-        {
-            if (!_Screens.Exists(x => x == screen.Name))
-                _Screens.Add(screen.Name);
-        }
-        public void ClearScreens()
-        {
-            _Screens.Clear();
-        }
-
-        public void InitProcess()
-        {
-            ScreenClones = Screens;
-        }
+        public List<Screen> Screens = new List<Screen>();
 
         override public string ToString()
         {

@@ -1,29 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Xml.Serialization;
+﻿using System.Collections.Generic;
 
 namespace VideoImageDeltaApp.Models
 {
-    public class GameProfile
+    public class GameProfile : IGeometry
     {
         public GameProfile(string name)
         {
             Name = name;
         }
 
-        public GameProfile() { }
+        internal GameProfile() { }
 
-        public string Name { get; set; }
         public List<Screen> Screens { get; set; } = new List<Screen>();
 
-        public void Serialize(string output)
+        public Screen AddScreen(string name, bool useAdvanced, Geometry geometry)
         {
-            Type t = GetType();
-            XmlSerializer serializer = new XmlSerializer(t);
-            using (TextWriter writer = new StreamWriter(output))
-            {
-                serializer.Serialize(writer, this);
+            var screen = new Screen(this, name, useAdvanced, geometry);
+            Screens.Add(screen);
+            return screen;
+        }
+
+        public void ReSyncRelationships()
+        {
+            if (Screens.Count > 0) {
+                foreach (var s in Screens)
+                {
+                    s.Parent = this;
+                    s.ReSyncRelationships();
+                }
             }
         }
 
