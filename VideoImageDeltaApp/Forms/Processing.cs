@@ -184,7 +184,7 @@ namespace VideoImageDeltaApp.Forms
         {
             BeginInvoke((MethodInvoker)delegate ()
             {
-                totalVideoFrames = n;
+                totalVideoFrames = n + 1;
             });
             Update_ProgressBar_Extraction(0);
             Update_ProgressBar_Scanning(0);

@@ -46,37 +46,6 @@ namespace VideoImageDeltaApp.Models
             }
         }
 
-
-
-        // Doesn't work as well as I would like yet...
-        public double TransparencyRate()
-        {
-            using (MagickImage i = new MagickImage(FilePath))
-            {
-                i.Separate(Channels.Alpha);
-                return i.ToByteArray().Cast<double>().Average();
-            }
-        }
-
-        public static double TransparencyRate(Image image)
-        {
-            using (MagickImage i = new MagickImage((Bitmap)image))
-            {
-                i.Separate(Channels.Alpha);
-                return i.ToByteArray().Cast<double>().Average();
-            }
-        }
-
-        public static double TransparencyRate(MagickImage image)
-        {
-            using (MagickImage i = new MagickImage(image))
-            {
-                var a = i.Separate(Channels.Alpha);
-                var b = Array.ConvertAll(i.ToByteArray(), item => (double)item);
-                return b.Average();
-            }
-        }
-
         public void SetName(Screen screen, WatchZone watchZone, Watcher watcher)
         {
             Name = screen.Name + "/" + watchZone.Name + "/" + watcher.Name + " - " + FileName;

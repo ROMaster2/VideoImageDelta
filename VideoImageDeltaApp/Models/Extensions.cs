@@ -66,13 +66,19 @@ namespace VideoImageDeltaApp.Models
 
             public string[] AllResults()
             {
-                var l = new List<List<char>>();
+                var l = new List<List<char?>>();
                 for (int a = 0; a < Results.Count(); a++)
                 {
-                    var l2 = new List<char>();
-                    for (int b = 0; b < Results.ElementAt(a).Count(); b++)
+                    var l2 = new List<char?>();
+                    l2.Add(null);
+                    for (int b = 0; b < Results[a].Count(); b++)
                     {
-                        l2.Add(Results.ElementAt(a).ElementAt(b).Character);
+                        l2.Add(Results[a][b].Character);
+                        if(Results[a][b].Character == ' ')
+                        {
+                            l2.Add('.');
+                            l2.Add(':');
+                        }
                     }
                     l.Add(l2);
                 }
@@ -86,6 +92,15 @@ namespace VideoImageDeltaApp.Models
             public char Character;
             public float Confidence;
         }
+
+        public static double TransparencyRate(this ImageMagick.MagickImage mi)
+        {
+            if (!mi.HasAlpha) return 0;
+            var bytes = mi.Separate(ImageMagick.Channels.Alpha).First().GetPixels().GetValues();
+            return (255 - bytes.Average(x => (double)x)) / 255;
+        }
+
+
     }
 
 }

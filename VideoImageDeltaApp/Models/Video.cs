@@ -52,7 +52,7 @@ namespace VideoImageDeltaApp.Models
         public TimeSpan Duration { get; }
         private streamType RawVideoMetadata { get { return RawMetadata.streams.Where(x => x.codec_type == "video").First(); } }
         public double FrameRate { get { return (double)Utilities.DivideString(RawVideoMetadata.r_frame_rate); } }
-        public int FrameCount { get { return (int)(FrameRate * Duration.TotalSeconds); } }
+        public int FrameCount { get { return (int)Math.Floor(FrameRate * Duration.TotalSeconds); } }
 
         public double MaxScanRate { get { return Math.Round(Watches.Max(w => w.Frequency) * 300d) / 300d; } }
 
@@ -79,7 +79,7 @@ namespace VideoImageDeltaApp.Models
             return Feeds.Count > 0 && Feeds.All(x => x.GameProfile != null) && Feeds.All(x => x.Screens.Count > 0 || x.UseOCR);
         }
 
-        public Image GetThumbnail(TimeSpan timestamp)
+        public Bitmap GetThumbnail(TimeSpan timestamp)
         {
             return RawFFmpeg.GetThumbnail(FilePath, new System.Windows.Size(Geometry.Width, Geometry.Height), timestamp);
         }

@@ -191,20 +191,19 @@ namespace VideoImageDeltaApp
          * Extra Spaghetti.
          */
 
-        public static Image FFCommand2(string process, TimeSpan timestamp, string videoPath, System.Windows.Size size, string parameters)
+        public static Bitmap FFCommand2(string process, TimeSpan timestamp, string videoPath, System.Windows.Size size, string parameters)
         {
             Bitmap t = null;
             using (NamedPipeServerStream p_from_ffmpeg = new NamedPipeServerStream(
                     "from_ffmpeg.bmp",
-                    PipeDirection.InOut,
+                    PipeDirection.In,
                     1,
                     PipeTransmissionMode.Byte,
-                    PipeOptions.WriteThrough,
+                    PipeOptions.None,
                     MAX_IMAGE_SIZE,
                     MAX_IMAGE_SIZE)
                 )
             {
-
                 string start = timestamp.ToString().Substring(0, 8);
                 string args = String.Format(@"-ss {0} -i ""{1}"" {2}", start, videoPath, parameters);
 
@@ -224,7 +223,7 @@ namespace VideoImageDeltaApp
                     pProcess.WaitForExit();
 
                     // Raw image size + bmp overhead.
-                    int imageSize = (int)(size.Width * size.Height) * 3 + 54;
+                    int imageSize = (int)(size.Width * size.Height) * 3 + 2048;
                     byte[] imageCache = new byte[imageSize];
 
                     p_from_ffmpeg.Read(imageCache, 0, imageSize);
@@ -248,9 +247,9 @@ namespace VideoImageDeltaApp
             return t;
         }
 
-        public static Image GetThumbnail(string videoPath, System.Windows.Size size, TimeSpan timestamp)
+        public static Bitmap GetThumbnail(string videoPath, System.Windows.Size size, TimeSpan timestamp)
         {
-            Image i = FFCommand2(@"ffmpeg", timestamp, videoPath, size,
+            Bitmap i = FFCommand2(@"ffmpeg", timestamp, videoPath, size,
                 @"-y -vframes 1 ""\\.\pipe\from_ffmpeg.bmp""");
 
             return i;
