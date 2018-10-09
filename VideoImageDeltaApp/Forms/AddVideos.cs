@@ -1334,6 +1334,7 @@ namespace VideoImageDeltaApp.Forms
         private void FillScreenBox()
         {
             CheckedListBox_Screens.Items.Clear();
+            DropBox_Watch_Preview.Items.Clear();
             if (SelectedGameProfile != null && SelectedVideo != null && SelectedVideo.Feeds != null)
             {
                 foreach (var s in SelectedGameProfile.Screens)
@@ -1346,7 +1347,6 @@ namespace VideoImageDeltaApp.Forms
                         SelectedFeed.Screens.Any(y => y == s)) // Is this right?
                             CheckedListBox_Screens.SetItemCheckState(CheckedListBox_Screens.Items.Count - 1, CheckState.Checked);
 
-                    DropBox_Watch_Preview.Items.Clear();
                     var dropDownWidth = 168;
                     foreach (var wz in s.WatchZones)
                     {

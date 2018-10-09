@@ -241,7 +241,7 @@ namespace VideoImageDeltaApp
 
         public void ScanVideo(Video video)
         {
-            int scanCount = (int)Math.Floor(video.FrameCount / video.MaxScanRate / video.FrameRate);
+            int scanCount = (int)Math.Floor(video.FrameCount * video.MaxScanRate / video.FrameRate);
             int finishCount = 0;
 
             ProcessingWindow.Update_totalVideoFrames(scanCount);

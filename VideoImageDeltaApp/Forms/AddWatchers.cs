@@ -1420,8 +1420,7 @@ namespace VideoImageDeltaApp.Forms
 
             if (File.Exists(ofd.FileName))
             {
-                var i = SelectedWatcher.AddWatchImage(ofd.FileName);
-                Box_WatchZones_New_Main.BackgroundImage = i.Image;
+                Box_WatchZones_New_Main.BackgroundImage = Image.FromFile(ofd.FileName);
                 Box_WatchZones_New_Preview.BackColor = Color.FromArgb(127, 255, 0, 255);
                 Button_WatchZones_New_SSAAI.Enabled = true;
             }

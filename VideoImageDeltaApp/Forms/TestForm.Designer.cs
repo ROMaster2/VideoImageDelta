@@ -36,7 +36,6 @@
             this.previewBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.previewBox1.AutoSize = true;
             this.previewBox1.Location = new System.Drawing.Point(9, 9);
             this.previewBox1.Margin = new System.Windows.Forms.Padding(0);
             this.previewBox1.Name = "previewBox1";
@@ -51,7 +50,6 @@
             this.Name = "TestForm";
             this.Text = "TestForm";
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 

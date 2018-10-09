@@ -69,8 +69,7 @@ namespace VideoImageDeltaApp.Models
                 var l = new List<List<char?>>();
                 for (int a = 0; a < Results.Count(); a++)
                 {
-                    var l2 = new List<char?>();
-                    l2.Add(null);
+                    var l2 = new List<char?> { null };
                     for (int b = 0; b < Results[a].Count(); b++)
                     {
                         l2.Add(Results[a][b].Character);

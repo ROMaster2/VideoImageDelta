@@ -52,7 +52,9 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.ThumbnailBox);
+            this.DoubleBuffered = true;
             this.Margin = new System.Windows.Forms.Padding(0);
+            this.MinimumSize = new System.Drawing.Size(40, 30);
             this.Name = "PreviewBox";
             this.Size = new System.Drawing.Size(650, 490);
             this.Load += new System.EventHandler(this.PreviewBox_Load);

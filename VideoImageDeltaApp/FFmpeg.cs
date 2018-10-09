@@ -210,7 +210,7 @@ namespace VideoImageDeltaApp
                 using (Process pProcess = new Process())
                 {
                     pProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                    pProcess.StartInfo.FileName = process;
+                    pProcess.StartInfo.FileName = RawFFmpeg.ffmpegPath;
                     pProcess.StartInfo.Arguments = args;
                     pProcess.StartInfo.UseShellExecute = false;
                     pProcess.StartInfo.RedirectStandardOutput = true;

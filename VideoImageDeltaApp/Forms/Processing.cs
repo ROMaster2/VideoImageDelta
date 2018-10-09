@@ -18,6 +18,7 @@ namespace VideoImageDeltaApp.Forms
         private int videoFramesCreated = 0;
         private int totalVideoFrames = 1;
         private int allFramesCreated = 1;
+        private int allFramesScanned = 1;
 
         public Processing()
         {
@@ -204,7 +205,7 @@ namespace VideoImageDeltaApp.Forms
         public void Update_Speed()
         {
             // Todo: Make it rolling average instead.
-            Label_Speed_Value.Text = (allFramesCreated * 1000 / (double)Watch.ElapsedMilliseconds).ToString(@"0.##\x");
+            Label_Speed_Value.Text = ((allFramesCreated + allFramesScanned) * 500 / (double)Watch.ElapsedMilliseconds).ToString("F") + "x";
         }
 
         public void Update_Video_Count(int finishedVideoCount, int totalVideoCount)
@@ -234,6 +235,7 @@ namespace VideoImageDeltaApp.Forms
         {
             Update_ProgressBar(ProgressBar_Scanning, finishedFrameCount, this.totalVideoFrames);
             Update_Counter(Label_Scanning_Value, finishedFrameCount, this.totalVideoFrames);
+            allFramesScanned++;
         }
 
         private void Update_Counter(Label label, int numerator, int denominator)

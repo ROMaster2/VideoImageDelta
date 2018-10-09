@@ -37,7 +37,8 @@ namespace VideoImageDeltaApp.Forms
     {
         private Video Video;
 
-        private const double DEFAULT_TIMESTAMP_POSITION = 2d / 3d; // Needs better name.
+        private const double DEFAULT_TIMESTAMP_POSITION = 2d / 3d;
+        private const FilterType DEFAULT_FILTER = FilterType.Lanczos;
 
         private TimeSpan DefaultTimestamp
         {
@@ -70,27 +71,6 @@ namespace VideoImageDeltaApp.Forms
             }
         }
 
-        /*
-        private Geometry ThumbnailBoxGeometry
-        {
-            get
-            {
-                var x = ThumbnailBox.Location.X;
-                var y = ThumbnailBox.Location.Y;
-                var width = ThumbnailBox.Width;
-                var height = ThumbnailBox.Height;
-                return new Geometry(x, y, width, height);
-            }
-            set
-            {
-                Point point = new Point((int)value.X, (int)value.Y);
-                ThumbnailBox.Location = point;
-                ThumbnailBox.Width = (int)value.Width;
-                ThumbnailBox.Height = (int)value.Height;
-            }
-        }
-        */
-
         private double ScaledRatio
         {
             get
@@ -102,6 +82,22 @@ namespace VideoImageDeltaApp.Forms
                     ),
                     (this.Height - ThumbnailBox.Margin.Top - ThumbnailBox.Margin.Bottom) / Video.Geometry.Height
                 );
+            }
+        }
+
+        private double ScaledX
+        {
+            get
+            {
+                return (this.Width - ScaledWidth + ThumbnailBox.Margin.Left - ThumbnailBox.Margin.Right) / 2;
+            }
+        }
+
+        private double ScaledY
+        {
+            get
+            {
+                return (this.Height - ScaledHeight + ThumbnailBox.Margin.Top - ThumbnailBox.Margin.Bottom) / 2;
             }
         }
 
@@ -117,7 +113,7 @@ namespace VideoImageDeltaApp.Forms
         {
             get
             {
-                return Video.Geometry.Height * ScaledRatio;
+                return Math.Max(Video.Geometry.Height * ScaledRatio, 1);
             }
         }
 
@@ -129,6 +125,13 @@ namespace VideoImageDeltaApp.Forms
         private void PreviewBox_Load(object sender, EventArgs e)
         {
             SetVideo(Video.Create(@"I:\Past Broadcasts\holyfuck.mp4"));
+            if (!this.DesignMode)
+            {
+                var parent = this.Parent;
+                while (!(parent is Form)) parent = parent.Parent;
+                var form = parent as Form;
+                form.ResizeEnd += (s, ea) => PreviewBox_ResizeEnd(s, ea);
+            }
             RefreshThumbnail();
         }
 
@@ -142,17 +145,14 @@ namespace VideoImageDeltaApp.Forms
             var width = (int)Math.Round(ScaledWidth);
             var height = (int)Math.Round(ScaledHeight);
             ThumbnailBox.Size = new Size(width, height);
-            ThumbnailBox.Location = new Point(ThumbnailBox.Margin.Left, ThumbnailBox.Margin.Top);
+            ThumbnailBox.Location = new Point((int)ScaledX, (int)ScaledY);
 
             using (var mi = new MagickImage(Video.GetThumbnail(DefaultTimestamp)))
             {
                 var mGeo = new MagickGeometry(width, height) { IgnoreAspectRatio = true };
-                mi.FilterType = FilterType.Lanczos;
-                //mi.Resize((Percentage)(Math.Pow(2, -0.5) * 100d));
+                mi.FilterType = DEFAULT_FILTER;
                 mi.Resize(mGeo);
-                var i = mi.ToBitmap();
-                i.SetResolution((float)ScaledWidth, (float)ScaledHeight);
-                FullThumbnail = i;
+                FullThumbnail = mi.ToBitmap();
             }
             ThumbnailBox.Image = FullThumbnail;
         }
@@ -175,6 +175,14 @@ namespace VideoImageDeltaApp.Forms
         private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
 
+        }
+
+        private void PreviewBox_ResizeEnd(object sender, EventArgs e)
+        {
+            if (ThumbnailBox.Image != null)
+            {
+                RefreshThumbnail();
+            }
         }
     }
 }
