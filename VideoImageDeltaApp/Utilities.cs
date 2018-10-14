@@ -152,7 +152,7 @@ namespace VideoImageDeltaApp
             return i;
         }
 
-        public static void ReadImage(Image image, Geometry geo, out string text, out float confidence)
+        public static void ReadImage(Image image, Geometry geo, out string text, out float confidence, TimeSpan? estimate = null)
         {
             try
             {
@@ -161,24 +161,59 @@ namespace VideoImageDeltaApp
                     using (var page = engine.Process((Bitmap)image, geo.ToTesseract()))
                     {
                         text = page.GetText().Split(new[] { '\r', '\n' }).FirstOrDefault().Trim();
-                        confidence = page.GetIterator().GetConfidence(PageIteratorLevel.TextLine);
-                        if (!Utilities.ValidateTimeOCR(text, true))
+                        confidence = page.GetIterator().GetConfidence(PageIteratorLevel.TextLine) / 100;
+                        if (!ValidateTimeOCR(text))
                         {
-                            confidence = 0.01f;
-                            var r = page.GetIterator().GetResults().AllResults().OrderByDescending(x => x.Length).ToList();
-                            foreach (var s in r)
+                            var r = page.GetIterator().GetResults();
+
+                            var a = r.AllResults(false, ValidateTimeOCR);
+                            if (a.Count() > 0)
                             {
-                                if (Utilities.ValidateTimeOCR(s.Replace(" ",""), false))
+                                if (estimate == null)
                                 {
-                                    text = s.Replace(" ", "");
-                                    break;
+                                    text = a.First();
+                                }
+                                else
+                                {
+                                    TimeSpan e = estimate ?? TimeSpan.Zero;
+                                    text = a.Aggregate((x, y) => 
+                                        Math.Abs(TimeStringToTimeSpan(x).Ticks - e.Ticks)
+                                        <
+                                        Math.Abs(TimeStringToTimeSpan(y).Ticks - e.Ticks)
+                                        ? x : y
+                                        );
+                                }
+                                confidence = 0.02f;
+                            }
+
+                            if (!ValidateTimeOCR(text))
+                            {
+                                a = r.AllResults(true, ValidateTimeOCR);
+                                if (a.Count() > 0)
+                                {
+                                    if (estimate == null)
+                                    {
+                                        text = a.First();
+                                    }
+                                    else
+                                    {
+                                        TimeSpan e = estimate ?? TimeSpan.Zero;
+                                        text = a.Aggregate((x, y) =>
+                                            Math.Abs(TimeStringToTimeSpan(x).Ticks - e.Ticks)
+                                            <
+                                            Math.Abs(TimeStringToTimeSpan(y).Ticks - e.Ticks)
+                                            ? x : y
+                                            );
+                                    }
+                                    confidence = 0.01f;
+                                }
+
+                                if (!ValidateTimeOCR(text))
+                                {
+                                    text = "";
+                                    confidence = 0.00f;
                                 }
                             }
-                        }
-                        if (!Utilities.ValidateTimeOCR(text))
-                        {
-                            confidence = 0;
-                            text = "";
                         }
                     }
                 }
@@ -191,49 +226,122 @@ namespace VideoImageDeltaApp
             }
         }
 
-        public static bool ValidateTimeOCR(string text, bool tryHard = false)
+        public static bool ValidateTimeOCR(string text)
         {
-            // Maybe try seeing if replacing the space(s) with : or . possibly validates things.
-            var a = text.Replace(" ", "");
-            if (tryHard)
+            return Regex.IsMatch(text, @"^-?((((\d?\d:)?[0-5])?\d:)?[0-5])?\d(\.\d\d?)?$");
+        }
+
+        public static TimeSpan TimeStringToTimeSpan(string text)
+        {
+            if (TimeSpan.TryParse(text, out TimeSpan result))
             {
-                var b = text.Replace(" ", ":");
-                var c = text.Replace(" ", ".");
-                return Regex.IsMatch(a, @"^-?(?:(?:(\d?\d):)?([0-5]\d):)?([0-5]\d)(\.\d?(\d))?$") ||
-                    Regex.IsMatch(b, @"^-?(?:(?:(\d?\d):)?([0-5]\d):)?([0-5]\d)(\.\d?(\d))?$") ||
-                    Regex.IsMatch(c, @"^-?(?:(?:(\d?\d):)?([0-5]\d):)?([0-5]\d)(\.\d?(\d))?$");
+                return result;
             }
             else
             {
-                return Regex.IsMatch(a, @"^-?(?:(?:(\d?\d):)?([0-5]\d):)?([0-5]\d)(\.\d?(\d))?$");
-            }
-       }
-
-        public static ConcurrentBag<string> Untitled1(int a, List<List<char?>> x)
-        {
-            ConcurrentBag<string> retval = new ConcurrentBag<string>();
-            if (a == x.Count || a > 11)
-            {
-                retval.Add("");
-                return retval;
-            }
-            Parallel.ForEach<char?>(x[a], (y) =>
-            {
-                Parallel.ForEach<string>(Untitled1(a + 1, x), (x2) =>
+                if (!ValidateTimeOCR(text))
                 {
-                    retval.Add(y.ToString() + x2.ToString());
-                });
-            });
-            return retval;
-        }
-        public static string[] Untitled2(List<List<char?>> myList)
-        {
-            var l = new List<string>();
-            foreach (string x in Untitled1(0, myList))
-            {
-                l.Add(x);
+                    throw new ArgumentException("String is not a time.");
+                }
+
+                var isNegative = false;
+                var v = new int[5] { 0, 0, 0, 0, 0 };
+
+                if (text[0] == '-')
+                {
+                    isNegative = true;
+                }
+
+                // The validators guarentee there's only 1 period.
+                if (text.Contains('.'))
+                {
+                    v[4] = int.Parse(text.Split('.')[1]);
+                    text = text.Split('.')[0];
+                }
+
+                if (text.Contains(':'))
+                {
+                    var t = text.Split(':');
+                    for (int i = 0; i < t.Length; i++)
+                    {
+                        v[3 - i] = Math.Abs(int.Parse(t[i]));
+                    }
+                }
+                else
+                {
+                    v[3] = Math.Abs(int.Parse(text));
+                }
+
+                result = new TimeSpan(v[0], v[1], v[2], v[3], v[4]);
+
+                if (!isNegative)
+                {
+                    return result;
+                }
+                else
+                {
+                    return result.Negate();
+                }
             }
-            return l.ToArray();
+        }
+
+        public static int LeastCommonMultiple(int a, int b)
+        {
+            int num1, num2;
+            if (a > b)
+            {
+                num1 = a; num2 = b;
+            }
+            else
+            {
+                num1 = b; num2 = a;
+            }
+
+            for (int i = 1; i < num2; i++)
+            {
+                if ((num1 * i) % num2 == 0)
+                {
+                    return i * num1;
+                }
+            }
+            return num1 * num2;
+        }
+
+        private static int GreatestCommonDivisor(int a, int b)
+        {
+            while (a != 0 && b != 0)
+            {
+                if (a > b)
+                    a %= b;
+                else
+                    b %= a;
+            }
+
+            return a == 0 ? b : a;
+        }
+
+        public static string ToFraction(int a, int b, bool shrink = false)
+        {
+            if (shrink)
+            {
+                int gcd = GreatestCommonDivisor(a, b);
+                a /= gcd;
+                b /= gcd;
+            }
+            return a.ToString() + "/" + b.ToString();
+        }
+
+        public static byte[] FloatToBytes(float num)
+        {
+            var bytes = new byte[2];
+            bytes[0] = (byte)Math.Max(Math.Min(Math.Floor(num), 255), 0);
+            bytes[1] = (byte)Math.Floor(Math.Max(Math.Min(num - bytes[0], 255f/256f), 0) * 256);
+            return bytes;
+        }
+
+        public static float BytesToFloat(byte num1, byte num2)
+        {
+            return num1 + num2 / 256f;
         }
 
 

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Tesseract;
 
 namespace VideoImageDeltaApp.Models
@@ -57,31 +59,63 @@ namespace VideoImageDeltaApp.Models
         {
             public CharResult[][] Results;
 
-            public string BestResult()
-            {
-                string str = null;
-                Results.ToList().ForEach(x => str += x.First().Character);
-                return str;
-            }
+            public delegate bool Validator(string str);
 
-            public string[] AllResults()
+            public IEnumerable<string> AllResults(bool includeNull, Validator f = null)
             {
-                var l = new List<List<char?>>();
+                var charss = new List<List<char?>>();
                 for (int a = 0; a < Results.Count(); a++)
                 {
-                    var l2 = new List<char?> { null };
+                    var chars = new List<char?>();
+                    if (includeNull)
+                    {
+                        chars.Add(null);
+                    }
                     for (int b = 0; b < Results[a].Count(); b++)
                     {
-                        l2.Add(Results[a][b].Character);
+                        // Todo: Make parameter instead for portability. (How?)
                         if(Results[a][b].Character == ' ')
                         {
-                            l2.Add('.');
-                            l2.Add(':');
+                            chars.Add('.');
+                            chars.Add(':');
+                        }
+                        else
+                        {
+                            chars.Add(Results[a][b].Character);
                         }
                     }
-                    l.Add(l2);
+                    charss.Add(chars);
                 }
-                return Utilities.Untitled2(l);
+                return SuperConcat(0, charss, f);
+            }
+
+            private static IEnumerable<string> SuperConcat(int curChar, List<List<char?>> charss, Validator f = null)
+            {
+                ConcurrentBag<string> retval = new ConcurrentBag<string>();
+                if (curChar == charss.Count)
+                {
+                    retval.Add("");
+                    return retval;
+                }
+                Parallel.ForEach<char?>(charss[curChar], (y) =>
+                {
+                    foreach (var x2 in SuperConcat(curChar + 1, charss, f))
+                    {
+                        var str = y + x2;
+                        if (f == null || f(str))
+                        {
+                            retval.Add(str);
+                        }
+                    }
+                });
+                return retval.AsEnumerable();
+            }
+
+            public string BestResult()
+            {
+                var str = "";
+                Results.ToList().ForEach(x => str += x.First().Character);
+                return str;
             }
 
         }

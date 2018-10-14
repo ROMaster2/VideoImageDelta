@@ -18,8 +18,6 @@ namespace VideoImageDeltaApp
         {
             bool ffExists = RawFFmpeg.FindFFExecutables();
 
-            Test.Run();
-
             if (ffExists)
             {
                 Application.EnableVisualStyles();

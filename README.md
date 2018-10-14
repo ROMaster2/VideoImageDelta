@@ -10,11 +10,11 @@ This readme will be updated over time with relevant information.
 
 ## Licenses
 
-This program and its source code, as well as the Newtonsoft.Json binaries included in releases, are under The MIT License (MIT).
+This program and its source code, the borrowed code from [LiveSplit](https://github.com/LiveSplit/LiveSplit), as well as the [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json) binaries included in releases, are under The MIT License (MIT).
 
-The [FFmpeg](https://github.com/FFmpeg/FFmpeg) binaries included in releases are under GNU Lesser General Public License (LGPL) version 2.1. It includes the stable 64-bit binaries available at https://ffmpeg.zeranoe.com/builds/.
+The [FFmpeg](https://github.com/FFmpeg/FFmpeg) binaries included in releases are under GNU General Public License (GPL) version 2.0. It includes the stable 64-bit binaries available at https://ffmpeg.zeranoe.com/builds/.
 
-The log4net, Magick.NET, and Tesseract binaries included in releases are under Apache License 2.0.
+The [OverrideXml](https://github.com/ikriv/OverrideXml) library, as well as the [log4net](https://logging.apache.org/log4net/), [Magick.NET](https://github.com/dlemstra/Magick.NET), [Irony](https://github.com/IronyProject/Irony), and [Tesseract](https://github.com/charlesw/tesseract) binaries included in releases, are under Apache License 2.0.
 
 The MIT License (MIT)
 

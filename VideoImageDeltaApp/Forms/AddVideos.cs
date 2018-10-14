@@ -420,9 +420,17 @@ namespace VideoImageDeltaApp.Forms
                     var sl = SelectedGameProfile.Screens.Where(z => z.Name == words[0]);
                     if (sl.Count() > 0)
                     {
-                        var wzl = sl.First().WatchZones.Where(z => z.Name == words[1]);
+                        var s = sl.First();
+
+                        if (!(gameWidth > 0 && gameHeight > 0))
+                            PreviewBoxGeometryRescale = new Geometry(s.Geometry.Width, s.Geometry.Height);
+
+                        var wzl = s.WatchZones.Where(z => z.Name == words[1]);
                         if (wzl.Count() > 0)
+                        {
                             PreviewBoxGeometryAfter = wzl.First().Geometry;
+                            //PreviewBoxGeometryAfter.Resize(PreviewBoxGeometryBefore, PreviewBoxGeometryRescale);
+                        }
                         else
                             throw new Exception("Despite being selectable, the WatchZone does not exist.");
                     }
@@ -453,7 +461,26 @@ namespace VideoImageDeltaApp.Forms
                             PreviewBoxGeometryRescale = new Geometry(gameWidth, gameHeight);
                         else
                             PreviewBoxGeometryRescale = PreviewBoxGeometryBefore;
+
+                        if (DropBox_Watch_Preview.SelectedIndex > -1 && SelectedGameProfile != null)
+                        {
+                            // Using strings to store this stuff is a bad idea...
+                            string[] words = DropBox_Watch_Preview.Text.Split('/');
+                            if (words.Count() != 3)
+                                throw new Exception("Slashes were used on variable names.");
+                            var sl = SelectedGameProfile.Screens.Where(z => z.Name == words[0]);
+                            if (sl.Count() > 0)
+                            {
+                                var s = sl.First();
+
+                                if (!(gameWidth > 0 && gameHeight > 0))
+                                    PreviewBoxGeometryRescale = new Geometry(s.Geometry.Width, s.Geometry.Height);
+                            }
+                            else
+                                throw new Exception("Despite being selectable, the Screen does not exist.");
+                        }
                         PreviewBoxGeometryAfter = PreviewBoxGeometryRescale;
+
                         break;
                     case PreviewType.WatchZone:
                         PreviewBoxGeometryBefore = new Geometry(x, y, width, height);
@@ -471,12 +498,18 @@ namespace VideoImageDeltaApp.Forms
                             var sl = SelectedGameProfile.Screens.Where(z => z.Name == words[0]);
                             if (sl.Count() > 0)
                             {
-                                var wzl = sl.First().WatchZones.Where(z => z.Name == words[1]);
+                                var s = sl.First();
+
+                                if (!(gameWidth > 0 && gameHeight > 0))
+                                    PreviewBoxGeometryRescale = new Geometry(s.Geometry.Width, s.Geometry.Height);
+
+                                var wzl = s.WatchZones.Where(z => z.Name == words[1]);
                                 if (wzl.Count() > 0)
-                                    PreviewBoxGeometryAfter = wzl.First().WithoutScale(
-                                        SelectedFeed.Geometry,
+                                    /*PreviewBoxGeometryAfter = wzl.First().WithoutScale(
+                                        s.Geometry,
                                         PreviewBoxGeometryBefore,
-                                        PreviewBoxGeometryRescale);
+                                        PreviewBoxGeometryRescale);*/
+                                    PreviewBoxGeometryAfter = (wzl.First()).Geometry;
                                 else
                                     throw new Exception("Despite being selectable, the WatchZone does not exist.");
                             }
@@ -511,6 +544,7 @@ namespace VideoImageDeltaApp.Forms
                     int h = (int)PreviewBoxGeometryBefore.Height;
                     mi.Crop(new MagickGeometry(x, y, w, h), Gravity.Northwest);
                     mi.RePage();
+                    mi.Write(@"E:\debug1.png");
                     if (force || (!PreviewBoxGeometryRescale.IsBlank && !PreviewBoxGeometryRescale.Equals(SelectedVideo.Geometry)))
                     {
                         w = (int)PreviewBoxGeometryRescale.Width;
@@ -518,6 +552,7 @@ namespace VideoImageDeltaApp.Forms
                         var size = new MagickGeometry(w, h) { IgnoreAspectRatio = true };
                         mi.Resize(size);
                         mi.RePage();
+                        mi.Write(@"E:\debug2.png");
                         if (force || (!PreviewBoxGeometryAfter.IsBlank && !PreviewBoxGeometryAfter.Equals(PreviewBoxGeometryRescale)))
                         {
                             x = (int)PreviewBoxGeometryAfter.X;
@@ -527,6 +562,7 @@ namespace VideoImageDeltaApp.Forms
                             Gravity g = PreviewBoxGeometryAfter.Anchor.ToGravity();
                             mi.Crop(new MagickGeometry(x, y, w, h), g);
                             mi.RePage();
+                            mi.Write(@"E:\debug3.png");
                             return mi.ToBitmap();
                         }
                         else
@@ -573,8 +609,9 @@ namespace VideoImageDeltaApp.Forms
                 }
 
                 thumb1 = v.GetThumbnail(timestamp);
+                thumb1.Save(@"E:\debug4.png");
                 thumb2 = (Bitmap)RescaleThumbnail((Image)thumb1.Clone(), true);
-                
+                thumb2.Save(@"E:\debug5.png");
 
                 if (SelectedGameProfile != null && SelectedGameProfile.Screens.Count > 0 && DropBox_Watch_Preview.SelectedIndex > -1)
                 {
@@ -598,6 +635,7 @@ namespace VideoImageDeltaApp.Forms
                                 if (il.Count() > 0)
                                 {
                                     thumb3 = (Bitmap)il.First().Image;
+                                    thumb3.Save(@"E:\debug6.png");
                                 }
                                 else
                                     throw new Exception("The Image no longer exists." +
@@ -614,7 +652,7 @@ namespace VideoImageDeltaApp.Forms
 
                     if (CheckBox_Timer.Checked)
                     {
-                        Utilities.ReadImage(thumb1, SelectedFeed.Geometry, out string str, out float confidence);
+                        Utilities.ReadImage(thumb1, SelectedFeed.Geometry, out string str, out float confidence, timestamp);
 
                         Label_Delta.Text = str;
 
@@ -660,15 +698,30 @@ namespace VideoImageDeltaApp.Forms
                                 {
                                     mi2.Composite(mi1, CompositeOperator.CopyAlpha);
                                 }
-                                double delta = mi1.Compare(mi2, ErrorMetric.PeakSignalToNoiseRatio);
+                                mi1.Write(@"E:\debug7.png");
+                                mi2.Write(@"E:\debug8.png");
+                                //mi1.Grayscale();
+                                //mi2.Grayscale();
+                                /*mi1.ColorSpace = ColorSpace.HCL;
+                                mi2.ColorSpace = ColorSpace.HCL;
+                                var mi3 = (MagickImage)mi1.Separate().First();
+                                var mi4 = (MagickImage)mi2.Separate().First();
+                                mi3.RePage();
+                                mi4.RePage();
+                                mi3.Write(@"E:\debug9.png");
+                                mi4.Write(@"E:\debug10.png");*/
+                                double delta = mi1.Compare(mi2, ErrorMetric.NormalizedCrossCorrelation);
+                                double delta2 = mi1.Compare(mi2, ErrorMetric.Fuzz);
                                 if (delta >= 16) Label_Delta_Number.ForeColor = Color.Cyan;
                                 else if (delta >= 8) Label_Delta_Number.ForeColor = Color.Green;
                                 else if (delta >= 4) Label_Delta_Number.ForeColor = Color.FromArgb(255, 192, 0);
                                 else if (delta >= 2) Label_Delta_Number.ForeColor = Color.OrangeRed;
                                 else Label_Delta_Number.ForeColor = Color.DarkRed;
 
+
                                 delta = Math.Round(delta, 4);
-                                Label_Delta_Number.Text = delta.ToString();
+                                delta2 = Math.Round(delta2, 4);
+                                Label_Delta_Number.Text = delta.ToString() + " / " + delta2.ToString();
                                 Label_Delta_Number.Show();
                                 if (CheckBox_Display.Checked)
                                 {
@@ -1018,22 +1071,27 @@ namespace VideoImageDeltaApp.Forms
         private Point selectionEnd = new Point(0, 0);
         private bool selectionActive = false;
 
+        private bool canMakeBox = true;
+
         private void Box_Main_MouseDown(object sender, MouseEventArgs e)
         {
-            decimal widthMultiplier = (decimal)SelectedVideo.Geometry.Width / Box_Main.Width;
-            decimal heightMultiplier = (decimal)SelectedVideo.Geometry.Height / Box_Main.Height;
-            Numeric_X.Value = selectionStart.X * widthMultiplier;
-            Numeric_Y.Value = selectionStart.Y * heightMultiplier;
+            if (canMakeBox)
+            {
+                decimal widthMultiplier = (decimal)SelectedVideo.Geometry.Width / Box_Main.Width;
+                decimal heightMultiplier = (decimal)SelectedVideo.Geometry.Height / Box_Main.Height;
+                Numeric_X.Value = selectionStart.X * widthMultiplier;
+                Numeric_Y.Value = selectionStart.Y * heightMultiplier;
 
-            Update_Preview();
+                Update_Preview();
 
-            selectionStart = e.Location;
-            selectionActive = true;
+                selectionStart = e.Location;
+                selectionActive = true;
+            }
         }
 
         private void Box_Main_MouseMove(object sender, MouseEventArgs e)
         {
-            if (selectionActive)
+            if (selectionActive && canMakeBox)
             {
                 Click_Resize_Preview(e);
             }
@@ -1041,9 +1099,12 @@ namespace VideoImageDeltaApp.Forms
 
         private void Box_Main_MouseUp(object sender, MouseEventArgs e)
         {
-            selectionEnd = e.Location;
-            selectionActive = false;
-            Click_Resize_Preview(e);
+            if (canMakeBox)
+            {
+                selectionEnd = e.Location;
+                selectionActive = false;
+                Click_Resize_Preview(e);
+            }
         }
 
         private void Click_Resize_Preview(MouseEventArgs e)
@@ -1090,6 +1151,21 @@ namespace VideoImageDeltaApp.Forms
             {
                 TextBox_Timestamp.BackColor = Color.FromArgb(224, 64, 64);
             }
+            switch (SelectedPreviewType)
+            {
+                case PreviewType.Feed:
+                case PreviewType.Screen:
+                case PreviewType.Watcher:
+                case PreviewType.WatchZone:
+                    Box_Preview.Hide();
+                    canMakeBox = false;
+                    break;
+                default:
+                    Box_Preview.Show();
+                    canMakeBox = true;
+                    break;
+            }
+
         }
 
         private bool Validate_Timestamp_Text(string str)

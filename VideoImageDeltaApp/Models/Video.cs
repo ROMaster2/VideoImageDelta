@@ -47,14 +47,54 @@ namespace VideoImageDeltaApp.Models
 
         internal Video() { }
 
+        private const double PREFER_FRAMERATE_THRESHOLD = 0.65;
+
         public string FilePath;
         public ffprobeType RawMetadata { get; }
         public TimeSpan Duration { get; }
         private streamType RawVideoMetadata { get { return RawMetadata.streams.Where(x => x.codec_type == "video").First(); } }
-        public double FrameRate { get { return (double)Utilities.DivideString(RawVideoMetadata.r_frame_rate); } }
+        public string RawFrameRate { get { return RawVideoMetadata.r_frame_rate; } }
+        public double FrameRate { get { return (double)Utilities.DivideString(RawFrameRate); } }
         public int FrameCount { get { return (int)Math.Floor(FrameRate * Duration.TotalSeconds); } }
 
-        public double MaxScanRate { get { return Math.Round(Watches.Max(w => w.Frequency) * 300d) / 300d; } }
+        public double MaxScanRate { get { return Watches.Max(w => w.Frequency); } }
+
+        public double ScanRate
+        {
+            get
+            {
+                if (MaxScanRate < FrameRate * PREFER_FRAMERATE_THRESHOLD)
+                {
+                    return Math.Round(MaxScanRate * 300d) / 300d;
+                }
+                else
+                {
+                    return FrameRate;
+                }
+            }
+        }
+        public string ScanRateFraction
+        {
+            get
+            {
+                if (MaxScanRate < FrameRate * PREFER_FRAMERATE_THRESHOLD)
+                {
+                    if (MaxScanRate == 1d)
+                    {
+                        return "1";
+                    }
+                    else
+                    {
+                        return Utilities.ToFraction((int)Math.Round(MaxScanRate * 300d), 300, true);
+                    }
+                }
+                else
+                {
+                    return RawFrameRate;
+                }
+
+            }
+        }
 
         [XmlIgnore]
         public GameProfile GameProfile;
@@ -88,7 +128,7 @@ namespace VideoImageDeltaApp.Models
         {
             CalcChildAdjGeo();
             WatchZones.ForEach(wz => wz.Watches.ForEach(w => w.WatchImages
-                .ForEach(i => i.SetMagickImage(wz.ThumbnailGeometry))));
+                .ForEach(wi => wi.SetMagickImage(wz.ThumbnailGeometry))));
         }
 
         public Feed AddFeed(string name, bool useOCR, Geometry geometry, Geometry gameGeometry)
@@ -115,8 +155,9 @@ namespace VideoImageDeltaApp.Models
         /// This is done so it's not crunched every single process cycle.
         /// Warning: Could break if negative offsets are used. Need to test.
         /// </summary>
-        public void CalcChildAdjGeo()
+        public void CalcChildAdjGeo(bool cropped = true)
         {
+
             double x = 32768d;
             double y = 32768d;
             double width = -32768d;
@@ -132,8 +173,18 @@ namespace VideoImageDeltaApp.Models
             // Disabled for now. No significant speed improvement noticed.
             //x = Math.Floor(x / 16) * 16;
             //y = Math.Floor(y / 16) * 16;
-            width -= x;
-            height -= y;
+            if (cropped)
+            {
+                width -= x;
+                height -= y;
+            }
+            else
+            {
+                x = 0;
+                y = 0;
+                width = RawVideoMetadata.width;
+                height = RawVideoMetadata.height;
+            }
 
             ThumbnailGeometry = new Geometry(x, y, width, height);
 
