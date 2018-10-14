@@ -40,10 +40,10 @@ namespace VideoImageDeltaApp.Forms
                 }
             }
 
+            Start_Timer();
+
             Thread run = new Thread(new ThreadStart(Run));
             run.Start();
-
-            Start_Timer();
         }
 
         private void Run()
@@ -185,7 +185,7 @@ namespace VideoImageDeltaApp.Forms
         {
             BeginInvoke((MethodInvoker)delegate ()
             {
-                totalVideoFrames = n + 1;
+                totalVideoFrames = n;
             });
             Update_ProgressBar_Extraction(0);
             Update_ProgressBar_Scanning(0);

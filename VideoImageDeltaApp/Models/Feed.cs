@@ -44,7 +44,7 @@ namespace VideoImageDeltaApp.Models
         {
             get
             {
-                string str = null;
+                string str = "";
                 foreach (var b in OCRBag)
                 {
                     var lb = new List<byte>();
@@ -52,13 +52,20 @@ namespace VideoImageDeltaApp.Models
                     lb.AddRange(BitConverter.GetBytes(b.Confidence));
                     // Testing for null termination
                     lb.AddRange(Encoding.ASCII.GetBytes(b.TimeStamp ?? ""));
-                    str += Convert.ToBase64String(lb.ToArray());
+                    str += Convert.ToBase64String(lb.ToArray()) + "=";
                 }
                 return str;
             }
             set
             {
-
+                var lb = Convert.FromBase64String(value);
+                OCRBag = new ConcurrentBag<Bag>();
+                for (int i = 0; i < lb.Count(); i += 8)
+                {
+                    var frameIndex = BitConverter.ToInt32(lb, i);
+                    var confidence = BitConverter.ToSingle(lb, i + 4);
+                    OCRBag.Add(new Bag(frameIndex, confidence));
+                }
             }
         }
 

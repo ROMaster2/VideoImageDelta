@@ -564,6 +564,42 @@ namespace VideoImageDeltaApp.Models
             ChangeAnchor(parentGeometry.Width, parentGeometry.Height, anchor);
         }
 
+        public void Resize(double width, double height)
+        {
+            Width = width;
+            Height = height;
+        }
+
+        public void Resize(Size newSize)
+        {
+            Resize(newSize.Width, newSize.Height);
+        }
+
+        public void Resize(Geometry newGeometry)
+        {
+            Resize(newGeometry.Width, newGeometry.Height);
+        }
+
+        public void Resize(double parentWidth, double parentHeight, double childWidth, double childHeight)
+        {
+            double xScale = childWidth / parentWidth;
+            double yScale = childHeight / parentHeight;
+            X /= xScale;
+            Y /= yScale;
+            Width /= xScale;
+            Height /= yScale;
+        }
+
+        public void Resize(Size parentSize, Size childSize)
+        {
+            Resize(parentSize.Width, parentSize.Height, childSize.Width, childSize.Height);
+        }
+
+        public void Resize(Geometry parentGeometry, Geometry childGeometry)
+        {
+            Resize(parentGeometry.Width, parentGeometry.Height, childGeometry.Width, childGeometry.Height);
+        }
+
         // I do not trust these contains and related. They need testing.
 
         /// <summary>

@@ -34,14 +34,57 @@ using Screen = VideoImageDeltaApp.Models.Screen;
 
 namespace VideoImageDeltaApp
 {
-    static class Test
+    class Test
     {
         public static void Run()
         {
-            var mi = new MagickImage(@"C:\Users\Administrator\Pictures\VID\splat.png");
-            var a = mi.Separate(Channels.Alpha).First().GetPixels().GetValues();
-            var c = (255L - a.Average(x => (decimal)x)) / 255L;
-            var d = (255d - a.Average(x => (double)x)) / 255d;
+            var txt = "-01:23:45.67";
+            var l = new List<List<char?>>();
+
+            for (int i = 0; i < txt.Length; i++)
+            {
+                l.Add(new List<char?>() { txt[i], null });
+            }
+
+            var test = SuperConcat(0, l).Distinct().ToArray();
+            var bools1 = new List<string>();
+            for (int i = 0; i < test.Length; i++)
+            {
+                if (Utilities.ValidateTimeOCR(test[i]))
+                {
+                    bools1.Add(test[i]);
+                }
+            }
+            var bools2 = new bool[bools1.Count];
+            for (int i = 0; i < bools1.Count; i++)
+            {
+                bools2[i] = TimeSpan.TryParse(bools1[i], out TimeSpan nothing);
+            }
         }
+
+        public delegate bool Validator(string str, bool tryhard = false);
+
+        private static IEnumerable<string> SuperConcat(int curChar, List<List<char?>> charss, Validator f = null)
+        {
+            ConcurrentBag<string> retval = new ConcurrentBag<string>();
+            if (curChar == charss.Count)
+            {
+                retval.Add("");
+                return retval;
+            }
+            foreach (var y in charss[curChar])
+            {
+                foreach (var x2 in SuperConcat(curChar + 1, charss, f))
+                {
+                    var str = y + x2;
+                    if (f == null || f(str))
+                    {
+                        retval.Add(str);
+                    }
+                }
+            }
+            return retval.AsEnumerable();
+        }
+
     }
 }

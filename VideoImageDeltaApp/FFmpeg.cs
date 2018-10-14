@@ -255,7 +255,7 @@ namespace VideoImageDeltaApp
             return i;
         }
 
-        // Unuased I know what accelerators ffmpeg supports (specifically their command names).
+        // Unused util I know what accelerators ffmpeg supports (specifically their command names).
         public enum HardwareAccelerator
         {
 

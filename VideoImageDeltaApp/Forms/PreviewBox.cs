@@ -57,8 +57,8 @@ namespace VideoImageDeltaApp.Forms
         }
 
         private Bitmap FullThumbnail;
-        private Bitmap CroppedThumbnail;
-        private Bitmap DeltaThumbnail;
+        //private Bitmap CroppedThumbnail;
+        //private Bitmap DeltaThumbnail;
         private Bitmap ScaledThumbnail
         {
             get

@@ -636,9 +636,9 @@
             // Label_Delta_Number
             // 
             this.Label_Delta_Number.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Label_Delta_Number.Location = new System.Drawing.Point(99, 129);
+            this.Label_Delta_Number.Location = new System.Drawing.Point(67, 128);
             this.Label_Delta_Number.Name = "Label_Delta_Number";
-            this.Label_Delta_Number.Size = new System.Drawing.Size(66, 13);
+            this.Label_Delta_Number.Size = new System.Drawing.Size(98, 13);
             this.Label_Delta_Number.TabIndex = 222;
             this.Label_Delta_Number.Text = "420.69%";
             this.Label_Delta_Number.TextAlign = System.Drawing.ContentAlignment.MiddleRight;

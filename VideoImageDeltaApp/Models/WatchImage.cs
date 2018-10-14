@@ -86,13 +86,24 @@ namespace VideoImageDeltaApp.Models
                 foreach (var b in DeltaBag)
                 {
                     lb.AddRange(BitConverter.GetBytes(b.FrameIndex));
-                    lb.AddRange(BitConverter.GetBytes(b.Confidence));
+                    lb.AddRange(Utilities.FloatToBytes(b.Confidence));
                 }
                 return Convert.ToBase64String(lb.ToArray());
             }
             set
             {
-
+                var lb = Convert.FromBase64String(value);
+                /*if (lb.Count() % 6 != 0)
+                {
+                    throw new Exception("Incorrect number of bytes. Conversion not possible.");
+                }*/
+                DeltaBag = new ConcurrentBag<Bag>();
+                for (int i = 0; i < lb.Count(); i += 6)
+                {
+                    var frameIndex = BitConverter.ToInt32(lb, i);
+                    var confidence = Utilities.BytesToFloat(lb[i + 4], lb[i + 5]);
+                    DeltaBag.Add(new Bag(frameIndex, confidence));
+                }
             }
         }
 
