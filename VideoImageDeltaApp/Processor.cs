@@ -83,7 +83,7 @@ namespace VideoImageDeltaApp
         }
 
         //private string _TempDirectory = Path.GetTempPath() + Application.ProductName;
-        private string _TempDirectory = @"E:\1";
+        private string _TempDirectory = @"J:\1";
         public string TempDirectory
         {
             get
@@ -94,7 +94,7 @@ namespace VideoImageDeltaApp
                 if (!Directory.Exists(_TempDirectory))
                 {
                     _TempDirectory = Path.GetTempPath() + Application.ProductName;
-                    _TempDirectory = @"E:\1";
+                    _TempDirectory = @"J:\1";
                 }
 
                 return _TempDirectory;
@@ -184,17 +184,21 @@ namespace VideoImageDeltaApp
                     ProcessingWindow.Update_Current_Video(video.FilePath);
                     video.InitProcess();
 
-                    string rateStr = Math.Round(video.MaxScanRate * 300d).ToString() + "/300";
-
-                    string hwAccel = null;
+                    string hardwareAccelStr = null;
                     if (!string.IsNullOrWhiteSpace(UseVideoHardwareAccel))
-                        hwAccel = "-hwaccel " + UseVideoHardwareAccel;
+                        hardwareAccelStr = "-hwaccel " + UseVideoHardwareAccel;
 
                     Process = new Process();
                     Process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                    Process.StartInfo.FileName = "ffmpeg";
-                    Process.StartInfo.Arguments = string.Format(@"{0} -i ""{1}"" -vf fps={2},crop={3} -q:v 5 ""{4}""",
-                        hwAccel, video.FilePath, rateStr, video.ThumbnailGeometry.ToFFmpegString(), TempDirectory + @"\%08d." + FRAME_FILE_TYPE);
+                    Process.StartInfo.FileName = RawFFmpeg.ffmpegPath;
+                    Process.StartInfo.Arguments = string.Format(
+                        @"{0} -i ""{1}"" -vf fps={2},crop={3} -q:v 5 ""{4}""",
+                        hardwareAccelStr,
+                        video.FilePath,
+                        video.ScanRateFraction,
+                        video.ThumbnailGeometry.ToFFmpegString(),
+                        TempDirectory + @"\%08d." + FRAME_FILE_TYPE
+                        );
                     Process.StartInfo.UseShellExecute = false;
                     Process.StartInfo.RedirectStandardOutput = false;
                     Process.StartInfo.RedirectStandardError = false;
@@ -241,10 +245,11 @@ namespace VideoImageDeltaApp
 
         public void ScanVideo(Video video)
         {
-            int scanCount = (int)Math.Floor(video.FrameCount * video.MaxScanRate / video.FrameRate);
+            int scanCount = (int)Math.Ceiling(video.Duration.TotalSeconds * video.ScanRate);
             int finishCount = 0;
-
             ProcessingWindow.Update_totalVideoFrames(scanCount);
+
+            double timeIndexMultiplier = 1000d / video.ScanRate;
 
             // Todo: Make method in Video for this instead.
             video.Feeds.ForEach(f => f.OCRBag = new ConcurrentBag<Bag>());
@@ -269,48 +274,53 @@ namespace VideoImageDeltaApp
                         {
                             try
                             {
-                                using (MagickImage fileImageBase = new MagickImage(file.FullName))
+                                using (var fileImageBase = new MagickImage(file.FullName))
                                 {
                                     if (fileImageBase.Width <= 1 && fileImageBase.Height <= 1)
                                     { // Sometimes happens. Dunno how. Probably because it's parallel.
                                         goto Skip;
                                     }
                                     fileImageBase.RePage();
-                                    Parallel.ForEach(video.Feeds, (f) =>
+                                    foreach (var f in video.Feeds)
                                     {
                                         if (!f.UseOCR)
                                         {
-                                            Parallel.ForEach(f.Screens, (s) =>
+                                            foreach (var s in f.Screens)
                                             {
-                                                Parallel.ForEach(s.WatchZones, (wz) =>
+                                                foreach (var wz in s.WatchZones)
                                                 {
                                                     var mg = wz.ThumbnailGeometry.ToMagick();
-                                                // Doesn't crop perfectly. Investigate later.
-                                                using (var fileImageCrop = (MagickImage)fileImageBase.Clone())
+                                                    // Doesn't crop perfectly. Investigate later.
+                                                    using (var fileImageCropped = (MagickImage)fileImageBase.Clone())
                                                     {
-                                                        fileImageCrop.Crop(mg, Gravity.Northwest);
-                                                        Parallel.ForEach(wz.Watches, (w) =>
+                                                        fileImageCropped.Crop(mg, Gravity.Northwest);
+                                                        foreach (var w in wz.Watches)
                                                         {
-                                                            Parallel.ForEach(w.WatchImages, (wi) =>
+                                                            using (var fileImageComposed = (MagickImage)fileImageCropped.Clone())
                                                             {
-                                                                using (MagickImage deltaImage = (MagickImage)wi.MagickImage.Clone())
+                                                                fileImageComposed.ColorSpace = w.ColorSpace;
+                                                                foreach (var wi in w.WatchImages)
                                                                 {
-                                                                    using (var fileImageCompare = (MagickImage)fileImageCrop.Clone())
+                                                                    var deltaImage = wi.MagickImage;
+                                                                    using (var fileImageCompare = (MagickImage)fileImageComposed.Clone())
                                                                     {
                                                                         if (deltaImage.HasAlpha)
                                                                         {
                                                                             fileImageCompare.Composite(deltaImage, CompositeOperator.CopyAlpha);
                                                                         }
-                                                                        float delta = (float)deltaImage.Compare(fileImageCompare,
-                                                                            ErrorMetric.PeakSignalToNoiseRatio);
-                                                                        wi.DeltaBag.Add(new Bag(thumbID, delta));
+
+                                                                        var delta = (float)deltaImage.Compare(fileImageCompare,
+                                                                            ErrorMetric.NormalizedCrossCorrelation);
+
+                                                                        int id = (int)Math.Round(thumbID * timeIndexMultiplier);
+                                                                        wi.DeltaBag.Add(new Bag(id, delta));
                                                                     }
                                                                 }
-                                                            });
-                                                        });
+                                                            }
+                                                        }
                                                     }
-                                                });
-                                            });
+                                                }
+                                            }
                                         }
                                         else
                                         {
@@ -320,7 +330,7 @@ namespace VideoImageDeltaApp
                                                 f.OCRBag.Add(new Bag(thumbID, confidence, str));
                                             }
                                         }
-                                    });
+                                    }
                                 }
                             } // Sometimes Magick can't read an image correctly. No idea why.
                             catch (MagickCorruptImageErrorException e)
