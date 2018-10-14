@@ -1,6 +1,7 @@
 ﻿using ImageMagick;
 using Microsoft.VisualBasic.Devices;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -11,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using VideoImageDeltaApp.Models;
+using VideoImageDeltaApp.Forms;
 
 namespace VideoImageDeltaApp
 {
@@ -155,9 +157,9 @@ namespace VideoImageDeltaApp
 
         public void Run(IEnumerable<Video> videos)
         {
+            Aborted = false;
             Finished = false;
             Paused = false;
-
 
             //Utilities.SetCPULimit(CPULimit);
             Utilities.SetPriority(Priority);
@@ -182,24 +184,11 @@ namespace VideoImageDeltaApp
                     ProcessingWindow.Update_Current_Video(video.FilePath);
                     video.InitProcess();
 
-                    //int imageSize = (int)(v.ThumbnailGeometry.Width * v.ThumbnailGeometry.Height) * 3 + BMP_OVERHEAD;
-
-                    /*var pipe = new NamedPipeServerStream(
-                        "from_ffmpeg.bmp",
-                        PipeDirection.In,
-                        1,
-                        PipeTransmissionMode.Message,
-                        PipeOptions.WriteThrough,
-                        cacheSize,
-                        cacheSize);*/
-
-
                     string rateStr = Math.Round(video.MaxScanRate * 300d).ToString() + "/300";
 
                     string hwAccel = null;
                     if (!string.IsNullOrWhiteSpace(UseVideoHardwareAccel))
                         hwAccel = "-hwaccel " + UseVideoHardwareAccel;
-
 
                     Process = new Process();
                     Process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
@@ -212,80 +201,61 @@ namespace VideoImageDeltaApp
                     Process.StartInfo.CreateNoWindow = false;
                     Process.Start();
 
-                    //pipe.WaitForConnection();
-
                     if (UseHDD)
                     {
                         ScanVideo(video);
                     }
-                    else
-                    {
-                        //Untitled(pProcess, pipe, imageSize, v);
-                    }
-
-                    //pipe.Dispose();
-                    //var a = pProcess.StandardError.ReadToEnd();
                     Process.WaitForExit();
                     videosFinished++;
                     ProcessingWindow.Update_Video_Count(videosFinished, videos.Count());
-                    //video.Feeds.ForEach(f => f.OCRBag = f.OCRBag.OrderBy(b => b.FrameIndex ?? 0).ToList());
-                    //video.WatchImages.ForEach(wi => wi.DeltaBag = wi.DeltaBag.OrderBy(b => b.FrameIndex).ToList());
 
-                    foreach(var f in video.Feeds)
+                    foreach (var f in video.Feeds)
                     {
                         if (f.OCRBag.Count > 0)
                         {
-                            f.OCRBag = f.OCRBag.OrderBy(b => b.FrameIndex).ToList();
+                            f.OCRBag = new ConcurrentBag<Bag>(f.OCRBag.OrderBy(b => -b.FrameIndex));
                         }
                     }
                     foreach (var wi in video.WatchImages)
                     {
                         if (wi.DeltaBag.Count > 0)
                         {
-                            wi.DeltaBag = wi.DeltaBag.OrderBy(b => b.FrameIndex).ToList();
+                            wi.DeltaBag = new ConcurrentBag<Bag>(wi.DeltaBag.OrderBy(b => -b.FrameIndex));
                         }
                     }
                 }
-                if (Aborted)
-                {
-                    DirectoryInfo directory = new DirectoryInfo(TempDirectory);
-                    FileInfo[] files = directory.GetFiles(FRAME_FILE_SELECTOR);
-                    Parallel.ForEach(files, (file) =>
-                    {
-                        file.Delete();
-                    });
-                }
             }
-            /*
-            var d = 0;
-            var a1 = videos[0].Feeds.Where(f => f.UseOCR).First().OCRBag;
-            var b1 = videos[0].Feeds[0].Screens[0].WatchZones[0].Watches[0].Images[0].DeltaBag;
-            var b2 = e.OrderBy(f => f.Confidence);
-            var b3 = e.OrderBy(f => f.FrameIndex);
-            var c1 = videos[0].Feeds[0].Screens[0].WatchZones[1].Watches[0].Images[0].DeltaBag;
-            var c2 = u.OrderBy(o => o.FrameIndex);
-            d += 1;
-            */
+
+            DirectoryInfo directory = new DirectoryInfo(TempDirectory);
+            FileInfo[] files = directory.GetFiles(FRAME_FILE_SELECTOR);
+            Parallel.ForEach(files, (file) =>
+            {
+                file.Delete();
+            });
 
             Aborted = false;
             Finished = true;
+            Paused = false;
             ProcessingWindow.Finished();
         }
 
         public void ScanVideo(Video video)
         {
-            int scanCount = (int)Math.Floor(video.FrameCount / video.MaxScanRate / video.FrameRate);
+            int scanCount = (int)Math.Floor(video.FrameCount * video.MaxScanRate / video.FrameRate);
             int finishCount = 0;
 
             ProcessingWindow.Update_totalVideoFrames(scanCount);
 
             // Todo: Make method in Video for this instead.
-            List<WatchZone> lwz = new List<WatchZone>();
-            video.Feeds.ForEach(f => f.Screens.ForEach(s => s.WatchZones.ForEach(wz => lwz.Add(wz))));
-            lwz.ForEach(wz => wz.Watches.ForEach(w => w.WatchImages.ForEach(wi => wi.DeltaBag.Clear())));
+            video.Feeds.ForEach(f => f.OCRBag = new ConcurrentBag<Bag>());
+            video.WatchImages.ForEach(wi => wi.DeltaBag = new ConcurrentBag<Bag>());
 
-            DirectoryInfo directory = new DirectoryInfo(_TempDirectory);
+            DirectoryInfo directory = new DirectoryInfo(TempDirectory);
             FileInfo[] files = directory.GetFiles(FRAME_FILE_SELECTOR);
+            Parallel.ForEach(files, (file) =>
+            {
+                file.Delete();
+            });
 
             while (!Aborted && (!Process.HasExited || files.Count() > 0))
             {
@@ -314,7 +284,7 @@ namespace VideoImageDeltaApp
                                             {
                                                 Parallel.ForEach(s.WatchZones, (wz) =>
                                                 {
-                                                    var mg = wz.AdjustedGeometry.ToMagick();
+                                                    var mg = wz.ThumbnailGeometry.ToMagick();
                                                 // Doesn't crop perfectly. Investigate later.
                                                 using (var fileImageCrop = (MagickImage)fileImageBase.Clone())
                                                     {
@@ -377,131 +347,5 @@ namespace VideoImageDeltaApp
                 }
             };
         }
-        /*
-        void Untitled(Process pProcess, NamedPipeServerStream pipe, int imageSize, Video video)
-        {
-            int scannedCount = 0;
-            List<Image> thumbs = new List<Image>();
-            while (!pProcess.HasExited || thumbs.Count() > 0)
-            {
-                //break;
-                if (thumbs.Count() > 0)
-                {
-                    for (int n = 0; n < thumbs.Count() - 1; n++)
-                    {
-                        video.Feeds[0].Screens.ForEach(s => s.WatchZones.ForEach(wz => wz.Watches.ForEach(w => w.Images.ForEach(i =>
-                        {
-                            using (MagickImage diffImage = new MagickImage((Bitmap)thumbs[n]))
-                            {
-                                if (i.MagickImage.HasAlpha)
-                                {
-                                    diffImage.Composite(i.MagickImage, CompositeOperator.CopyAlpha);
-                                }
-                                double delta = diffImage.Compare(i.MagickImage, ErrorMetric.PeakSignalToNoiseRatio);
-                                //i.AddBag(n, delta);
-                            }
-                        }
-                        ))));
-                    }
-
-
-                    /*
-                    Parallel.ForEach(thumbs, (a, state, index) =>
-                    {
-                        video.Feeds[0].Screens.ForEach(s => s.WatchZones.ForEach(wz => wz.Watches.ForEach(w => w.Images.ForEach(i =>
-                            {
-                                using (MagickImage diffImage = new MagickImage((Bitmap)a))
-                                {
-                                    if (i.MagickImage.HasAlpha)
-                                    {
-                                        diffImage.Composite(i.MagickImage, CompositeOperator.CopyAlpha);
-                                    }
-                                    double delta = diffImage.Compare(i.MagickImage, ErrorMetric.PeakSignalToNoiseRatio);
-                                    i.AddBag(index, delta);
-                                }
-                            }
-                        ))));
-                    });
-                    */
-        /*
     }
-    thumbs = GetThumbnails(pProcess, pipe, imageSize, ref scannedCount);
-}
-
-}
-
-static List<Image> GetThumbnails(Process pProcess, NamedPipeServerStream stream, int imageSize, ref int scannedCountEnd)
-{
-int scannedCountStart = scannedCountEnd;
-byte[] allImages = null;
-using (var br = new BinaryReader(stream))
-{
-    int i = br.Read();
-    Array.Resize(ref allImages, i);
-    allImages = br.ReadBytes(i);
-
-    //stream.CopyTo(sr);
-    //stream.Read(allImages, scannedCountStart, (int)stream.Position);
-    //sr.Read(allImages, scannedCountStart, (int)stream.Position);
-    // If it isn't a multiple of imageSize, we're fucked.
-    //scannedCountEnd = (int)ms.Length / imageSize;
-
-}
-
-var l = new List<Image>();
-for (int i = 0; i < allImages.Count(); i += imageSize)
-{
-    using (var ms = new MemoryStream(imageSize))
-    {
-        var start = Math.Min(0, allImages.Count());
-        var end = Math.Min(i + imageSize - 1, allImages.Count());
-        ms.Write(allImages, start, end);
-        Bitmap a = new Bitmap(1, 1);
-        try
-        {
-            a = (Bitmap)Image.FromStream(ms);
-            a.Save(@"E:\1\" + Guid.NewGuid().ToString("N"));
-        }
-        catch (System.ArgumentException e)
-        {
-            Debug.Write(e);
-        }
-        l.Add(a);
-    }
-}
-return l;
-}
-
-
-
-/*
-static IEnumerable<int> GetBytePatternPositions(byte[] data, byte[] pattern)
-{
-var dataLen = data.Length;
-var patternLen = pattern.Length - 1;
-int scanData = 0;
-int scanPattern = 0;
-while (scanData < dataLen)
-{
-    if (pattern[0] == data[scanData])
-    {
-        scanPattern = 1;
-        scanData++;
-        while (pattern[scanPattern] == data[scanData])
-        {
-            if (scanPattern == patternLen)
-            {
-                yield return scanData - patternLen;
-                break;
-            }
-            scanPattern++;
-            scanData++;
-        }
-    }
-    scanData++;
-}
-}
-*/
-    }
-
 }

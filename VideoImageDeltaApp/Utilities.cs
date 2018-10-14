@@ -162,6 +162,24 @@ namespace VideoImageDeltaApp
                     {
                         text = page.GetText().Split(new[] { '\r', '\n' }).FirstOrDefault().Trim();
                         confidence = page.GetIterator().GetConfidence(PageIteratorLevel.TextLine);
+                        if (!Utilities.ValidateTimeOCR(text, true))
+                        {
+                            confidence = 0.01f;
+                            var r = page.GetIterator().GetResults().AllResults().OrderByDescending(x => x.Length).ToList();
+                            foreach (var s in r)
+                            {
+                                if (Utilities.ValidateTimeOCR(s.Replace(" ",""), false))
+                                {
+                                    text = s.Replace(" ", "");
+                                    break;
+                                }
+                            }
+                        }
+                        if (!Utilities.ValidateTimeOCR(text))
+                        {
+                            confidence = 0;
+                            text = "";
+                        }
                     }
                 }
             }
@@ -173,32 +191,42 @@ namespace VideoImageDeltaApp
             }
         }
 
-        public static bool ValidateTimeOCR(string text)
+        public static bool ValidateTimeOCR(string text, bool tryHard = false)
         {
             // Maybe try seeing if replacing the space(s) with : or . possibly validates things.
-            text = text.Replace(" ", "");
-            return Regex.IsMatch(text, @"^-?(?:(?:(\d?\d):)?([0-5]\d):)?([0-5]\d)(\.\d?(\d?(\d)))?$");
-        }
-
-        public static List<string> Untitled1(int a, List<List<char>> x)
-        {
-            List<string> retval = new List<string>();
-            if (a == x.Count)
+            var a = text.Replace(" ", "");
+            if (tryHard)
             {
-                retval.Add("_");
+                var b = text.Replace(" ", ":");
+                var c = text.Replace(" ", ".");
+                return Regex.IsMatch(a, @"^-?(?:(?:(\d?\d):)?([0-5]\d):)?([0-5]\d)(\.\d?(\d))?$") ||
+                    Regex.IsMatch(b, @"^-?(?:(?:(\d?\d):)?([0-5]\d):)?([0-5]\d)(\.\d?(\d))?$") ||
+                    Regex.IsMatch(c, @"^-?(?:(?:(\d?\d):)?([0-5]\d):)?([0-5]\d)(\.\d?(\d))?$");
+            }
+            else
+            {
+                return Regex.IsMatch(a, @"^-?(?:(?:(\d?\d):)?([0-5]\d):)?([0-5]\d)(\.\d?(\d))?$");
+            }
+       }
+
+        public static ConcurrentBag<string> Untitled1(int a, List<List<char?>> x)
+        {
+            ConcurrentBag<string> retval = new ConcurrentBag<string>();
+            if (a == x.Count || a > 11)
+            {
+                retval.Add("");
                 return retval;
             }
-            foreach (char y in x.ElementAt(a))
+            Parallel.ForEach<char?>(x[a], (y) =>
             {
-                foreach (string x2 in Untitled1(a + 1, x))
+                Parallel.ForEach<string>(Untitled1(a + 1, x), (x2) =>
                 {
                     retval.Add(y.ToString() + x2.ToString());
-                }
-
-            }
+                });
+            });
             return retval;
         }
-        public static string[] Untitled2(List<List<char>> myList)
+        public static string[] Untitled2(List<List<char?>> myList)
         {
             var l = new List<string>();
             foreach (string x in Untitled1(0, myList))

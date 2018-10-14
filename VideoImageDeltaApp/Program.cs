@@ -18,12 +18,15 @@ namespace VideoImageDeltaApp
         {
             bool ffExists = RawFFmpeg.FindFFExecutables();
 
+            Test.Run();
+
             if (ffExists)
             {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
                 MainWindow = new MainWindow();
                 Application.Run(MainWindow);
+                //Application.Run(new TestForm());
             }
         }
     }

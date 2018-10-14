@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace VideoImageDeltaApp
+namespace VideoImageDeltaApp.Forms
 {
     public partial class ProcessSettings : Form
     {

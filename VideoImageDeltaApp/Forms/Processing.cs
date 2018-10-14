@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 using System.Windows.Forms;
 using VideoImageDeltaApp.Models;
 
-namespace VideoImageDeltaApp
+namespace VideoImageDeltaApp.Forms
 {
     public partial class Processing : Form
     {
@@ -18,6 +18,7 @@ namespace VideoImageDeltaApp
         private int videoFramesCreated = 0;
         private int totalVideoFrames = 1;
         private int allFramesCreated = 1;
+        private int allFramesScanned = 1;
 
         public Processing()
         {
@@ -39,10 +40,10 @@ namespace VideoImageDeltaApp
                 }
             }
 
+            Start_Timer();
+
             Thread run = new Thread(new ThreadStart(Run));
             run.Start();
-
-            Start_Timer();
         }
 
         private void Run()
@@ -105,10 +106,10 @@ namespace VideoImageDeltaApp
                         {
                             overrides
                                 .Override<Feed>()
-                                    .Member("OCRBag").XmlIgnore(false)
+                                    .Member("OCRList").XmlIgnore(false)
                                     .Member("OCRBagCompact").XmlIgnore(true)
                                 .Override<WatchImage>()
-                                    .Member("DeltaBag").XmlIgnore(false)
+                                    .Member("DeltaList").XmlIgnore(false)
                                     .Member("DeltaBagCompact").XmlIgnore(true);
                         }
 
@@ -204,7 +205,7 @@ namespace VideoImageDeltaApp
         public void Update_Speed()
         {
             // Todo: Make it rolling average instead.
-            Label_Speed_Value.Text = (allFramesCreated * 1000 / (double)Watch.ElapsedMilliseconds).ToString(@"0.##\x");
+            Label_Speed_Value.Text = ((allFramesCreated + allFramesScanned) * 500 / (double)Watch.ElapsedMilliseconds).ToString("F") + "x";
         }
 
         public void Update_Video_Count(int finishedVideoCount, int totalVideoCount)
@@ -234,6 +235,7 @@ namespace VideoImageDeltaApp
         {
             Update_ProgressBar(ProgressBar_Scanning, finishedFrameCount, this.totalVideoFrames);
             Update_Counter(Label_Scanning_Value, finishedFrameCount, this.totalVideoFrames);
+            allFramesScanned++;
         }
 
         private void Update_Counter(Label label, int numerator, int denominator)

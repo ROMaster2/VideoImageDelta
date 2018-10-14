@@ -289,7 +289,7 @@ namespace VideoImageDeltaApp.Forms
                 {
                     ListBox_Watches.Items.Add(w);
                 }
-                var ratio = wz.Geometry.Ratio;
+                var ratio = wz.Geometry.Width / wz.Geometry.Height;
                 ratio = ratio / (200d / 120d);
                 if (ratio > 1d)
                 {
@@ -344,6 +344,8 @@ namespace VideoImageDeltaApp.Forms
                     {
                         gp = (GameProfile)serializer.Deserialize(reader);
                     }
+                    gp.ReSyncRelationships();
+
                     ListBox_GameProfiles.Items.Add(gp);
                 }
                 ListBox_GameProfiles.SelectedIndex = ListBox_GameProfiles.Items.Count - 1;
@@ -542,10 +544,8 @@ namespace VideoImageDeltaApp.Forms
             }
             else
             {
-                Models.Screen item;
-                item = new Models.Screen(name, useAdvanced, new Geometry(width, height));
                 var gp = SelectedGameProfile;
-                gp.Screens.Add(item);
+                var screen = SelectedGameProfile.AddScreen(name, useAdvanced, new Geometry(width, height));
                 Update_Screens();
                 ListBox_Screens.SelectedIndex = ListBox_Screens.Items.Count - 1;
                 TextBox_Screens_New_Name.Text = null;
@@ -857,7 +857,7 @@ namespace VideoImageDeltaApp.Forms
             ListBox_Watches_New_Images.Items.Clear();
 
             var wz = SelectedWatchZone;
-            var ratio = wz.Geometry.Ratio;
+            var ratio = wz.Geometry.Width / wz.Geometry.Height;
             ratio = ratio / (200d / 120d);
             if (ratio > 1d)
             {
@@ -926,8 +926,7 @@ namespace VideoImageDeltaApp.Forms
                 var s = SelectedScreen;
                 Geometry geo;
                 geo = new Geometry(x, y, width, height, anchor);
-                var wz = new WatchZone(name, scaleType, geo);
-                s.WatchZones.Add(wz);
+                var wz = s.AddWatchZone(name, scaleType, geo);
                 Update_WatchZones();
                 ListBox_WatchZones.SelectedIndex = ListBox_WatchZones.Items.Count - 1;
                 Clean_WatchZones_New();
@@ -957,9 +956,9 @@ namespace VideoImageDeltaApp.Forms
             }
             else if (TableLayoutPanel_WatchZones_New.Visible && TableLayoutPanel_WatchZones_New.Width > 0 && Panel_WatchZones_New.Visible == true) // Stop minimize bug
             {
-                double screenWidth = 1920d;
-                double screenHeight = 1080d;
-                if (SelectedScreen.Geometry != null)
+                double screenWidth = 640d;
+                double screenHeight = 480d;
+                if (!SelectedScreen.Geometry.HasSize)
                 {
                     screenWidth = SelectedScreen.Geometry.Width;
                     screenHeight = SelectedScreen.Geometry.Height;
@@ -1035,9 +1034,9 @@ namespace VideoImageDeltaApp.Forms
             }
             else if (TableLayoutPanel_WatchZones.Visible && TableLayoutPanel_WatchZones.Width > 0 && Panel_WatchZones.Visible == true) // Stops minimize bug
             {
-                double screenWidth = 1920d;
-                double screenHeight = 1080d;
-                if (SelectedScreen.Geometry != null)
+                double screenWidth = 640d;
+                double screenHeight = 480d;
+                if (!SelectedScreen.Geometry.HasSize)
                 {
                     screenWidth = SelectedScreen.Geometry.Width;
                     screenHeight = SelectedScreen.Geometry.Height;
@@ -1218,7 +1217,7 @@ namespace VideoImageDeltaApp.Forms
 
             foreach (var f in ofd.FileNames)
             {
-                var i = new WatchImage(f);
+                var i = new WatchImage(null, f);
                 ListBox_Watches_New_Images.Items.Add(i);
             }
 
@@ -1277,7 +1276,7 @@ namespace VideoImageDeltaApp.Forms
 
             foreach (var f in ofd.FileNames)
             {
-                var i = new WatchImage(f);
+                var i = SelectedWatcher.AddWatchImage(f);
                 ListBox_Watches_Images.Items.Add(i);
             }
 
@@ -1315,13 +1314,12 @@ namespace VideoImageDeltaApp.Forms
             else
             {
                 var wz = SelectedWatchZone;
-                var w = new Watcher(name, frequency);
+                var w = SelectedWatchZone.AddWatcher(name, frequency);
                 foreach (WatchImage i in ListBox_Watches_New_Images.Items)
                 {
                     i.Clear();
-                    w.WatchImages.Add(i);
+                    w.AddWatchImage(i.FilePath);
                 }
-                wz.Watches.Add(w);
                 Update_Watches();
                 ListBox_Watches.SelectedIndex = ListBox_Watches.Items.Count - 1;
                 Clean_Watches_New();
@@ -1346,7 +1344,7 @@ namespace VideoImageDeltaApp.Forms
 
 
                 var wz = SelectedWatchZone;
-                var ratio = wz.Geometry.Ratio;
+                var ratio = wz.Geometry.Width / wz.Geometry.Height;
                 ratio = ratio / (200d / 120d);
                 if (ratio > 1d)
                 {
@@ -1422,8 +1420,7 @@ namespace VideoImageDeltaApp.Forms
 
             if (File.Exists(ofd.FileName))
             {
-                var i = new WatchImage(ofd.FileName);
-                Box_WatchZones_New_Main.BackgroundImage = i.Image;
+                Box_WatchZones_New_Main.BackgroundImage = Image.FromFile(ofd.FileName);
                 Box_WatchZones_New_Preview.BackColor = Color.FromArgb(127, 255, 0, 255);
                 Button_WatchZones_New_SSAAI.Enabled = true;
             }
@@ -1443,9 +1440,9 @@ namespace VideoImageDeltaApp.Forms
             {
                 var image = Box_WatchZones_New_Main.BackgroundImage;
 
-                double screenWidth = 1920d;
-                double screenHeight = 1080d;
-                if (SelectedScreen.Geometry != null)
+                double screenWidth = 640d;
+                double screenHeight = 480d;
+                if (!SelectedScreen.Geometry.HasSize)
                 {
                     screenWidth = SelectedScreen.Geometry.Width;
                     screenHeight = SelectedScreen.Geometry.Height;
@@ -1497,7 +1494,7 @@ namespace VideoImageDeltaApp.Forms
 
             if (File.Exists(ofd.FileName))
             {
-                var i = new WatchImage(ofd.FileName);
+                var i = SelectedWatcher.AddWatchImage(ofd.FileName);
                 Box_WatchZones_Main.BackgroundImage = i.Image;
                 Box_WatchZones_Preview.BackColor = Color.FromArgb(127, 255, 0, 255);
                 Button_WatchZones_SSAAI.Enabled = true;
@@ -1518,9 +1515,9 @@ namespace VideoImageDeltaApp.Forms
             {
                 var image = Box_WatchZones_Main.BackgroundImage;
 
-                double screenWidth = 1920d;
-                double screenHeight = 1080d;
-                if (SelectedScreen.Geometry != null)
+                double screenWidth = 640d;
+                double screenHeight = 480d;
+                if (!SelectedScreen.Geometry.HasSize)
                 {
                     screenWidth = SelectedScreen.Geometry.Width;
                     screenHeight = SelectedScreen.Geometry.Height;

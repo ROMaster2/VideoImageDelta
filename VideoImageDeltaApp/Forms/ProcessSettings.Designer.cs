@@ -1,4 +1,4 @@
-﻿namespace VideoImageDeltaApp
+﻿namespace VideoImageDeltaApp.Forms
 {
     partial class ProcessSettings
     {
